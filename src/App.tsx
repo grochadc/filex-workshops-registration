@@ -1,24 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState } from "react";
+import Router from "./components/Router";
+import Home from "./components/Home";
 
 function App() {
+  const [currentRoute, setCurrentRoute] = useState("home");
+  const [code, setCode] = useState();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router
+        currentRoute={currentRoute}
+        render={(currentRoute: string) => (
+          <Fragment>
+            <Router.View route="home" currentRoute={currentRoute}>
+              <Home setCurrentRoute={setCurrentRoute} setCode={setCode} />
+            </Router.View>
+            <Router.View route="selection" currentRoute={currentRoute}>
+              <p>You chose the code: {code}</p>
+            </Router.View>
+          </Fragment>
+        )}
+      />
     </div>
   );
 }

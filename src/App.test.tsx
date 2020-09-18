@@ -1,9 +1,15 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import App from './App';
+import React, { Fragment } from "react";
+import { render, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import App from "./App";
 
-test('renders learn react link', () => {
-  const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test("Renders app without crashing", () => {
+  const { asFragment } = render(<App />);
+  expect(asFragment()).toMatchSnapshot();
+});
+
+test("Gets a code and renders it in a new route", () => {
+  const { getByLabelText } = render(<App />);
+  userEvent.type(getByLabelText("Code:"), "12345");
+  expect(getByLabelText("Code:")).toHaveValue("12345");
 });
