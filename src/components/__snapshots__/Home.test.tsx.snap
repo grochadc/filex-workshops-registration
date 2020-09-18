@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders Home without crashing 1`] = `
+<DocumentFragment>
+  <form>
+    <label
+      for="code"
+    >
+      Code:
+    </label>
+    <input
+      id="code"
+      type="text"
+      value=""
+    />
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

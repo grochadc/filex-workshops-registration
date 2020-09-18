@@ -9,7 +9,10 @@ test("Renders app without crashing", () => {
 });
 
 test("Gets a code and renders it in a new route", () => {
-  const { getByLabelText } = render(<App />);
-  userEvent.type(getByLabelText("Code:"), "12345");
-  expect(getByLabelText("Code:")).toHaveValue("12345");
+  const { getByLabelText, queryByText } = render(<App />);
+  const codeInput = getByLabelText("Code:");
+  userEvent.type(codeInput, "12345");
+  expect(codeInput).toHaveValue("12345");
+  userEvent.click(codeInput);
+  expect(queryByText(/You chose the code: 12345/i));
 });
