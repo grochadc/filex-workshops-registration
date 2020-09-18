@@ -14,5 +14,5 @@ test("Gets a code and renders it in a new route", () => {
   userEvent.type(codeInput, "12345");
   expect(codeInput).toHaveValue("12345");
   userEvent.click(codeInput);
-  expect(queryByText(/You chose the code: 12345/i));
+  expect(queryByText(/Hello Pedro!/i));
 });
