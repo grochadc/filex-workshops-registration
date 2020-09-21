@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 
 type RouterProps = {
   currentRoute: string;
@@ -15,8 +15,10 @@ type RouterViewProps = {
   children: React.ReactNode;
 };
 
-Router.View = ({ route, currentRoute, children }: RouterViewProps) => (
-  <div>{currentRoute === route ? <Fragment>{children}</Fragment> : null}</div>
-);
+const View = ({ route, currentRoute, children }: RouterViewProps) => {
+  return(<>{currentRoute === route ? <div>{children}</div> : null}</>)
+};
+
+Router.View = View;
 
 export default Router;

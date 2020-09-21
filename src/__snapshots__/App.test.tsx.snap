@@ -22,7 +22,6 @@ exports[`Renders app without crashing 1`] = `
         </button>
       </form>
     </div>
-    <div />
   </div>
 </DocumentFragment>
 `;
