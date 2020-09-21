@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect } from "react";
-import useFetch from "./lib";
 import Router from "./components/Router";
 import Home from "./components/Home";
 import Selection from "./components/Selection";
@@ -23,7 +22,7 @@ function App() {
               <Home setCurrentRoute={setCurrentRoute} setCode={setCode} />
             </Router.View>
             <Router.View route="selection" currentRoute={currentRoute}>
-              <Selection student={{ name: "Pedro" }} />
+              <Selection student={{ name: "Pedro" }} code={code} />
             </Router.View>
           </Fragment>
         )}
