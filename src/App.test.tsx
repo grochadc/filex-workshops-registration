@@ -1,10 +1,11 @@
 import React, { Fragment } from "react";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen, act, waitFor, cleanup, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import MutationObserver from "mutation-observer";
 window.MutationObserver = MutationObserver;
 
+afterEach(cleanup)
 async function mockFetch(url, config) {
   if(url === '/students/12345') {
     return {
@@ -22,14 +23,14 @@ test("Renders app without crashing", () => {
   expect(asFragment()).toMatchSnapshot();
 });
 
-test("Gets a code and renders it in a new route", async () => {
+test("Gets a code and renders student info on new route", async () => {
   const mockedFetch = jest.spyOn(window, 'fetch')
   render(<App />);
   const codeInput = screen.getByLabelText("Code:");
   userEvent.type(codeInput, "12345");
   expect(screen.getByLabelText(/Code:/i)).toHaveValue("12345");
   userEvent.click(screen.getByText(/Submit/i));
-  expect(mockedFetch).toHaveBeenCalledWith('/students/12345');
-  expect(waitFor)
-  waitFor(() => expect(screen.getByText(/Submit/i)).not.toBeInTheDocument());
+  expect(mockedFetch).toHaveBeenCalled();
+  expect(await screen.findByText(/Pedro/i)).toBeInTheDocument();
+  waitFor(() => expect(screen.queryByText(/Submit/i)).not.toBeInTheDocument());
 });
