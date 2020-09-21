@@ -7,12 +7,7 @@ import Selection from "./components/Selection";
 function App() {
   const [currentRoute, setCurrentRoute] = useState("home");
   const [code, setCode] = useState();
-  useEffect(() => {
-    fetch("/students/12345")
-      .then(response => response.json())
-      .then(console.log)
-      .catch(console.error);
-  });
+  const { response, error, loading } = useFetch("/students/12345");
   return (
     <div>
       <Router
@@ -23,7 +18,7 @@ function App() {
               <Home setCurrentRoute={setCurrentRoute} setCode={setCode} />
             </Router.View>
             <Router.View route="selection" currentRoute={currentRoute}>
-              <Selection student={{ name: "Pedro" }} />
+              {loading ? <p>Loading...</p> : <Selection student={response} />}
             </Router.View>
           </Fragment>
         )}
