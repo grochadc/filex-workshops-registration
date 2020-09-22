@@ -2,22 +2,33 @@
 
 exports[`Renders Home without crashing 1`] = `
 <DocumentFragment>
-  <form>
-    <label
-      for="code"
+  <div>
+    <form
+      class=""
     >
-      Code:
-    </label>
-    <input
-      id="code"
-      type="text"
-      value=""
-    />
-    <button
-      type="submit"
-    >
-      Submit
-    </button>
-  </form>
+      <div
+        class="form-group"
+      >
+        <label
+          class="form-label"
+          for="code"
+        >
+          Code:
+        </label>
+        <input
+          class="form-control"
+          id="code"
+          type="text"
+          value=""
+        />
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
 </DocumentFragment>
 `;
