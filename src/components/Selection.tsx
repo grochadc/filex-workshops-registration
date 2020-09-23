@@ -7,17 +7,23 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Router from "./Router";
+import Database from "../dbInterface";
+import { useFetch, useModal } from "../hooks";
 
 import workshops from "./workshops";
 
 type Student = {
+  code: string;
   name: string;
 };
 
 type WorkshopSelection = {
   workshop: string;
   teacher: string;
+  day: string;
   time: string;
+  code: string;
+  name: string;
 };
 
 const optionCardStyles = {
@@ -27,69 +33,99 @@ const optionCardStyles = {
   textDecoration: "none",
 };
 
-type SelectionProps = { code: string };
+type SelectionProps = { code: string | undefined };
 
-const Selection: React.FC<any> = ({ code }: SelectionProps) => {
+const Selection: React.FC<SelectionProps> = ({ code }) => {
+  const { response, error, isLoading } = useFetch(`students/${code}`);
+  const student: Student = response;
   const { setRoute } = Router.useRoute();
-  const [student, setStudent] = useState<Student | undefined>(undefined);
   const [workshopSelection, setWorkshopSelection] = useState<
     WorkshopSelection | undefined
   >(undefined);
+  const { showModal, handleCloseModal, handleShowModal } = useModal();
   const handleWorkshopSelection = (selection: WorkshopSelection) => {
     setWorkshopSelection(selection);
     handleShowModal();
   };
-  const [showModal, setShowModal] = useState(false);
-  const handleCloseModal = () => setShowModal(false);
-  const handleShowModal = () => setShowModal(true);
+  const handlePostData = (data: WorkshopSelection | undefined) => {
+    if (code && data) {
+      Database.ref(`workshops/${data.teacher}/`)
+        .set({ [code]: { ...data, day: data.day } })
+        .then(() => {
+          handleCloseModal();
+          setRoute("success");
+        })
+        .catch(() => {
+          alert("Hubo un error. Por favor intenta de nuevo.");
+        });
+    } else {
+      alert("Por favor revisa tu codigo o seleccion");
+    }
+  };
 
   return (
     <Container>
-      {student ? <>Hello {student.name}!</> : <p>Loading...</p>}
-      {workshops.map((workshop, workshopIndex) => {
-        const eventKey = workshopIndex.toString();
-        return (
-          <Accordion key={workshopIndex}>
-            <Card className="text-center p-3">
-              <Accordion.Toggle eventKey={eventKey} as={Button}>
-                {workshop.name}
-              </Accordion.Toggle>
-              {workshop.description}
-            </Card>
-            <Accordion.Collapse eventKey={eventKey}>
-              <Container>
-                <Row>
-                  {workshop.days.map((day) =>
-                    day.options.map((option, optionIndex) => {
-                      return (
-                        <Col className="mb-3" key={optionIndex}>
-                          <Card
-                            onClick={() =>
-                              handleWorkshopSelection({
-                                workshop: workshop.name,
-                                teacher: option.teacher,
-                                time: `${day.name} ${option.time}`,
-                              })
-                            }
-                            as="a"
-                            style={optionCardStyles}
-                            className="text-center pt-3"
-                          >
-                            <Card.Title>Teacher {option.teacher}</Card.Title>
-                            <Card.Body>
-                              {day.name} {option.time}
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      );
-                    })
-                  )}
-                </Row>
-              </Container>
-            </Accordion.Collapse>
-          </Accordion>
-        );
-      })}
+      {error ? (
+        <p>
+          Sucedió un error. Porfavor intenta de nuevo. Error code:{" "}
+          {error.status} {error.message}
+        </p>
+      ) : isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          {student && <>Hello {student.name}!</>}
+          {workshops.map((workshop, workshopIndex) => {
+            const eventKey = workshopIndex.toString();
+            return (
+              <Accordion key={workshopIndex}>
+                <Card className="text-center p-3">
+                  <Accordion.Toggle eventKey={eventKey} as={Button}>
+                    {workshop.name}
+                  </Accordion.Toggle>
+                  {workshop.description}
+                </Card>
+                <Accordion.Collapse eventKey={eventKey}>
+                  <Container>
+                    <Row>
+                      {workshop.days.map((day) =>
+                        day.options.map((option, optionIndex) => {
+                          return (
+                            <Col className="mb-3" key={optionIndex}>
+                              <Card
+                                onClick={() =>
+                                  handleWorkshopSelection({
+                                    workshop: workshop.name,
+                                    teacher: option.teacher,
+                                    time: `${day.name} ${option.time}`,
+                                    day: day.name,
+                                    code: student.code,
+                                    name: student.name,
+                                  })
+                                }
+                                as="a"
+                                style={optionCardStyles}
+                                className="text-center pt-3"
+                              >
+                                <Card.Title>
+                                  Teacher {option.teacher}
+                                </Card.Title>
+                                <Card.Body>
+                                  {day.name} {option.time}
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          );
+                        })
+                      )}
+                    </Row>
+                  </Container>
+                </Accordion.Collapse>
+              </Accordion>
+            );
+          })}
+        </div>
+      )}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Seleccionaste la opcion:</Modal.Title>
@@ -113,7 +149,10 @@ const Selection: React.FC<any> = ({ code }: SelectionProps) => {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleCloseModal}>
+          <Button
+            variant="primary"
+            onClick={() => handlePostData(workshopSelection)}
+          >
             Reservar
           </Button>
         </Modal.Footer>
@@ -121,25 +160,5 @@ const Selection: React.FC<any> = ({ code }: SelectionProps) => {
     </Container>
   );
 };
-
-/*
-useEffect(() => {
-  let mounted = true;
-  if (code) {
-    fetch(`/students/${code}`)
-      .then((response) => response.json())
-      .then((student) => {
-        if (mounted) {
-          setStudent(student);
-        }
-      })
-      .catch(console.error);
-  }
-  function callback() {
-    mounted = false;
-  }
-  return callback;
-}, [code]);
-*/
 
 export default Selection;
