@@ -35,6 +35,10 @@ const optionCardStyles = {
 
 type SelectionProps = { code: string | undefined };
 
+const capitalizeString = (str: string) => {
+  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+};
+
 const Selection: React.FC<SelectionProps> = ({ code }) => {
   const { response, error, isLoading } = useFetch(`students/${code}`);
   const student: Student = response;
@@ -108,7 +112,7 @@ const Selection: React.FC<SelectionProps> = ({ code }) => {
                                 className="text-center pt-3"
                               >
                                 <Card.Title>
-                                  Teacher {option.teacher}
+                                  Teacher {capitalizeString(option.teacher)}
                                 </Card.Title>
                                 <Card.Body>
                                   {day.name} {option.time}
@@ -137,7 +141,8 @@ const Selection: React.FC<SelectionProps> = ({ code }) => {
                 <strong>Taller:</strong> <em>{workshopSelection.workshop}</em>
               </p>
               <p>
-                <strong>Teacher:</strong> <em>{workshopSelection.teacher}</em>
+                <strong>Teacher:</strong>{" "}
+                <em>{capitalizeString(workshopSelection.teacher)}</em>
               </p>
               <p>
                 <strong>Horario:</strong> <em>{workshopSelection.time}</em>
