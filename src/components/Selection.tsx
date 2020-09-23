@@ -39,6 +39,11 @@ const capitalizeString = (str: string) => {
   return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 };
 
+const generateId = () => {
+  let str = Math.random().toString(36).substring(7);
+  return str;
+};
+
 const Selection: React.FC<SelectionProps> = ({ code }) => {
   const { response, error, isLoading } = useFetch(`students/${code}`);
   const student: Student = response;
@@ -53,8 +58,8 @@ const Selection: React.FC<SelectionProps> = ({ code }) => {
   };
   const handlePostData = (data: WorkshopSelection | undefined) => {
     if (code && data) {
-      Database.ref(`workshops/${data.teacher}/`)
-        .set({ [code]: { ...data, day: data.day } })
+      Database.ref(`workshops/${data.teacher}/${generateId()}`)
+        .set({ ...data, day: data.day })
         .then(() => {
           handleCloseModal();
           setRoute("success");
