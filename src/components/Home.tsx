@@ -5,8 +5,10 @@ import Alert from "react-bootstrap/Alert";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMediaQuery } from "react-responsive";
+import Router from "./Router";
 
-const Home: React.FC<any> = ({ setCurrentRoute, setCode }) => {
+const Home: React.FC<any> = ({ setCode }) => {
+  const { setRoute } = Router.useRoute();
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 400px)" });
   const formik = useFormik({
     initialValues: {
@@ -17,18 +19,21 @@ const Home: React.FC<any> = ({ setCurrentRoute, setCode }) => {
     }),
     onSubmit: (values) => {
       setCode(values.code);
-      setCurrentRoute("selection");
+      setRoute("selection");
     },
   });
   return (
     <div>
-      <Form onSubmit={formik.handleSubmit} inline={isTabletOrMobile}>
+      <Form
+        onSubmit={(e) => formik.handleSubmit(e as any)}
+        inline={isTabletOrMobile}
+      >
         <Form.Group>
           <Form.Label htmlFor="code">Code:</Form.Label>
           <Form.Control
             id="code"
             type="text"
-            onChange={formik.handleChange}
+            onChange={(e) => formik.handleChange(e as any)}
             value={formik.values.code}
           />
           <Button type="submit">Submit</Button>

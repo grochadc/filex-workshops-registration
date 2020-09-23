@@ -1,23 +1,13 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { render, act } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import React from "react";
+import { render } from "@testing-library/react";
 import Router from "./Router";
 
 const App = () => {
   return (
-    <Router
-      currentRoute={"home"}
-      render={(currentRoute: string) => (
-        <Fragment>
-          <Router.View route="home" currentRoute={currentRoute}>
-            This is the homepage.
-          </Router.View>
-          <Router.View route="selection" currentRoute={currentRoute}>
-            This is the selection page.
-          </Router.View>
-        </Fragment>
-      )}
-    />
+    <Router defaultRoute={"home"}>
+      <Router.View route="home">This is the homepage.</Router.View>
+      <Router.View route="selection">This is the selection page.</Router.View>
+    </Router>
   );
 };
 

@@ -2,8 +2,6 @@
 
 exports[`Renders without crashing [Snapshot] 1`] = `
 <DocumentFragment>
-  <div>
-    This is the homepage.
-  </div>
+  This is the homepage.
 </DocumentFragment>
 `;

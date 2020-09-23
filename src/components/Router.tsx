@@ -1,24 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 
-type RouterProps = {
-  currentRoute: string;
-  render: any;
+type RouterContextType = {
+  contextRoute: string;
+  setRoute: (route: string) => void;
 };
 
-const Router = ({ currentRoute, render }: RouterProps) => {
-  return <>{render(currentRoute)}</>;
+function initFn(route) {
+  return true;
+}
+const initialContext = {
+  contextRoute: "",
+  setRoute: initFn,
+};
+
+const RouterContext = React.createContext<RouterContextType>(initialContext);
+
+type RouterProps = {
+  children: React.ReactNode;
+  defaultRoute: string;
+};
+
+const Router = ({ defaultRoute, children }: RouterProps) => {
+  const [route, setRoute] = useState(defaultRoute);
+  return (
+    <RouterContext.Provider value={{ contextRoute: route, setRoute }}>
+      {children}
+    </RouterContext.Provider>
+  );
 };
 
 type RouterViewProps = {
   route: string;
-  currentRoute: string;
   children: React.ReactNode;
 };
+const useRoute = () => React.useContext(RouterContext);
 
-const View = ({ route, currentRoute, children }: RouterViewProps) => {
-  return(<>{currentRoute === route ? <div>{children}</div> : null}</>)
+const View = ({ route, children }: RouterViewProps) => {
+  const { contextRoute } = useRoute();
+  return <>{route === contextRoute ? children : null}</>;
 };
 
 Router.View = View;
+Router.useRoute = useRoute;
 
 export default Router;

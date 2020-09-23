@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -6,6 +6,7 @@ import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Router from "./Router";
 
 import workshops from "./workshops";
 
@@ -29,6 +30,7 @@ const optionCardStyles = {
 type SelectionProps = { code: string };
 
 const Selection: React.FC<any> = ({ code }: SelectionProps) => {
+  const { setRoute } = Router.useRoute();
   const [student, setStudent] = useState<Student | undefined>(undefined);
   const [workshopSelection, setWorkshopSelection] = useState<
     WorkshopSelection | undefined
