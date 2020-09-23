@@ -23,31 +23,31 @@ const workshops: Workshop[] = [
       {
         name: "Lunes",
         options: [
-          { teacher: "Alondra", time: "13:00 - 14:00" },
-          { teacher: "Gonzalo", time: "14:00 - 15:00" },
+          { teacher: "alondra", time: "13:00 - 14:00" },
+          { teacher: "gonzalo", time: "14:00 - 15:00" },
         ],
       },
       {
         name: "Martes",
         options: [
-          { teacher: "Alondra", time: "13:00 - 14:00" },
-          { teacher: "Sergio", time: "14:00 - 15:00" },
-          { teacher: "Gissel", time: "16:00 - 17:00" },
+          { teacher: "alondra", time: "13:00 - 14:00" },
+          { teacher: "sergio", time: "14:00 - 15:00" },
+          { teacher: "gissel", time: "16:00 - 17:00" },
         ],
       },
       {
         name: "Miercoles",
         options: [
-          { teacher: "Carlos", time: "12:00 - 13:00" },
-          { teacher: "Sergio", time: "14:00 - 15:00" },
-          { teacher: "Gissel", time: "16:00 - 17:00" },
+          { teacher: "carlos", time: "12:00 - 13:00" },
+          { teacher: "sergio", time: "14:00 - 15:00" },
+          { teacher: "gissel", time: "16:00 - 17:00" },
         ],
       },
       {
         name: "Jueves",
         options: [
-          { teacher: "Gonzalo", time: "14:00 - 15:00" },
-          { teacher: "Zullet", time: "13:00 - 14:00" },
+          { teacher: "gonzalo", time: "14:00 - 15:00" },
+          { teacher: "zullet", time: "13:00 - 14:00" },
         ],
       },
     ],
@@ -59,19 +59,29 @@ const workshops: Workshop[] = [
     days: [
       {
         name: "Lunes",
-        options: [{ teacher: "Carlos", time: "12:00 - 13:00" }],
+        options: [{ teacher: "carlos", time: "12:00 - 13:00" }],
       },
       {
         name: "Martes",
-        options: [{ teacher: "Carlos", time: "12:00 - 13:00" }],
+        options: [{ teacher: "carlos", time: "12:00 - 13:00" }],
       },
       {
         name: "Miercoles",
-        options: [{ teacher: "Jiselaine", time: "11:00 - 12:00" }],
+        options: [
+          {
+            teacher: "jiselaine",
+            time: "11:00 - 12:00",
+          },
+        ],
       },
       {
         name: "Jueves",
-        options: [{ teacher: "Jiselaine", time: "11:00 - 12:00" }],
+        options: [
+          {
+            teacher: "jiselaine",
+            time: "11:00 - 12:00",
+          },
+        ],
       },
     ],
   },
@@ -82,7 +92,12 @@ const workshops: Workshop[] = [
     days: [
       {
         name: "Miércoles",
-        options: [{ teacher: "Alondra", time: "13:00 - 14:00" }],
+        options: [
+          {
+            teacher: "alondra",
+            time: "13:00 - 14:00",
+          },
+        ],
       },
     ],
   },
@@ -93,11 +108,11 @@ const workshops: Workshop[] = [
     days: [
       {
         name: "Lunes",
-        options: [{ teacher: "Zullet", time: "12:00 - 13:00" }],
+        options: [{ teacher: "zullet", time: "12:00 - 13:00" }],
       },
       {
         name: "Martes",
-        options: [{ teacher: "Zullet", time: "12:00 - 13:00" }],
+        options: [{ teacher: "zullet", time: "12:00 - 13:00" }],
       },
     ],
   },
@@ -109,17 +124,13 @@ const workshops: Workshop[] = [
       {
         name: "Lunes",
         options: [
-          { teacher: "Sergio", time: "14:00 - 15:00" },
-          { teacher: "Gissel", time: "16:00 - 17:00" },
+          { teacher: "sergio", time: "14:00 - 15:00" },
+          { teacher: "gissel", time: "16:00 - 17:00" },
         ],
       },
       {
-        name: "Martes",
-        options: [{ teacher: "Gonzalo", time: "14:00 - 15:00" }],
-      },
-      {
         name: "Miercoles",
-        options: [{ teacher: "Zullet", time: "11:00 - 12:00" }],
+        options: [{ teacher: "zullet", time: "11:00 - 12:00" }],
       },
     ],
   },
