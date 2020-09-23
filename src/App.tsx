@@ -3,10 +3,14 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Router from "./components/Router";
 import Home from "./components/Home";
 import Selection from "./components/Selection";
+import Dashboard from "./components/Dashboard";
 
 function App() {
-  const defaultRoute =
-    process.env.NODE_ENV === "development" ? "selection" : "home";
+  const regex = /^\/dashboard/;
+  const defaultRoute = regex.test(window.location.pathname)
+    ? "dashboard"
+    : "home";
+  // process.env.NODE_ENV === "development" ? "selection" : "home";
   const [code, setCode] = useState();
   return (
     <div>
@@ -19,6 +23,12 @@ function App() {
         </Router.View>
         <Router.View route="selection">
           <Selection code={code} />
+        </Router.View>
+        <Router.View route="success">
+          <p>Success!</p>
+        </Router.View>
+        <Router.View route="dashboard">
+          <Dashboard teacher="Alondra" />
         </Router.View>
       </Router>
     </div>
