@@ -5,30 +5,39 @@ type FetchError = {
   message: string;
 };
 
+type ResType = {
+  ok: boolean;
+  status: number;
+};
+
 const useFetch = (url: string) => {
   const [response, setResponse] = useState({ name: "", code: "" });
   const [error, setError] = useState<FetchError>();
   const [isLoading, setIsLoading] = useState(false);
+  const [res, setRes] = useState<ResType | undefined>();
   useEffect(() => {
     let mounted = true;
-    const fetchData = async () => {
+
+    const fetchData = () => {
       setIsLoading(true);
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        if (mounted && res.ok) {
-          setResponse(json);
-          setIsLoading(false);
-        } else if (!res.ok) {
-          setError({
-            status: res.status,
-            message:
-              res.status === 404 ? "Not found" : `Error status ${res.status}`,
-          });
-        }
-      } catch (error) {
-        setError({ status: 500, message: "Network error" });
-      }
+      fetch(url)
+        .then((res) => {
+          setRes({ ok: res.ok, status: res.status });
+          res.json();
+        })
+        .then((json: any) => {
+          if (mounted && res && res.ok) {
+            setResponse(json);
+            setIsLoading(false);
+          } else if (res && res.ok === false) {
+            setError({
+              status: res.status,
+              message:
+                res.status === 404 ? "Not found" : `Error status ${res.status}`,
+            });
+          }
+        })
+        .catch(() => setError({ status: 500, message: "Network error" }));
     };
     fetchData();
     function callback() {
