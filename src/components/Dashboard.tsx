@@ -1,111 +1,155 @@
-import React, { useEffect, useState } from "react";
+import React, { useReducer } from "react";
 import Form from "react-bootstrap/Form";
-import Table from "react-bootstrap/Table";
+import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Database from "../dbInterface";
-import { capitalizeString } from "../lib";
+import { capitalizeString } from "../utils/lib";
+import { gql, useQuery } from "@apollo/client";
 
-type Applicant = {
-  code: string;
+interface Option {
   day: string;
+}
+
+interface Reservation {
+  code: string;
   name: string;
-  teacher: string;
+  option: Option;
+}
+
+const GET_RESERVATIONS = gql`
+  query reservationsList {
+    teacher(id: "alondra") {
+      name
+      options {
+        time
+        day
+        workshop {
+          name
+        }
+      }
+      reservations {
+        code
+        name
+        option {
+          day
+        }
+      }
+    }
+  }
+`;
+
+interface WorkshopAttendanceProps {
+  name: string;
+  day: string;
   time: string;
-  workshop: string;
-  id: string;
+  reservations: Reservation[];
+  handleAttendance: (info: any) => any;
+}
+
+let transform = (arr, key) => {
+  let obj = {};
+  arr.forEach((item) => (obj[item[key]] = { attendance: false, ...item }));
+  return obj;
 };
 
-const Loading: React.FC<{ isLoading: boolean; children: React.ReactNode }> = ({
-  isLoading,
-  children,
-}) => {
-  return <>{isLoading ? <p>Loading...</p> : <>{children}</>}</>;
-};
+const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
+  const reducer = (state, action: { type: string; payload: string }) => {
+    const targetProp = action.payload;
+    const current = state[targetProp].attendance;
+    switch (action.type) {
+      case "toggle_attendance":
+        return {
+          ...state,
+          [targetProp]: {
+            ...state[targetProp],
+            attendance: !current,
+          },
+        };
+      default:
+        return state;
+    }
+  };
+  const bareReservations = props.reservations.map((item) => {
+    return { code: item.code, name: item.name };
+  });
 
-const getUniqueKeys = (applicants: Applicant[], key: string): string[] => {
-  const keys = applicants.map((applicant) => applicant[key]);
-  let unique = (keys: string[]) => keys.filter((v, i) => keys.indexOf(v) === i);
-  return unique(keys);
-};
-
-const filterApplicants = (applicants: Applicant[]) => {
-  return getUniqueKeys(applicants, "day").map((uniqueKey) =>
-    applicants.filter((applicant) => applicant["day"] === uniqueKey)
+  const initialState = transform(bareReservations, "code");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <Row>
+      <Col>
+        <h5>
+          {props.name}: {capitalizeString(props.day)} {props.time}
+        </h5>
+        <Form.Group>
+          <Table striped bordered size="sm">
+            <thead>
+              <tr>
+                <th style={{ width: "9%" }}>Attendance</th>
+                <th>Code</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {props.reservations.map((applicant, index) => {
+                return (
+                  <tr key={index}>
+                    <td style={{ textAlign: "center" }}>
+                      <input
+                        type="checkbox"
+                        key={index}
+                        value={state[applicant.code].attendance}
+                        onChange={() =>
+                          dispatch({
+                            type: "toggle_attendance",
+                            payload: applicant.code,
+                          })
+                        }
+                      />
+                    </td>
+                    <td>{applicant.code}</td>
+                    <td>{applicant.name}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+          <Button
+            disabled={props.reservations.length === 0}
+            onClick={() => props.handleAttendance(state)}
+          >
+            Send
+          </Button>
+        </Form.Group>
+      </Col>
+    </Row>
   );
 };
 
 const Dashboard: React.FC<any> = () => {
-  const [applicants, setApplicants] = useState<Applicant[] | undefined>();
-  const [loading, setLoading] = useState(false);
-  const [teacherName, setTeacherName] = useState<string | null>();
-  useEffect(() => {
-    const params = new URL(window.location.href).searchParams;
-    const teacher = params.get("teacher");
-    setTeacherName(teacher);
-    const dbRef = `workshops/${params.get("teacher")}`;
-    setLoading(true);
-    Database.ref(dbRef)
-      .once("value")
-      .then((snapshot) => {
-        const values: Applicant[] = Object.values(snapshot.val());
-        setApplicants(values);
-        setLoading(false);
-      });
-  }, []);
-
-  applicants && console.log(filterApplicants(applicants));
+  const { data, loading, error } = useQuery(GET_RESERVATIONS);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <h1>Error</h1>;
   return (
-    <Loading isLoading={loading}>
-      <Container>
-        <Row>
-          <h3>
-            Teacher {teacherName && capitalizeString(teacherName)}'s Workshops
-          </h3>
-        </Row>
-        {applicants &&
-          filterApplicants(applicants).map((dayArray) => (
-            <Row>
-              <Col>
-                <h5>
-                  {dayArray[0].workshop}: {dayArray[0].time}
-                </h5>
-                <Form.Group>
-                  <Table striped bordered size="sm">
-                    <thead>
-                      <tr>
-                        <th style={{ width: "9%" }}>Attendance</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dayArray.map((applicant, i) => (
-                        <tr>
-                          <td style={{ textAlign: "center" }}>
-                            <input
-                              type="checkbox"
-                              key={i}
-                              value={applicant.code}
-                            />
-                          </td>
-                          <td>
-                            <label>{applicant.code}</label>
-                          </td>
-                          <td>{applicant.name}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                  <Button>Send</Button>
-                </Form.Group>
-              </Col>
-            </Row>
-          ))}
-      </Container>
-    </Loading>
+    <Container>
+      <Row>
+        <h3>Teacher {data.teacher.name}'s Workshops</h3>
+      </Row>
+      {data.teacher.options.map((option, index) => (
+        <WorkshopAttendance
+          key={index}
+          name={option.workshop.name}
+          day={option.day}
+          time={option.time}
+          reservations={data.teacher.reservations.filter(
+            (reservation: Reservation) => reservation.option.day === option.day
+          )}
+          handleAttendance={(info: any) => console.log("parent", info)}
+        />
+      ))}
+    </Container>
   );
 };
 

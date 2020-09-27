@@ -1,18 +1,24 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import * as React from "react";
+import { render } from "react-dom";
+import {
+  ApolloClient,
+  InMemoryCache,
+  NormalizedCacheObject,
+  ApolloProvider,
+} from "@apollo/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+import App from "./App";
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+  uri: "https://filex-database.herokuapp.com/graphql",
+  cache: new InMemoryCache(),
+});
+
+const rootElement = document.getElementById("root");
+render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  rootElement
+);
