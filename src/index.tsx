@@ -12,7 +12,7 @@ import App from "./App";
 
 const ServerUri =
   process.env.NODE_ENV === "production"
-    ? "https://filex-database.herokuapp.com/graphql"
+    ? "https://filex-database.herokuapp.com/"
     : "http://localhost:5000/";
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({

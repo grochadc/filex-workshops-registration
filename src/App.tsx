@@ -3,6 +3,7 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Router from "./components/Router";
 import Home from "./components/Home";
 import Selection from "./components/Selection";
+import Success from "./components/Success";
 import Dashboard from "./components/Dashboard";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
     : "home";
   // process.env.NODE_ENV === "development" ? "selection" : "home";
   const [code, setCode] = useState();
+  const [reservation, setReservation] = useState();
   return (
     <div>
       <Jumbotron>
@@ -22,10 +24,10 @@ function App() {
           <Home setCode={setCode} />
         </Router.View>
         <Router.View route="selection">
-          <Selection code={code} />
+          <Selection code={code} setReservation={setReservation} />
         </Router.View>
         <Router.View route="success">
-          <p>Success!</p>
+          <Success reservation={reservation} />
         </Router.View>
         <Router.View route="dashboard">
           <Dashboard teacher="Alondra" />
