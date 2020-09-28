@@ -46,6 +46,7 @@ const Success: React.FC<SuccessProps> = ({ reservation }) => {
   );
   useEffect(() => {
     addReservation({ variables });
+    // eslint-disable-next-line
   }, []);
   if (error) return <p>Error: {JSON.stringify(error)}</p>;
   if (loading) return <p>Loading...</p>;
