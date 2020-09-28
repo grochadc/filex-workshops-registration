@@ -9,7 +9,9 @@ import { capitalizeString } from "../utils/lib";
 import { gql, useQuery } from "@apollo/client";
 
 interface Option {
+  time: string;
   day: string;
+  workshop: string;
 }
 
 interface Reservation {
@@ -25,9 +27,7 @@ const GET_RESERVATIONS = gql`
       options {
         time
         day
-        workshop {
-          name
-        }
+        workshop
       }
       reservations {
         code
@@ -40,6 +40,37 @@ const GET_RESERVATIONS = gql`
   }
 `;
 
+let toObjWithIds = (arr: any[], key: string): {} => {
+  let obj = {};
+  arr.forEach((item) => (obj[item[key]] = { ...item }));
+  return obj;
+};
+
+const Dashboard: React.FC<any> = () => {
+  const { data, loading, error } = useQuery(GET_RESERVATIONS);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <h1>Error: {JSON.stringify(error)}</h1>;
+  return (
+    <Container>
+      <Row>
+        <h3>Teacher {data.teacher.name}'s Workshops</h3>
+      </Row>
+      {data.teacher.options.map((option: Option, index: number) => (
+        <WorkshopAttendance
+          key={index}
+          name={option.workshop}
+          day={option.day}
+          time={option.time}
+          reservations={data.teacher.reservations.filter(
+            (reservation: Reservation) => reservation.option.day === option.day
+          )}
+          handleAttendance={(info: any) => console.log("parent", info)}
+        />
+      ))}
+    </Container>
+  );
+};
+
 interface WorkshopAttendanceProps {
   name: string;
   day: string;
@@ -47,15 +78,21 @@ interface WorkshopAttendanceProps {
   reservations: Reservation[];
   handleAttendance: (info: any) => any;
 }
+interface ReducerAction {
+  type: string;
+  payload: string;
+}
 
-let transform = (arr, key) => {
-  let obj = {};
-  arr.forEach((item) => (obj[item[key]] = { attendance: false, ...item }));
-  return obj;
-};
+interface ReducerState {
+  [prop: string]: {
+    attendance: boolean;
+    code: string;
+    name: string;
+  };
+}
 
 const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
-  const reducer = (state, action: { type: string; payload: string }) => {
+  const reducer = (state: ReducerState, action: ReducerAction) => {
     const targetProp = action.payload;
     const current = state[targetProp].attendance;
     switch (action.type) {
@@ -71,11 +108,11 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
         return state;
     }
   };
-  const bareReservations = props.reservations.map((item) => {
-    return { code: item.code, name: item.name };
+  const reservations = props.reservations.map((item) => {
+    return { attendance: false, code: item.code, name: item.name };
   });
 
-  const initialState = transform(bareReservations, "code");
+  const initialState = toObjWithIds(reservations, "code");
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <Row>
@@ -100,7 +137,7 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                       <input
                         type="checkbox"
                         key={index}
-                        value={state[applicant.code].attendance}
+                        checked={state[applicant.code].attendance}
                         onChange={() =>
                           dispatch({
                             type: "toggle_attendance",
@@ -125,31 +162,6 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
         </Form.Group>
       </Col>
     </Row>
-  );
-};
-
-const Dashboard: React.FC<any> = () => {
-  const { data, loading, error } = useQuery(GET_RESERVATIONS);
-  if (loading) return <p>Loading...</p>;
-  if (error) return <h1>Error</h1>;
-  return (
-    <Container>
-      <Row>
-        <h3>Teacher {data.teacher.name}'s Workshops</h3>
-      </Row>
-      {data.teacher.options.map((option, index) => (
-        <WorkshopAttendance
-          key={index}
-          name={option.workshop.name}
-          day={option.day}
-          time={option.time}
-          reservations={data.teacher.reservations.filter(
-            (reservation: Reservation) => reservation.option.day === option.day
-          )}
-          handleAttendance={(info: any) => console.log("parent", info)}
-        />
-      ))}
-    </Container>
   );
 };
 
