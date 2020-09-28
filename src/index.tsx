@@ -10,8 +10,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import App from "./App";
 
+const ServerUri =
+  process.env.NODE_ENV === "production"
+    ? "https://filex-database.herokuapp.com/graphql"
+    : "http://localhost:5000/";
+
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-  uri: "https://filex-database.herokuapp.com/graphql",
+  uri: ServerUri,
   cache: new InMemoryCache(),
 });
 
