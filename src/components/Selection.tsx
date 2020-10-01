@@ -36,6 +36,8 @@ const GET_STUDENT = gql`
         time
         teacher
         workshop
+        url
+        zoom_id
       }
     }
   }
@@ -46,6 +48,8 @@ type Option = {
   day: string;
   time: string;
   teacher: string;
+  url: string;
+  zoom_id?: string;
 };
 type Workshop = {
   name: string;
@@ -58,6 +62,8 @@ type WorkshopSelection = {
   workshop_id: string;
   option_id: string;
   teacher_id?: String;
+  url: string;
+  zoom_id?: string;
 };
 
 type SelectionForModal = {
@@ -129,6 +135,8 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
                             handleWorkshopSelection({
                               code: data.student.code,
                               name: data.student.name,
+                              url: option.url,
+                              zoom_id: option.zoom_id,
                               option_id: option.id,
                               workshop_id: workshop.name,
                             })

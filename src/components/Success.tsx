@@ -26,6 +26,8 @@ const MAKE_RESERVATION = gql`
 type WorkshopSelection = {
   code: string;
   name: string;
+  url: string;
+  zoom_id?: string;
   workshop_id: string;
   option_id: string;
   teacher: string;
@@ -59,6 +61,15 @@ const Success: React.FC<SuccessProps> = ({ reservation }) => {
       <p>Codigo: {data && data.makeReservation.code}</p>
       <p>Nombre: {data && data.makeReservation.name}</p>
       <p>Hora: {data && data.makeReservation.timestamp}</p>
+      <p>
+        URL del taller:{" "}
+        <a href={reservation && reservation.url}>
+          {reservation && reservation.url}
+        </a>
+      </p>
+      {reservation && reservation.zoom_id && (
+        <p>Zoom ID: {reservation.zoom_id}</p>
+      )}
     </div>
   );
 };
