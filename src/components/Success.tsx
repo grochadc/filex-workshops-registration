@@ -28,6 +28,7 @@ type WorkshopSelection = {
   name: string;
   workshop_id: string;
   option_id: string;
+  teacher: string;
 };
 
 type SuccessProps = {
@@ -40,12 +41,13 @@ const Success: React.FC<SuccessProps> = ({ reservation }) => {
     name: reservation.name,
     option_id: reservation.option_id,
     workshop_id: reservation.workshop_id,
+    teacher_id: reservation.teacher,
   };
   const [addReservation, { data, loading, error }] = useMutation(
     MAKE_RESERVATION
   );
   useEffect(() => {
-    addReservation({ variables });
+    addReservation({ variables }).catch((error) => console.log(error));
     // eslint-disable-next-line
   }, []);
   if (error) return <p>Error: {JSON.stringify(error)}</p>;
