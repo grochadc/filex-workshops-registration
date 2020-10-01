@@ -57,6 +57,7 @@ type WorkshopSelection = {
   name: string;
   workshop_id: string;
   option_id: string;
+  teacher_id?: String;
 };
 
 type SelectionForModal = {
@@ -98,6 +99,7 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
   };
   const handlePostData = (data: WorkshopSelection | undefined) => {
     data && setReservation && setReservation(data);
+    console.log("reservation from selection component", data);
     setRoute("success");
   };
 

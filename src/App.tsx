@@ -11,7 +11,11 @@ function App() {
   const defaultRoute = regex.test(window.location.pathname)
     ? "dashboard"
     : "home";
-  // process.env.NODE_ENV === "development" ? "selection" : "home";
+  let teacher_param;
+  if (regex.test(window.location.pathname)) {
+    let params = new URL(window.location.href).searchParams;
+    teacher_param = params.get("teacher");
+  }
   const [code, setCode] = useState();
   const [reservation, setReservation] = useState();
   return (
@@ -30,7 +34,7 @@ function App() {
           <Success reservation={reservation} />
         </Router.View>
         <Router.View route="dashboard">
-          <Dashboard teacher="Alondra" />
+          <Dashboard teacher={teacher_param} />
         </Router.View>
       </Router>
     </div>

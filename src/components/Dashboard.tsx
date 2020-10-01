@@ -18,11 +18,12 @@ interface Reservation {
   code: string;
   name: string;
   option: Option;
+  timestamp: string;
 }
 
 const GET_RESERVATIONS = gql`
-  query reservationsList {
-    teacher(id: "alondra") {
+  query reservationsList($teacher: ID!) {
+    teacher(id: $teacher) {
       name
       options {
         time
@@ -32,6 +33,7 @@ const GET_RESERVATIONS = gql`
       reservations {
         code
         name
+        timestamp
         option {
           day
         }
@@ -46,8 +48,19 @@ let toObjWithIds = (arr: any[], key: string): {} => {
   return obj;
 };
 
-const Dashboard: React.FC<any> = () => {
-  const { data, loading, error } = useQuery(GET_RESERVATIONS);
+const dateParser = (timestamp) => {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+};
+
+const Dashboard: React.FC<any> = ({ teacher }) => {
+  const { data, loading, error } = useQuery(GET_RESERVATIONS, {
+    variables: { teacher },
+  });
+  console.log(data);
   if (loading) return <p>Loading...</p>;
   if (error) return <h1>Error: {JSON.stringify(error)}</h1>;
   return (
@@ -127,6 +140,7 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                 <th style={{ width: "9%" }}>Attendance</th>
                 <th>Code</th>
                 <th>Name</th>
+                <th>Reservation made:</th>
               </tr>
             </thead>
             <tbody>
@@ -148,6 +162,7 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                     </td>
                     <td>{applicant.code}</td>
                     <td>{applicant.name}</td>
+                    <td>{dateParser(applicant.timestamp)}</td>
                   </tr>
                 );
               })}
