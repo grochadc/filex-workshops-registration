@@ -45,30 +45,6 @@ const GET_STUDENT = gql`
   }
 `;
 
-type Option = {
-  id: string;
-  day: string;
-  time: string;
-  teacher: string;
-  url: string;
-  zoom_id?: string;
-  available: boolean;
-};
-type Workshop = {
-  name: string;
-  description: string;
-  options: Option[];
-};
-type WorkshopSelection = {
-  code: string;
-  name: string;
-  workshop_id: string;
-  option_id: string;
-  teacher_id?: String;
-  url: string;
-  zoom_id?: string;
-};
-
 type SelectionForModal = {
   workshop: string;
   teacher: string;
@@ -93,9 +69,9 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
   >(undefined);
   const { showModal, handleCloseModal, handleShowModal } = useModal();
   const handleWorkshopSelection = (selection: WorkshopSelection) => {
-    const options = data.workshops.map((workshop) => workshop.options).flat();
+    const options = data.workshops.map((workshop: Workshop) => workshop.options).flat();
     const selectedOption = options.filter(
-      (option) => option.id === selection.option_id
+      (option: Option) => option.id === selection.option_id
     )[0];
     setWorkshopSelection(selection);
     setSelectionForModal({
@@ -137,14 +113,22 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
                           <Card
                             onClick={() => {
                               if (option.available) {
-                                handleWorkshopSelection({
-                                  code: data.student.code,
-                                  name: data.student.name,
-                                  url: option.url,
-                                  zoom_id: option.zoom_id,
-                                  option_id: option.id,
-                                  workshop_id: workshop.name,
-                                });
+
+                                const { code, name }: {code: string; name: string} = data.student;
+                                const { url, zoom_id } = option;
+                                const option_id: string = option.id;
+                                const teacher = option.teacher;
+                                const workshop_id: string = workshop.name;
+                                const workshopSelection: WorkshopSelection = {
+                                  code,
+                                  name,
+                                  url,
+                                  zoom_id,
+                                  option_id,
+                                  workshop_id,
+                                  teacher
+                                }
+                                handleWorkshopSelection(workshopSelection);
                               }
                             }}
                             as="a"

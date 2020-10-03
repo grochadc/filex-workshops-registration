@@ -8,19 +8,6 @@ import Col from "react-bootstrap/Col";
 import { capitalizeString } from "../utils/lib";
 import { gql, useQuery } from "@apollo/client";
 
-interface Option {
-  time: string;
-  day: string;
-  workshop: string;
-}
-
-interface Reservation {
-  code: string;
-  name: string;
-  option: Option;
-  timestamp: string;
-}
-
 const GET_RESERVATIONS = gql`
   query reservationsList($teacher: ID!) {
     teacher(id: $teacher) {

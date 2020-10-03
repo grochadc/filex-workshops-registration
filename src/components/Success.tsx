@@ -23,16 +23,6 @@ const MAKE_RESERVATION = gql`
   }
 `;
 
-type WorkshopSelection = {
-  code: string;
-  name: string;
-  url: string;
-  zoom_id?: string;
-  workshop_id: string;
-  option_id: string;
-  teacher: string;
-};
-
 type SuccessProps = {
   reservation: WorkshopSelection | undefined;
 };

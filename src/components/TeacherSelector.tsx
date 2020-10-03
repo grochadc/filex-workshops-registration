@@ -1,7 +1,7 @@
 import React from "react";
 
 const TeacherSelector: React.FC<any> = () => {
-  const setUrl = (teacher) => {
+  const setUrl = (teacher: string) => {
     const href = window.location.href;
     window.location.href = `${href.substr(
       0,
