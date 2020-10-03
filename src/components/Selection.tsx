@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Router from "./Router";
@@ -38,6 +39,7 @@ const GET_STUDENT = gql`
         workshop
         url
         zoom_id
+        available
       }
     }
   }
@@ -50,6 +52,7 @@ type Option = {
   teacher: string;
   url: string;
   zoom_id?: string;
+  available: boolean;
 };
 type Workshop = {
   name: string;
@@ -128,32 +131,48 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
               <Accordion.Collapse eventKey={eventKey}>
                 <Container>
                   <Row>
-                    {workshop.options.map((option, optionIndex) => (
-                      <Col className="mb-3" key={optionIndex}>
-                        <Card
-                          onClick={() =>
-                            handleWorkshopSelection({
-                              code: data.student.code,
-                              name: data.student.name,
-                              url: option.url,
-                              zoom_id: option.zoom_id,
-                              option_id: option.id,
-                              workshop_id: workshop.name,
-                            })
-                          }
-                          as="a"
-                          style={optionCardStyles}
-                          className="text-center pt-3"
-                        >
-                          <Card.Title>
-                            Teacher {capitalizeString(option.teacher)}
-                          </Card.Title>
-                          <Card.Body>
-                            {option.day} {option.time}
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    ))}
+                    {workshop.options.map((option, optionIndex) => {
+                      return (
+                        <Col className="mb-3" key={optionIndex}>
+                          <Card
+                            onClick={() => {
+                              if (option.available) {
+                                handleWorkshopSelection({
+                                  code: data.student.code,
+                                  name: data.student.name,
+                                  url: option.url,
+                                  zoom_id: option.zoom_id,
+                                  option_id: option.id,
+                                  workshop_id: workshop.name,
+                                });
+                              }
+                            }}
+                            as="a"
+                            style={optionCardStyles}
+                            className="text-center pt-3"
+                          >
+                            <Card.Title className={option.available ? "" : "text-muted"}>
+                              Teacher {capitalizeString(option.teacher)}
+                            </Card.Title>
+                            <Card.Subtitle className={option.available ? "" : "text-muted"}>
+                            {capitalizeString(option.day)}
+                            </Card.Subtitle>
+                            <Card.Body className={option.available ? "" : "text-muted"}>
+                              {option.time}
+                              {option.available ? (
+                                <Alert variant="primary">
+                                  Lugares disponibles
+                                </Alert>
+                              ) : (
+                                <Alert variant="danger">
+                                  Lugares no disponibles
+                                </Alert>
+                              )}
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      );
+                    })}
                   </Row>
                 </Container>
               </Accordion.Collapse>
