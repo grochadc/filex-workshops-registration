@@ -46,7 +46,7 @@ const Success: React.FC<SuccessProps> = ({ reservation }) => {
   if (loading) return <p>Loading...</p>;
   return (
     <div>
-      <p>Reservación relaizada con exito!</p>
+      <p>Reservación realizada con exito!</p>
       <p>ID de Reservacion: {data && data.makeReservation.id}</p>
       <p>Codigo: {data && data.makeReservation.code}</p>
       <p>Nombre: {data && data.makeReservation.name}</p>
