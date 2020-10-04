@@ -29,18 +29,15 @@ const GET_RESERVATIONS = gql`
   }
 `;
 
+type ReservationWithOptionObj =  Reservation & {
+  timestamp: string;
+  option: Option;
+}
+
 let toObjWithIds = (arr: any[], key: string): {} => {
   let obj = {};
   arr.forEach((item) => (obj[item[key]] = { ...item }));
   return obj;
-};
-
-const dateParser = (timestamp) => {
-  const date = new Date(timestamp);
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  return `${month} ${day}, ${year}`;
 };
 
 const Dashboard: React.FC<any> = ({ teacher }) => {
@@ -62,7 +59,7 @@ const Dashboard: React.FC<any> = ({ teacher }) => {
           day={option.day}
           time={option.time}
           reservations={data.teacher.reservations.filter(
-            (reservation: Reservation) => reservation.option.day === option.day
+            (reservation: ReservationWithOptionObj) => reservation.option.day === option.day
           )}
           handleAttendance={(info: any) => console.log("parent", info)}
         />
@@ -127,7 +124,6 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                 <th style={{ width: "9%" }}>Attendance</th>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Reservation made:</th>
               </tr>
             </thead>
             <tbody>
@@ -149,7 +145,6 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                     </td>
                     <td>{applicant.code}</td>
                     <td>{applicant.name}</td>
-                    <td>{dateParser(applicant.timestamp)}</td>
                   </tr>
                 );
               })}
