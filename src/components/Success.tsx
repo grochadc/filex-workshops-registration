@@ -2,44 +2,45 @@ import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 
 const MAKE_RESERVATION = gql`
-  mutation setReservation(
+mutation setReservation(
     $code: String!
     $name: String!
+  	$first_last_name:String!
+  	$second_last_name: String!
+  	$level: Int!
+  	$group: String!
     $option_id: String!
-    $workshop_id: String!
   ) {
-    makeReservation(
+    makeReservation(input: {
       code: $code
       name: $name
+      first_last_name: $first_last_name
+      second_last_name:$second_last_name
+      level: $level
+      group: $group
       option_id: $option_id
-      workshop_id: $workshop_id
-    ) {
+    }) {
       id
       timestamp
       code
       name
       option_id
+      url
+      zoom_id
     }
   }
 `;
 
 type SuccessProps = {
-  reservation: WorkshopSelection | undefined;
+  reservation: Reservation | undefined;
 };
 
-const Success: React.FC<SuccessProps> = ({ reservation }) => {
-  const variables = reservation && {
-    code: reservation.code,
-    name: reservation.name,
-    option_id: reservation.option_id,
-    workshop_id: reservation.workshop_id,
-    teacher_id: reservation.teacher,
-  };
+const Success: React.FC<SuccessProps> = (props) => {
   const [addReservation, { data, loading, error }] = useMutation(
     MAKE_RESERVATION
   );
   useEffect(() => {
-    addReservation({ variables }).catch((error) => console.log(error));
+    addReservation({ variables: props.reservation }).catch((error) => console.log(error));
     // eslint-disable-next-line
   }, []);
   if (error) return <p>Error: {JSON.stringify(error)}</p>;
@@ -53,12 +54,12 @@ const Success: React.FC<SuccessProps> = ({ reservation }) => {
       <p>Hora: {data && data.makeReservation.timestamp}</p>
       <p>
         URL del taller:{" "}
-        <a href={reservation && reservation.url}>
-          {reservation && reservation.url}
+        <a href={data && data.makeReservation.url}>
+          {data && data.makeReservation.url}
         </a>
       </p>
-      {reservation && reservation.zoom_id && (
-        <p>Zoom ID: {reservation.zoom_id}</p>
+      {data && data.makeReservation.zoom_id && (
+        <p>Zoom ID: {data.makeReservation.zoom_id}</p>
       )}
     </div>
   );

@@ -27,6 +27,10 @@ const GET_STUDENT = gql`
     student(code: $code) {
       code
       name
+      first_last_name
+      second_last_name
+      level
+      group
     }
     workshops {
       name
@@ -56,19 +60,19 @@ type SelectionProps = {
   code: string | undefined;
   setReservation: React.Dispatch<any> | undefined;
 };
-const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
+const Selection: React.FC<SelectionProps> = (props) => {
   const { data, loading, error } = useQuery(GET_STUDENT, {
-    variables: { code },
+    variables: { code: props.code },
   });
   const { setRoute } = Router.useRoute();
   const [workshopSelection, setWorkshopSelection] = useState<
-    WorkshopSelection | undefined
+    Reservation | undefined
   >(undefined);
   const [selectionForModal, setSelectionForModal] = useState<
     SelectionForModal | undefined
   >(undefined);
   const { showModal, handleCloseModal, handleShowModal } = useModal();
-  const handleWorkshopSelection = (selection: WorkshopSelection) => {
+  const handleWorkshopSelection = (selection: Reservation) => {
     const options = data.workshops.map((workshop: Workshop) => workshop.options).flat();
     const selectedOption = options.filter(
       (option: Option) => option.id === selection.option_id
@@ -82,9 +86,8 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
     });
     handleShowModal();
   };
-  const handlePostData = (data: WorkshopSelection | undefined) => {
-    data && setReservation && setReservation(data);
-    console.log("reservation from selection component", data);
+  const handleSubmit = (reservation: Reservation | undefined) => {
+    data && props.setReservation && props.setReservation(reservation);
     setRoute("success");
   };
 
@@ -113,22 +116,13 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
                           <Card
                             onClick={() => {
                               if (option.available) {
-
-                                const { code, name }: {code: string; name: string} = data.student;
-                                const { url, zoom_id } = option;
-                                const option_id: string = option.id;
-                                const teacher = option.teacher;
-                                const workshop_id: string = workshop.name;
-                                const workshopSelection: WorkshopSelection = {
-                                  code,
-                                  name,
-                                  url,
-                                  zoom_id,
-                                  option_id,
-                                  workshop_id,
-                                  teacher
+                                const workshopSelection: Reservation = {
+                                  ...data.student,
+                                  option_id: option.id,
                                 }
                                 handleWorkshopSelection(workshopSelection);
+                              } else {
+                                alert('Cupo lleno. Por favor elige otra opcion.')
                               }
                             }}
                             as="a"
@@ -195,7 +189,7 @@ const Selection: React.FC<SelectionProps> = ({ code, setReservation }) => {
           </Button>
           <Button
             variant="primary"
-            onClick={() => handlePostData(workshopSelection)}
+            onClick={() => handleSubmit(workshopSelection)}
           >
             Reservar
           </Button>

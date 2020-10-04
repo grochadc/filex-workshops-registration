@@ -22,7 +22,7 @@ function App() {
     teacher_param = params.get("teacher");
   }
   const [code, setCode] = useState();
-  const [reservation, setReservation] = useState();
+  const [reservation, setReservation] = useState<Reservation>();
   return (
     <div>
       <Jumbotron>
