@@ -45,6 +45,13 @@ function App() {
           <TeacherSelector />
         </Router.View>
       </Router>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdIdtnyAzbTcOlkCbwCpIWM3vrMNRfA_5DamsK4wosCrz3Ybg/viewform?usp=sf_link"
+      >
+        Reportar un problema
+      </a>
     </div>
   );
 }
