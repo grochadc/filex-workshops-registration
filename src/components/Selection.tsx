@@ -35,6 +35,7 @@ const GET_STUDENT = gql`
     workshops {
       name
       description
+      levels
       options {
         id
         day
@@ -73,7 +74,9 @@ const Selection: React.FC<SelectionProps> = (props) => {
   >(undefined);
   const { showModal, handleCloseModal, handleShowModal } = useModal();
   const handleWorkshopSelection = (selection: Reservation) => {
-    const options = data.workshops.map((workshop: Workshop) => workshop.options).flat();
+    const options = data.workshops
+      .map((workshop: Workshop) => workshop.options)
+      .flat();
     const selectedOption = options.filter(
       (option: Option) => option.id === selection.option_id
     )[0];
@@ -97,66 +100,79 @@ const Selection: React.FC<SelectionProps> = (props) => {
     <Container>
       <div>
         <>Hola {data.student.name}!</>
-        {data.workshops.map((workshop: Workshop, workshopIndex: number) => {
-          const eventKey = workshopIndex.toString();
-          return (
-            <Accordion key={workshopIndex}>
-              <Card className="text-center p-3">
-                <Accordion.Toggle eventKey={eventKey} as={Button}>
-                  {workshop.name}
-                </Accordion.Toggle>
-                {workshop.description}
-              </Card>
-              <Accordion.Collapse eventKey={eventKey}>
-                <Container>
-                  <Row>
-                    {workshop.options.map((option, optionIndex) => {
-                      return (
-                        <Col className="mb-3" key={optionIndex}>
-                          <Card
-                            onClick={() => {
-                              if (option.available) {
-                                const workshopSelection: Reservation = {
-                                  ...data.student,
-                                  option_id: option.id,
+        {data.workshops
+          .filter(
+            ({ levels }: { levels: number[] }) =>
+              levels.indexOf(data.student.level) > -1
+          )
+          .map((workshop: Workshop, workshopIndex: number) => {
+            const eventKey = workshopIndex.toString();
+            return (
+              <Accordion key={workshopIndex}>
+                <Card className="text-center p-3">
+                  <Accordion.Toggle eventKey={eventKey} as={Button}>
+                    {workshop.name}
+                  </Accordion.Toggle>
+                  {workshop.description}
+                </Card>
+                <Accordion.Collapse eventKey={eventKey}>
+                  <Container>
+                    <Row>
+                      {workshop.options.map((option, optionIndex) => {
+                        return (
+                          <Col className="mb-3" key={optionIndex}>
+                            <Card
+                              onClick={() => {
+                                if (option.available) {
+                                  const workshopSelection: Reservation = {
+                                    ...data.student,
+                                    option_id: option.id,
+                                  };
+                                  handleWorkshopSelection(workshopSelection);
+                                } else {
+                                  alert(
+                                    "Cupo lleno. Por favor elige otra opcion."
+                                  );
                                 }
-                                handleWorkshopSelection(workshopSelection);
-                              } else {
-                                alert('Cupo lleno. Por favor elige otra opcion.')
-                              }
-                            }}
-                            as="a"
-                            style={optionCardStyles}
-                            className="text-center pt-3"
-                          >
-                            <Card.Title className={option.available ? "" : "text-muted"}>
-                              Teacher {capitalizeString(option.teacher)}
-                            </Card.Title>
-                            <Card.Subtitle className={option.available ? "" : "text-muted"}>
-                            {capitalizeString(option.day)}
-                            </Card.Subtitle>
-                            <Card.Body className={option.available ? "" : "text-muted"}>
-                              {option.time}
-                              {option.available ? (
-                                <Alert variant="primary">
-                                  Lugares disponibles
-                                </Alert>
-                              ) : (
-                                <Alert variant="danger">
-                                  Lugares no disponibles
-                                </Alert>
-                              )}
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      );
-                    })}
-                  </Row>
-                </Container>
-              </Accordion.Collapse>
-            </Accordion>
-          );
-        })}
+                              }}
+                              as="a"
+                              style={optionCardStyles}
+                              className="text-center pt-3"
+                            >
+                              <Card.Title
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                Teacher {capitalizeString(option.teacher)}
+                              </Card.Title>
+                              <Card.Subtitle
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                {capitalizeString(option.day)}
+                              </Card.Subtitle>
+                              <Card.Body
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                {option.time}
+                                {option.available ? (
+                                  <Alert variant="primary">
+                                    Lugares disponibles
+                                  </Alert>
+                                ) : (
+                                  <Alert variant="danger">
+                                    Lugares no disponibles
+                                  </Alert>
+                                )}
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  </Container>
+                </Accordion.Collapse>
+              </Accordion>
+            );
+          })}
       </div>
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
