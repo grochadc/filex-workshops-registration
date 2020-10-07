@@ -122,19 +122,6 @@ const Selection: React.FC<SelectionProps> = (props) => {
                         return (
                           <Col className="mb-3" key={optionIndex}>
                             <Card
-                              onClick={() => {
-                                if (option.available) {
-                                  const workshopSelection: Reservation = {
-                                    ...data.student,
-                                    option_id: option.id,
-                                  };
-                                  handleWorkshopSelection(workshopSelection);
-                                } else {
-                                  alert(
-                                    "Cupo lleno. Por favor elige otra opcion."
-                                  );
-                                }
-                              }}
                               as="a"
                               style={optionCardStyles}
                               className="text-center pt-3"
@@ -154,9 +141,21 @@ const Selection: React.FC<SelectionProps> = (props) => {
                               >
                                 {option.time}
                                 {option.available ? (
-                                  <Alert variant="primary">
-                                    Lugares disponibles
-                                  </Alert>
+                                  <p>
+                                    <Button
+                                      onClick={() => {
+                                        const workshopSelection: Reservation = {
+                                          ...data.student,
+                                          option_id: option.id,
+                                        };
+                                        handleWorkshopSelection(
+                                          workshopSelection
+                                        );
+                                      }}
+                                    >
+                                      Reservar
+                                    </Button>
+                                  </p>
                                 ) : (
                                   <Alert variant="danger">
                                     Lugares no disponibles
