@@ -20,10 +20,6 @@ const GET_RESERVATIONS = gql`
       reservations {
         code
         name
-        first_last_name
-        second_last_name
-        level
-        group
         timestamp
         option {
           day
@@ -125,20 +121,15 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
           <Table striped bordered size="sm">
             <thead>
               <tr>
-                <th>No.</th>
                 <th style={{ width: "9%" }}>Attendance</th>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Last name</th>
-                <th>Level</th>
-                <th>Group</th>
               </tr>
             </thead>
             <tbody>
               {props.reservations.map((applicant, index) => {
                 return (
                   <tr key={index}>
-                  <td>{index+1}</td>
                     <td style={{ textAlign: "center" }}>
                       <input
                         type="checkbox"
@@ -154,9 +145,6 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                     </td>
                     <td>{applicant.code}</td>
                     <td>{applicant.name}</td>
-                    <td>{applicant.first_last_name} {applicant.second_last_name}</td>
-                    <td>{applicant.level}</td>
-                    <td>{applicant.group}</td>
                   </tr>
                 );
               })}
