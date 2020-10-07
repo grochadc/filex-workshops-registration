@@ -3,14 +3,13 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
-import { useAccordionToggle } from "react-bootstrap/AccordionToggle";
 import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Router from "./Router";
 import { useModal } from "../hooks";
-import { gql, useQuery, useLazyQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 const optionCardStyles = {
   width: "18rem",
@@ -37,6 +36,16 @@ const GET_STUDENT = gql`
       name
       description
       levels
+      options {
+        id
+        day
+        time
+        teacher
+        workshop
+        url
+        zoom_id
+        available
+      }
     }
   }
 `;
@@ -97,13 +106,71 @@ const Selection: React.FC<SelectionProps> = (props) => {
               levels.indexOf(data.student.level) > -1
           )
           .map((workshop: Workshop, workshopIndex: number) => {
+            const eventKey = workshopIndex.toString();
             return (
-              <WorkshopAccordion
-                workshop={workshop}
-                student={data.student}
-                eventKey={workshopIndex.toString()}
-                handleWorkshopSelection={handleWorkshopSelection}
-              />
+              <Accordion key={workshopIndex}>
+                <Card className="text-center p-3">
+                  <Accordion.Toggle eventKey={eventKey} as={Button}>
+                    {workshop.name}
+                  </Accordion.Toggle>
+                  {workshop.description}
+                </Card>
+                <Accordion.Collapse eventKey={eventKey}>
+                  <Container>
+                    <Row>
+                      {workshop.options.map((option, optionIndex) => {
+                        return (
+                          <Col className="mb-3" key={optionIndex}>
+                            <Card
+                              onClick={() => {
+                                if (option.available) {
+                                  const workshopSelection: Reservation = {
+                                    ...data.student,
+                                    option_id: option.id,
+                                  };
+                                  handleWorkshopSelection(workshopSelection);
+                                } else {
+                                  alert(
+                                    "Cupo lleno. Por favor elige otra opcion."
+                                  );
+                                }
+                              }}
+                              as="a"
+                              style={optionCardStyles}
+                              className="text-center pt-3"
+                            >
+                              <Card.Title
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                Teacher {capitalizeString(option.teacher)}
+                              </Card.Title>
+                              <Card.Subtitle
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                {capitalizeString(option.day)}
+                              </Card.Subtitle>
+                              <Card.Body
+                                className={option.available ? "" : "text-muted"}
+                              >
+                                {option.time}
+                                {option.available ? (
+                                  <Alert variant="primary">
+                                    Lugares disponibles
+                                  </Alert>
+                                ) : (
+                                  <Alert variant="danger">
+                                    Lugares no disponibles
+                                  </Alert>
+                                )}
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  </Container>
+                </Accordion.Collapse>
+              </Accordion>
             );
           })}
       </div>
@@ -145,114 +212,6 @@ const Selection: React.FC<SelectionProps> = (props) => {
         </Modal.Footer>
       </Modal>
     </Container>
-  );
-};
-
-const GET_OPTIONS_BY_WORKSHOP = gql`
-  query getOptionsByWorkshopId($workshop_id: String) {
-    options(workshop_id: $workshop_id) {
-      id
-      day
-      time
-      teacher
-      workshop
-      url
-      zoom_id
-      available
-    }
-  }
-`;
-
-const CustomToggle = ({ children, eventKey, workshop_id, getOptions }) => {
-  const decoratedOnClick = useAccordionToggle(eventKey, () =>
-    getOptions({ variables: workshop_id })
-  );
-
-  return <Button onClick={decoratedOnClick}>{children}</Button>;
-};
-
-type WorkshopAccordionProps = {
-  workshop: any;
-  student: Student;
-  eventKey: string;
-  handleWorkshopSelection: (selection: Reservation) => void;
-};
-
-const WorkshopAccordion: React.FC<WorkshopAccordionProps> = (props) => {
-  const [getOptions, { data, loading, error }] = useLazyQuery(
-    GET_OPTIONS_BY_WORKSHOP
-  );
-  return (
-    <Accordion>
-      <Card className="text-center p-3">
-        <CustomToggle
-          eventKey={props.eventKey}
-          workshop_id={props.workshop.id}
-          getOptions={getOptions}
-        >
-          {props.workshop.name}
-        </CustomToggle>
-        {props.workshop.description}
-      </Card>
-      <Accordion.Collapse eventKey={props.eventKey}>
-        {loading ? (
-          <>Loading...</>
-        ) : error ? (
-          <>{JSON.stringify(error)}</>
-        ) : (
-          <Container>
-            <Row>
-              {data &&
-                data.options.map((option, optionIndex) => {
-                  return (
-                    <Col className="mb-3" key={optionIndex}>
-                      <Card
-                        onClick={() => {
-                          if (option.available) {
-                            const workshopSelection: Reservation = {
-                              ...props.student,
-                              option_id: option.id,
-                            };
-                            props.handleWorkshopSelection(workshopSelection);
-                          } else {
-                            alert("Cupo lleno. Por favor elige otra opcion.");
-                          }
-                        }}
-                        as="a"
-                        style={optionCardStyles}
-                        className="text-center pt-3"
-                      >
-                        <Card.Title
-                          className={option.available ? "" : "text-muted"}
-                        >
-                          Teacher {capitalizeString(option.teacher)}
-                        </Card.Title>
-                        <Card.Subtitle
-                          className={option.available ? "" : "text-muted"}
-                        >
-                          {capitalizeString(option.day)}
-                        </Card.Subtitle>
-                        <Card.Body
-                          className={option.available ? "" : "text-muted"}
-                        >
-                          {option.time}
-                          {option.available ? (
-                            <Alert variant="primary">Lugares disponibles</Alert>
-                          ) : (
-                            <Alert variant="danger">
-                              Lugares no disponibles
-                            </Alert>
-                          )}
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  );
-                })}
-            </Row>
-          </Container>
-        )}
-      </Accordion.Collapse>
-    </Accordion>
   );
 };
 
