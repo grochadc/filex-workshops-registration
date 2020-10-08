@@ -157,6 +157,8 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                 <th style={{ width: "9%" }}>Attendance</th>
                 <th>Code</th>
                 <th>Name</th>
+                <th>Level</th>
+                <th>Group</th>
               </tr>
             </thead>
             <tbody>
@@ -177,7 +179,12 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                       />
                     </td>
                     <td>{applicant.code}</td>
-                    <td>{applicant.name}</td>
+                    <td>
+                      {applicant.name} {applicant.first_last_name}{" "}
+                      {applicant.second_last_name}
+                    </td>
+                    <td>{applicant.level}</td>
+                    <td>{applicant.group}</td>
                   </tr>
                 );
               })}
