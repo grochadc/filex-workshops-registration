@@ -14,6 +14,18 @@ type Reservation = Student & {
   option_id: string;
 };
 
+type Attendance = {
+  attendance: boolean;
+  code: string;
+  name: string;
+  first_last_name: string;
+  second_last_name: string;
+  telephone: string;
+  email: string;
+  level: number;
+  group: string;
+};
+
 type Workshop = {
   name: string;
   description: string;
@@ -26,14 +38,19 @@ type Option = {
   time: string;
   day: "lunes" | "martes" | "miercoles" | "jueves";
   url: string;
-  workshop: "conversation" | "toeflpreparation" | "basicreading" | "basicadvancedlistening" | "tutoring";
+  workshop:
+    | "conversation"
+    | "toeflpreparation"
+    | "basicreading"
+    | "basicadvancedlistening"
+    | "tutoring";
   zoom_id?: string | undefined;
   available: boolean;
-}
+};
 
 type Teacher = {
   id: string;
   name: string;
-  options: {time: string, day: string, workshop: string}[];
+  options: { time: string; day: string; workshop: string }[];
   reservations: Reservation[];
 };
