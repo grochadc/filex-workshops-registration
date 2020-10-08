@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { capitalizeString } from "../utils/lib";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 
 const GET_RESERVATIONS = gql`
   query reservationsList($teacher: ID!) {
@@ -20,6 +20,10 @@ const GET_RESERVATIONS = gql`
       reservations {
         code
         name
+        first_last_name
+        second_last_name
+        level
+        group
         timestamp
         option {
           day
@@ -29,10 +33,20 @@ const GET_RESERVATIONS = gql`
   }
 `;
 
-type ReservationWithOptionObj =  Reservation & {
+const SAVE_ATTENDANCE = gql`
+  mutation saveAttendance($students: [AttendanceInput]) {
+    saveAttendance(input: $students) {
+      status
+      message
+      error
+    }
+  }
+`;
+
+type ReservationWithOptionObj = Reservation & {
   timestamp: string;
   option: Option;
-}
+};
 
 let toObjWithIds = (arr: any[], key: string): {} => {
   let obj = {};
@@ -44,7 +58,15 @@ const Dashboard: React.FC<any> = ({ teacher }) => {
   const { data, loading, error } = useQuery(GET_RESERVATIONS, {
     variables: { teacher },
   });
-  console.log(data);
+  const [saveAttendance] = useMutation(SAVE_ATTENDANCE);
+  const handleAttendance = (students: Attendance[]) => {
+    console.log("students", students);
+    saveAttendance({ variables: { students: students } }).then((response) => {
+      const { status, message, error } = response.data.saveAttendance;
+      if (status === 200) alert(message);
+      if (error) console.log(error);
+    });
+  };
   if (loading) return <p>Loading...</p>;
   if (error) return <h1>Error: {JSON.stringify(error)}</h1>;
   return (
@@ -59,9 +81,10 @@ const Dashboard: React.FC<any> = ({ teacher }) => {
           day={option.day}
           time={option.time}
           reservations={data.teacher.reservations.filter(
-            (reservation: ReservationWithOptionObj) => reservation.option.day === option.day
+            (reservation: ReservationWithOptionObj) =>
+              reservation.option.day === option.day
           )}
-          handleAttendance={(info: any) => console.log("parent", info)}
+          handleAttendance={handleAttendance}
         />
       ))}
     </Container>
@@ -105,9 +128,19 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
         return state;
     }
   };
-  const reservations = props.reservations.map((item) => {
-    return { attendance: false, code: item.code, name: item.name };
-  });
+  const reservations = props.reservations.map(
+    ({ code, name, first_last_name, second_last_name, group, level }) => {
+      return {
+        attendance: false,
+        code,
+        name,
+        first_last_name,
+        second_last_name,
+        group,
+        level,
+      };
+    }
+  );
 
   const initialState = toObjWithIds(reservations, "code");
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -152,7 +185,7 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
           </Table>
           <Button
             disabled={props.reservations.length === 0}
-            onClick={() => props.handleAttendance(state)}
+            onClick={() => props.handleAttendance(Object.values(state))}
           >
             Send
           </Button>
