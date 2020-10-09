@@ -2,24 +2,26 @@ import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 
 const MAKE_RESERVATION = gql`
-mutation setReservation(
+  mutation setReservation(
     $code: String!
     $name: String!
-  	$first_last_name:String!
-  	$second_last_name: String!
-  	$level: Int!
-  	$group: String!
+    $first_last_name: String!
+    $second_last_name: String!
+    $level: Int!
+    $group: String!
     $option_id: String!
   ) {
-    makeReservation(input: {
-      code: $code
-      name: $name
-      first_last_name: $first_last_name
-      second_last_name:$second_last_name
-      level: $level
-      group: $group
-      option_id: $option_id
-    }) {
+    makeReservation(
+      input: {
+        code: $code
+        name: $name
+        first_last_name: $first_last_name
+        second_last_name: $second_last_name
+        level: $level
+        group: $group
+        option_id: $option_id
+      }
+    ) {
       id
       timestamp
       code
@@ -40,10 +42,13 @@ const Success: React.FC<SuccessProps> = (props) => {
     MAKE_RESERVATION
   );
   useEffect(() => {
-    addReservation({ variables: props.reservation }).catch((error) => console.log(error));
+    addReservation({ variables: props.reservation }).catch((error) => {
+      console.log(error);
+    });
     // eslint-disable-next-line
   }, []);
-  if (error) return <p>Error: {JSON.stringify(error)}</p>;
+  if (error)
+    return <p>Error: {JSON.stringify(error.graphQLErrors[0].message)}</p>;
   if (loading) return <p>Loading...</p>;
   return (
     <div>
