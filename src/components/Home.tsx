@@ -36,7 +36,7 @@ const Home: React.FC<any> = ({ setCode }) => {
             onChange={(e) => formik.handleChange(e as any)}
             value={formik.values.code}
           />
-          <Button type="submit">Submit</Button>
+          <Button disabled type="submit">Submit</Button>
         </Form.Group>
       </Form>
       {formik.touched.code && formik.errors.code ? (
