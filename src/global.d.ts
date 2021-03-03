@@ -1,13 +1,13 @@
 interface Student {
   id: string;
-  code: string;
-  name: string;
-  first_last_name: string;
-  second_last_name: string;
-  telephone: string;
+  codigo: string;
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  telefono: string;
   email: string;
-  level: number;
-  group: string;
+  nivel: number;
+  grupo: string;
 }
 
 type Reservation = Student & {

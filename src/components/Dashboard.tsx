@@ -95,15 +95,15 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
     }
   };
   const reservations = props.reservations.map(
-    ({ code, name, first_last_name, second_last_name, group, level }) => {
+    ({ codigo, nombre, apellido_paterno, apellido_materno, grupo, nivel }) => {
       return {
         attendance: false,
-        code,
-        name,
-        first_last_name,
-        second_last_name,
-        group,
-        level,
+        codigo,
+        nombre,
+        apellido_paterno,
+        apellido_materno,
+        grupo,
+        nivel,
       };
     }
   );
@@ -135,22 +135,22 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                       <input
                         type="checkbox"
                         key={index}
-                        checked={state[applicant.code].attendance}
+                        checked={state[applicant.codigo].attendance}
                         onChange={() =>
                           dispatch({
                             type: "toggle_attendance",
-                            payload: applicant.code,
+                            payload: applicant.codigo,
                           })
                         }
                       />
                     </td>
-                    <td>{applicant.code}</td>
+                    <td>{applicant.codigo}</td>
                     <td>
-                      {applicant.name} {applicant.first_last_name}{" "}
-                      {applicant.second_last_name}
+                      {applicant.nombre} {applicant.apellido_paterno}{" "}
+                      {applicant.apellido_materno}
                     </td>
-                    <td>{applicant.level}</td>
-                    <td>{applicant.group}</td>
+                    <td>{applicant.nivel}</td>
+                    <td>{applicant.grupo}</td>
                   </tr>
                 );
               })}

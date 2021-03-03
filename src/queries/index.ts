@@ -36,8 +36,8 @@ export const SAVE_ATTENDANCE = gql`
 `;
 
 export const GET_STUDENT = gql`
-  query getSelectionInfo($code: String!) {
-    student(code: $code) {
+  query getSelectionInfo($code: ID!) {
+    student(codigo: $code) {
       codigo
       nombre
       apellido_paterno
@@ -64,31 +64,12 @@ export const GET_STUDENT = gql`
 `;
 
 export const MAKE_RESERVATION = gql`
-  mutation setReservation(
-    $code: String!
-    $name: String!
-    $first_last_name: String!
-    $second_last_name: String!
-    $level: Int!
-    $group: String!
-    $option_id: String!
-  ) {
-    makeReservation(
-      input: {
-        code: $code
-        name: $name
-        first_last_name: $first_last_name
-        second_last_name: $second_last_name
-        level: $level
-        group: $group
-        option_id: $option_id
-      }
-    ) {
+  mutation setReservation($codigo: ID!, $option_id: ID!) {
+    makeWorkshopReservation(input: { codigo: $codigo, option_id: $option_id }) {
       id
       timestamp
-      code
-      name
-      option_id
+      codigo
+      nombre
       url
       zoom_id
     }

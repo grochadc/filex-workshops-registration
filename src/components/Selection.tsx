@@ -74,9 +74,8 @@ const Selection: React.FC<SelectionProps> = (props) => {
       <div>
         <>Hola {data.student.nombre}!</>
         {data.workshops
-          .filter(
-            ({ levels }: { levels: number[] }) =>
-              levels.indexOf(data.student.nivel) > -1
+          .filter(({ levels }: { levels: number[] }) =>
+            levels.includes(data.student.nivel)
           )
           .map((workshop: Workshop, workshopIndex: number) => {
             const eventKey = workshopIndex.toString();

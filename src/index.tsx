@@ -17,7 +17,9 @@ const ServerUri =
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
   uri: ServerUri,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ addTypename: false }),
+  //@ts-ignore
+  connectToDevtools: true,
 });
 
 const rootElement = document.getElementById("root");

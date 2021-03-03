@@ -16,24 +16,23 @@ const Success: React.FC<SuccessProps> = (props) => {
     });
     // eslint-disable-next-line
   }, []);
-  if (error)
-    return <p>Error: {JSON.stringify(error.graphQLErrors[0].message)}</p>;
+  if (error) return <p>Error: {JSON.stringify(error)}</p>;
   if (loading) return <p>Loading...</p>;
   return (
     <div>
       <p>Reservación realizada con exito!</p>
-      <p>ID de Reservacion: {data && data.makeReservation.id}</p>
-      <p>Codigo: {data && data.makeReservation.code}</p>
-      <p>Nombre: {data && data.makeReservation.name}</p>
-      <p>Hora: {data && data.makeReservation.timestamp}</p>
+      <p>ID de Reservacion: {data && data.makeWorkshopReservation.id}</p>
+      <p>Codigo: {data && data.makeWorkshopReservation.codigo}</p>
+      <p>Nombre: {data && data.makeWorkshopReservation.nombre}</p>
+      <p>Hora: {data && data.makeWorkshopReservation.timestamp}</p>
       <p>
         URL del taller:{" "}
-        <a href={data && data.makeReservation.url}>
-          {data && data.makeReservation.url}
+        <a href={data && data.makeWorkshopReservation.url}>
+          {data && data.makeWorkshopReservation.url}
         </a>
       </p>
-      {data && data.makeReservation.zoom_id && (
-        <p>Zoom ID: {data.makeReservation.zoom_id}</p>
+      {data && data.makeWorkshopReservation.zoom_id && (
+        <p>Zoom ID: {data.makeWorkshopReservation.zoom_id}</p>
       )}
     </div>
   );
