@@ -9,7 +9,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Router from "./Router";
 import { useModal } from "../hooks";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import { GET_STUDENT } from "../queries";
 
 const optionCardStyles = {
   width: "18rem",
@@ -21,34 +22,6 @@ const optionCardStyles = {
 const capitalizeString = (str: string) => {
   return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 };
-
-const GET_STUDENT = gql`
-  query getSelectionInfo($code: String!) {
-    student(code: $code) {
-      code
-      name
-      first_last_name
-      second_last_name
-      level
-      group
-    }
-    workshops {
-      name
-      description
-      levels
-      options {
-        id
-        day
-        time
-        teacher
-        workshop
-        url
-        zoom_id
-        available
-      }
-    }
-  }
-`;
 
 type SelectionForModal = {
   workshop: string;
@@ -99,11 +72,11 @@ const Selection: React.FC<SelectionProps> = (props) => {
   return (
     <Container>
       <div>
-        <>Hola {data.student.name}!</>
+        <>Hola {data.student.nombre}!</>
         {data.workshops
           .filter(
             ({ levels }: { levels: number[] }) =>
-              levels.indexOf(data.student.level) > -1
+              levels.indexOf(data.student.nivel) > -1
           )
           .map((workshop: Workshop, workshopIndex: number) => {
             const eventKey = workshopIndex.toString();

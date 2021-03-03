@@ -1,37 +1,6 @@
 import React, { useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
-
-const MAKE_RESERVATION = gql`
-  mutation setReservation(
-    $code: String!
-    $name: String!
-    $first_last_name: String!
-    $second_last_name: String!
-    $level: Int!
-    $group: String!
-    $option_id: String!
-  ) {
-    makeReservation(
-      input: {
-        code: $code
-        name: $name
-        first_last_name: $first_last_name
-        second_last_name: $second_last_name
-        level: $level
-        group: $group
-        option_id: $option_id
-      }
-    ) {
-      id
-      timestamp
-      code
-      name
-      option_id
-      url
-      zoom_id
-    }
-  }
-`;
+import { useMutation } from "@apollo/client";
+import { MAKE_RESERVATION } from "../queries";
 
 type SuccessProps = {
   reservation: Reservation | undefined;

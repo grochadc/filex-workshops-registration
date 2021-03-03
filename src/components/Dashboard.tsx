@@ -6,42 +6,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { capitalizeString } from "../utils/lib";
-import { gql, useQuery, useMutation } from "@apollo/client";
-
-const GET_RESERVATIONS = gql`
-  query reservationsList($teacher: ID!) {
-    teacher(id: $teacher) {
-      name
-      options {
-        time
-        day
-        workshop
-      }
-      reservations {
-        code
-        name
-        first_last_name
-        second_last_name
-        level
-        group
-        timestamp
-        option {
-          day
-        }
-      }
-    }
-  }
-`;
-
-const SAVE_ATTENDANCE = gql`
-  mutation saveAttendance($students: [AttendanceInput]) {
-    saveAttendance(input: $students) {
-      status
-      message
-      error
-    }
-  }
-`;
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_RESERVATIONS, SAVE_ATTENDANCE } from "../queries";
 
 type ReservationWithOptionObj = Reservation & {
   timestamp: string;
