@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useParams, useHistory } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -7,7 +8,6 @@ import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Router from "./Router";
 import { useModal } from "../hooks";
 import { useQuery } from "@apollo/client";
 import { GET_STUDENT } from "../queries";
@@ -35,10 +35,11 @@ type SelectionProps = {
   setReservation: React.Dispatch<any> | undefined;
 };
 const Selection: React.FC<SelectionProps> = (props) => {
+  const params: { code: string } = useParams();
+  const history = useHistory();
   const { data, loading, error } = useQuery(GET_STUDENT, {
-    variables: { code: props.code },
+    variables: { code: params.code },
   });
-  const { setRoute } = Router.useRoute();
   const [workshopSelection, setWorkshopSelection] = useState<
     Reservation | undefined
   >(undefined);
@@ -64,10 +65,15 @@ const Selection: React.FC<SelectionProps> = (props) => {
   };
   const handleSubmit = (reservation: Reservation | undefined) => {
     data && props.setReservation && props.setReservation(reservation);
-    setRoute("success");
+    history.push("/success");
   };
 
-  if (error) return <p>Error: {JSON.stringify(error)}</p>;
+  if (error)
+    return (
+      <p>
+        <h1>This is the code {params.code}</h1>Error: {JSON.stringify(error)}
+      </p>
+    );
   if (loading) return <p>Loading...</p>;
   return (
     <Container>
