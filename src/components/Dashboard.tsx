@@ -1,4 +1,5 @@
 import React, { useReducer } from "react";
+import { useParams } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -20,7 +21,8 @@ let toObjWithIds = (arr: any[], key: string): {} => {
   return obj;
 };
 
-const Dashboard: React.FC<any> = ({ teacher }) => {
+const Dashboard: React.FC<any> = () => {
+  const { teacher }: { teacher: string } = useParams();
   const { data, loading, error } = useQuery(GET_RESERVATIONS, {
     variables: { teacher },
   });
@@ -34,7 +36,7 @@ const Dashboard: React.FC<any> = ({ teacher }) => {
     });
   };
   if (loading) return <p>Loading...</p>;
-  if (error) return <h1>Error: {JSON.stringify(error)}</h1>;
+  if (error) return <div>Error: {JSON.stringify(error)}</div>;
   return (
     <Container>
       <Row>

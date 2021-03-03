@@ -6,6 +6,7 @@ import {
   NormalizedCacheObject,
   ApolloProvider,
 } from "@apollo/client";
+import { BrowserRouter as Router } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import App from "./App";
@@ -23,7 +24,9 @@ const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
 const rootElement = document.getElementById("root");
 render(
   <ApolloProvider client={client}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </ApolloProvider>,
   rootElement
 );
