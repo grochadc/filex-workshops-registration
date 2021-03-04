@@ -31,7 +31,6 @@ type SelectionForModal = {
 };
 
 type SelectionProps = {
-  code: string | undefined;
   setReservation: React.Dispatch<any> | undefined;
 };
 const Selection: React.FC<SelectionProps> = (props) => {

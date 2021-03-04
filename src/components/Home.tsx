@@ -5,10 +5,10 @@ import Alert from "react-bootstrap/Alert";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMediaQuery } from "react-responsive";
-import Router from "./Router";
+import { useHistory } from "react-router-dom";
 
-const Home: React.FC<any> = ({ setCode }) => {
-  const { setRoute } = Router.useRoute();
+const Home: React.FC = () => {
+  const history = useHistory();
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 400px)" });
   const formik = useFormik({
     initialValues: {
@@ -17,9 +17,8 @@ const Home: React.FC<any> = ({ setCode }) => {
     validationSchema: Yup.object({
       code: Yup.number().required("Required"),
     }),
-    onSubmit: (values) => {
-      setCode(values.code);
-      setRoute("selection");
+    onSubmit: ({ code }) => {
+      history.push(`/selection/${code}`);
     },
   });
   return (

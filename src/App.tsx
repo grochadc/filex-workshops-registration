@@ -8,7 +8,6 @@ import Dashboard from "./components/Dashboard";
 import TeacherSelector from "./components/TeacherSelector";
 
 function App() {
-  const [code, setCode] = useState();
   const [reservation, setReservation] = useState<Reservation>();
   return (
     <div>
@@ -16,11 +15,8 @@ function App() {
         <h1>FILEX WORKSHOPS</h1>
       </Jumbotron>
       <Switch>
-        <Route path="/someroute">
-          <h1>thisis a Route</h1>
-        </Route>
         <Route path="/selection/:code">
-          <Selection code={code} setReservation={setReservation} />
+          <Selection setReservation={setReservation} />
         </Route>
         <Route path="/success">
           <Success reservation={reservation} />
@@ -32,7 +28,7 @@ function App() {
           <TeacherSelector />
         </Route>
         <Route path="/">
-          <Home setCode={setCode} />
+          <Home />
         </Route>
       </Switch>
       <a
