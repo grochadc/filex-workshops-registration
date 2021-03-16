@@ -7,8 +7,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { capitalizeString } from "../utils/lib";
-import { useQuery, useMutation } from "@apollo/client";
-import { GET_RESERVATIONS, SAVE_ATTENDANCE } from "../queries";
+import { useQuery, useMutation, gql } from "@apollo/client";
 
 type ReservationWithOptionObj = Reservation & {
   timestamp: string;
@@ -26,14 +25,12 @@ const Dashboard: React.FC<any> = () => {
   const { data, loading, error } = useQuery(GET_RESERVATIONS, {
     variables: { teacher },
   });
-  const [saveAttendance] = useMutation(SAVE_ATTENDANCE);
+  const [saveAttendance] = useMutation(SAVE_ATTENDANCE, {
+    onCompleted: () => console.log("Saved attendance succe"),
+  });
   const handleAttendance = (students: Attendance[]) => {
     console.log("students", students);
-    saveAttendance({ variables: { students: students } }).then((response) => {
-      const { status, message, error } = response.data.saveAttendance;
-      if (status === 200) alert(message);
-      if (error) console.log(error);
-    });
+    saveAttendance({ variables: { students: students } });
   };
   if (loading) return <p>Loading...</p>;
   if (error) return <div>Error: {JSON.stringify(error)}</div>;
@@ -46,6 +43,8 @@ const Dashboard: React.FC<any> = () => {
         <WorkshopAttendance
           key={index}
           name={option.workshop}
+          workshop={option.workshop}
+          teacher={data.teacher.name}
           day={option.day}
           time={option.time}
           reservations={data.teacher.reservations.filter(
@@ -59,13 +58,6 @@ const Dashboard: React.FC<any> = () => {
   );
 };
 
-interface WorkshopAttendanceProps {
-  name: string;
-  day: string;
-  time: string;
-  reservations: Reservation[];
-  handleAttendance: (info: any) => any;
-}
 interface ReducerAction {
   type: string;
   payload: string;
@@ -73,23 +65,32 @@ interface ReducerAction {
 
 interface ReducerState {
   [prop: string]: {
-    attendance: boolean;
+    attended: boolean;
     code: string;
     name: string;
   };
 }
 
+interface WorkshopAttendanceProps {
+  name: string;
+  day: string;
+  time: string;
+  workshop: string;
+  teacher: string;
+  reservations: Reservation[];
+  handleAttendance: (info: any) => any;
+}
 const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
   const reducer = (state: ReducerState, action: ReducerAction) => {
     const targetProp = action.payload;
-    const current = state[targetProp].attendance;
+    const current = state[targetProp].attended;
     switch (action.type) {
       case "toggle_attendance":
         return {
           ...state,
           [targetProp]: {
             ...state[targetProp],
-            attendance: !current,
+            attended: !current,
           },
         };
       default:
@@ -97,9 +98,11 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
     }
   };
   const reservations = props.reservations.map(
-    ({ codigo, nombre, apellido_paterno, apellido_materno, grupo, nivel }) => {
+    ({ codigo, nombre, apellido_materno, apellido_paterno, grupo, nivel }) => {
       return {
-        attendance: false,
+        workshop: props.workshop,
+        teacher: props.teacher,
+        attended: false,
         codigo,
         nombre,
         apellido_paterno,
@@ -110,8 +113,9 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
     }
   );
 
-  const initialState = toObjWithIds(reservations, "code");
+  const initialState = toObjWithIds(reservations, "codigo");
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log("state", initialState);
   return (
     <Row>
       <Col>
@@ -137,7 +141,7 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
                       <input
                         type="checkbox"
                         key={index}
-                        checked={state[applicant.codigo].attendance}
+                        checked={state[applicant.codigo].attended}
                         onChange={() =>
                           dispatch({
                             type: "toggle_attendance",
@@ -169,5 +173,38 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
     </Row>
   );
 };
+
+export const GET_RESERVATIONS = gql`
+  query reservationsList($teacher: ID!) {
+    teacher(id: $teacher) {
+      name
+      options {
+        time
+        day
+        workshop
+      }
+      reservations {
+        codigo
+        nombre
+        apellido_paterno
+        apellido_materno
+        nivel
+        grupo
+        timestamp
+        option {
+          day
+        }
+      }
+    }
+  }
+`;
+
+export const SAVE_ATTENDANCE = gql`
+  mutation saveAttendance($students: [AttendingStudent!]) {
+    saveWorkshopsAttendance(input: $students) {
+      success
+    }
+  }
+`;
 
 export default Dashboard;

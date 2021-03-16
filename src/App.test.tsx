@@ -1,45 +1,33 @@
-import React, { Fragment } from "react";
-import {
-  render,
-  screen,
-  act,
-  waitFor,
-  cleanup,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import React from "react";
+import { screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "./testutils";
+import { getStudentMock, makeReservationMock } from "./testutils/mocks";
 import App from "./App";
-import MutationObserver from "mutation-observer";
-window.MutationObserver = MutationObserver;
 
-afterEach(cleanup);
-async function mockFetch(url, config) {
-  if (url === "/students/12345") {
-    return {
-      ok: true,
-      status: 200,
-      json: async () => ({ name: "Pedro" }),
-    };
-  } else {
-    throw new Error(`Unhandled request: ${url}`);
-  }
-}
+test("makes a reservation successfully", async () => {
+  renderWithProviders(<App />, {
+    mocks: [getStudentMock, makeReservationMock],
+  });
+  userEvent.type(screen.getByRole("textbox"), "1234567890");
+  userEvent.click(screen.getByRole("button"));
 
-beforeAll(() => jest.spyOn(window, "fetch"));
+  await act(async () => await new Promise((resolve) => setTimeout(resolve, 0)));
 
-test("Renders app without crashing", () => {
-  const { asFragment } = render(<App />);
-  expect(asFragment()).toMatchSnapshot();
-});
+  const workshopButton = await screen.findByRole("button", {
+    name: /conversation/i,
+  });
+  userEvent.click(workshopButton);
 
-test("Gets a code and renders student info on new route", async () => {
-  const mockedFetch = jest.spyOn(window, "fetch");
-  render(<App />);
-  const codeInput = screen.getByLabelText("Code:");
-  userEvent.type(codeInput, "12345");
-  expect(screen.getByLabelText(/Code:/i)).toHaveValue("12345");
-  userEvent.click(screen.getByText(/Submit/i));
-  expect(mockedFetch).toHaveBeenCalled();
-  expect(await screen.findByText(/Pedro/i)).toBeInTheDocument();
-  waitFor(() => expect(screen.queryByText(/Submit/i)).not.toBeInTheDocument());
+  userEvent.click(
+    await screen.findByRole("button", {
+      name: /reservar/i,
+    })
+  );
+
+  userEvent.click(await screen.findByRole("button", { name: /reservar/i }));
+
+  await act(async () => await new Promise((resolve) => setTimeout(resolve, 0)));
+
+  expect(await screen.findByText(/exito/i)).toBeInTheDocument();
 });

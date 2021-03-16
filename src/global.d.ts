@@ -10,7 +10,22 @@ interface Student {
   grupo: string;
 }
 
-type Reservation = Student & {
+interface StudentEnglish {
+  id: string;
+  codigo: string;
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  nivel: number;
+  grupo: string;
+}
+
+type Selected = {
+  codigo: string;
+  option_id: string;
+};
+
+type Reservation = StudentEnglish & {
   option_id: string;
 };
 

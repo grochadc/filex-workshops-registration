@@ -8,7 +8,15 @@ import Dashboard from "./components/Dashboard";
 import TeacherSelector from "./components/TeacherSelector";
 
 function App() {
-  const [reservation, setReservation] = useState<Reservation>();
+  const [reservationResponse, setReservationResponse] = useState({
+    makeWorkshopReservation: {
+      id: "",
+      timestamp: "",
+      codigo: "",
+      nombre: "",
+      url: "",
+    },
+  });
   return (
     <div>
       <Jumbotron>
@@ -16,10 +24,10 @@ function App() {
       </Jumbotron>
       <Switch>
         <Route path="/selection/:code">
-          <Selection setReservation={setReservation} />
+          <Selection setReservation={setReservationResponse} />
         </Route>
         <Route path="/success">
-          <Success reservation={reservation} />
+          <Success reservationResponse={reservationResponse} />
         </Route>
         <Route path="/dashboard/:teacher">
           <Dashboard />

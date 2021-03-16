@@ -1,38 +1,25 @@
-import React, { useEffect } from "react";
-import { useMutation } from "@apollo/client";
-import { MAKE_RESERVATION } from "../queries";
+import React from "react";
 
 type SuccessProps = {
-  reservation: Reservation | undefined;
+  reservationResponse: any;
 };
 
-const Success: React.FC<SuccessProps> = (props) => {
-  const [addReservation, { data, loading, error }] = useMutation(
-    MAKE_RESERVATION
-  );
-  useEffect(() => {
-    addReservation({ variables: props.reservation }).catch((error) => {
-      console.log(error);
-    });
-    // eslint-disable-next-line
-  }, []);
-  if (error) return <p>Error: {JSON.stringify(error)}</p>;
-  if (loading) return <p>Loading...</p>;
+const Success: React.FC<SuccessProps> = ({ reservationResponse }) => {
   return (
     <div>
       <p>Reservación realizada con exito!</p>
-      <p>ID de Reservacion: {data && data.makeWorkshopReservation.id}</p>
-      <p>Codigo: {data && data.makeWorkshopReservation.codigo}</p>
-      <p>Nombre: {data && data.makeWorkshopReservation.nombre}</p>
-      <p>Hora: {data && data.makeWorkshopReservation.timestamp}</p>
+      <p>ID de Reservacion: {reservationResponse.makeWorkshopReservation.id}</p>
+      <p>Codigo: {reservationResponse.makeWorkshopReservation.codigo}</p>
+      <p>Nombre: {reservationResponse.makeWorkshopReservation.nombre}</p>
+      <p>Hora: {reservationResponse.makeWorkshopReservation.timestamp}</p>
       <p>
         URL del taller:{" "}
-        <a href={data && data.makeWorkshopReservation.url}>
-          {data && data.makeWorkshopReservation.url}
+        <a href={reservationResponse.makeWorkshopReservation.url}>
+          {reservationResponse.makeWorkshopReservation.url}
         </a>
       </p>
-      {data && data.makeWorkshopReservation.zoom_id && (
-        <p>Zoom ID: {data.makeWorkshopReservation.zoom_id}</p>
+      {reservationResponse.makeWorkshopReservation.zoom_id && (
+        <p>Zoom ID: {reservationResponse.makeWorkshopReservation.zoom_id}</p>
       )}
     </div>
   );

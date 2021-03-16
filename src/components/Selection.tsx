@@ -9,19 +9,7 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useModal } from "../hooks";
-import { useQuery } from "@apollo/client";
-import { GET_STUDENT } from "../queries";
-
-const optionCardStyles = {
-  width: "18rem",
-  cursor: "pointer",
-  color: "black",
-  textDecoration: "none",
-};
-
-const capitalizeString = (str: string) => {
-  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
-};
+import { useQuery, useMutation, gql } from "@apollo/client";
 
 type SelectionForModal = {
   workshop: string;
@@ -31,7 +19,7 @@ type SelectionForModal = {
 };
 
 type SelectionProps = {
-  setReservation: React.Dispatch<any> | undefined;
+  setReservation: React.Dispatch<any>;
 };
 const Selection: React.FC<SelectionProps> = (props) => {
   const params: { code: string } = useParams();
@@ -39,21 +27,27 @@ const Selection: React.FC<SelectionProps> = (props) => {
   const { data, loading, error } = useQuery(GET_STUDENT, {
     variables: { code: params.code },
   });
-  const [workshopSelection, setWorkshopSelection] = useState<
-    Reservation | undefined
-  >(undefined);
+  const [makeReservationMutation] = useMutation(MAKE_RESERVATION, {
+    onCompleted: (data) => {
+      props.setReservation(data);
+    },
+  });
+  const [workshopSelection, setWorkshopSelection] = useState<Selected>({
+    codigo: "",
+    option_id: "",
+  });
   const [selectionForModal, setSelectionForModal] = useState<
     SelectionForModal | undefined
   >(undefined);
   const { showModal, handleCloseModal, handleShowModal } = useModal();
-  const handleWorkshopSelection = (selection: Reservation) => {
+  const handleWorkshopSelection = (selection: Selected) => {
+    setWorkshopSelection(selection);
     const options = data.workshops
       .map((workshop: Workshop) => workshop.options)
       .flat();
     const selectedOption = options.filter(
       (option: Option) => option.id === selection.option_id
     )[0];
-    setWorkshopSelection(selection);
     setSelectionForModal({
       workshop: selectedOption.workshop,
       teacher: selectedOption.teacher,
@@ -62,8 +56,8 @@ const Selection: React.FC<SelectionProps> = (props) => {
     });
     handleShowModal();
   };
-  const handleSubmit = (reservation: Reservation | undefined) => {
-    data && props.setReservation && props.setReservation(reservation);
+  const handleSubmit = ({ codigo, option_id }: Selected) => {
+    makeReservationMutation({ variables: { codigo, option_id } });
     history.push("/success");
   };
 
@@ -121,8 +115,8 @@ const Selection: React.FC<SelectionProps> = (props) => {
                                   <p>
                                     <Button
                                       onClick={() => {
-                                        const workshopSelection: Reservation = {
-                                          ...data.student,
+                                        const workshopSelection: Selected = {
+                                          codigo: data.student.codigo,
                                           option_id: option.id,
                                         };
                                         handleWorkshopSelection(
@@ -189,6 +183,54 @@ const Selection: React.FC<SelectionProps> = (props) => {
       </Modal>
     </Container>
   );
+};
+
+export const GET_STUDENT = gql`
+  query getSelectionInfo($code: ID!) {
+    student(codigo: $code) {
+      codigo
+      nombre
+      nivel
+    }
+    workshops {
+      name
+      description
+      levels
+      options {
+        id
+        day
+        time
+        teacher
+        workshop
+        url
+        zoom_id
+        available
+      }
+    }
+  }
+`;
+export const MAKE_RESERVATION = gql`
+  mutation setReservation($codigo: ID!, $option_id: ID!) {
+    makeWorkshopReservation(input: { codigo: $codigo, option_id: $option_id }) {
+      id
+      timestamp
+      codigo
+      nombre
+      url
+      zoom_id
+    }
+  }
+`;
+
+const optionCardStyles = {
+  width: "18rem",
+  cursor: "pointer",
+  color: "black",
+  textDecoration: "none",
+};
+
+const capitalizeString = (str: string) => {
+  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 };
 
 export default Selection;
