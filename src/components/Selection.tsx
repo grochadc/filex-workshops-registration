@@ -218,6 +218,7 @@ export const MAKE_RESERVATION = gql`
       nombre
       url
       zoom_id
+      alreadyRegistered
     }
   }
 `;

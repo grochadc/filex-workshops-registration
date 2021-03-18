@@ -7,7 +7,16 @@ type SuccessProps = {
 const Success: React.FC<SuccessProps> = ({ reservationResponse }) => {
   return (
     <div>
-      <p>Reservación realizada con exito!</p>
+      <p>
+        {reservationResponse.makeWorkshopReservation.alreadyRegistered ? (
+          <>
+            Ya te habías registrado a ese taller. Aquí tienes toda la
+            informacion:
+          </>
+        ) : (
+          <>Reservación realizada con exito!</>
+        )}
+      </p>
       <p>ID de Reservacion: {reservationResponse.makeWorkshopReservation.id}</p>
       <p>Codigo: {reservationResponse.makeWorkshopReservation.codigo}</p>
       <p>Nombre: {reservationResponse.makeWorkshopReservation.nombre}</p>
