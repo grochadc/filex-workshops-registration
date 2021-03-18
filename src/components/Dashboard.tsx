@@ -26,11 +26,14 @@ const Dashboard: React.FC<any> = () => {
     variables: { teacher },
   });
   const [saveAttendance] = useMutation(SAVE_ATTENDANCE, {
-    onCompleted: () => console.log("Saved attendance succe"),
+    onCompleted: () => alert("Attendance was saved successfully"),
   });
-  const handleAttendance = (students: Attendance[]) => {
+  const handleAttendance = (
+    students: Attendance[],
+    workshopInfo: { teacher: string; option_id: string }
+  ) => {
     console.log("students", students);
-    saveAttendance({ variables: { students: students } });
+    saveAttendance({ variables: { students, workshopInfo } });
   };
   if (loading) return <p>Loading...</p>;
   if (error) return <div>Error: {JSON.stringify(error)}</div>;
@@ -44,6 +47,8 @@ const Dashboard: React.FC<any> = () => {
           key={index}
           name={option.workshop}
           workshop={option.workshop}
+          optionId={option.id}
+          teacherId={option.teacher_id}
           teacher={data.teacher.name}
           day={option.day}
           time={option.time}
@@ -73,14 +78,20 @@ interface ReducerState {
 
 interface WorkshopAttendanceProps {
   name: string;
+  optionId: string;
+  teacherId: string;
   day: string;
   time: string;
   workshop: string;
   teacher: string;
   reservations: Reservation[];
-  handleAttendance: (info: any) => any;
+  handleAttendance: (
+    info: any,
+    workshop: { teacher: string; option_id: string }
+  ) => any;
 }
 const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
+  const [showReservations, setShowReservations] = React.useState(true);
   const reducer = (state: ReducerState, action: ReducerAction) => {
     const targetProp = action.payload;
     const current = state[targetProp].attended;
@@ -134,37 +145,45 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.reservations.map((applicant, index) => {
-                return (
-                  <tr key={index}>
-                    <td style={{ textAlign: "center" }}>
-                      <input
-                        type="checkbox"
-                        key={index}
-                        checked={state[applicant.codigo].attended}
-                        onChange={() =>
-                          dispatch({
-                            type: "toggle_attendance",
-                            payload: applicant.codigo,
-                          })
-                        }
-                      />
-                    </td>
-                    <td>{applicant.codigo}</td>
-                    <td>
-                      {applicant.nombre} {applicant.apellido_paterno}{" "}
-                      {applicant.apellido_materno}
-                    </td>
-                    <td>{applicant.nivel}</td>
-                    <td>{applicant.grupo}</td>
-                  </tr>
-                );
-              })}
+              {showReservations
+                ? props.reservations.map((applicant, index) => {
+                    return (
+                      <tr key={index}>
+                        <td style={{ textAlign: "center" }}>
+                          <input
+                            type="checkbox"
+                            key={index}
+                            checked={state[applicant.codigo].attended}
+                            onChange={() =>
+                              dispatch({
+                                type: "toggle_attendance",
+                                payload: applicant.codigo,
+                              })
+                            }
+                          />
+                        </td>
+                        <td>{applicant.codigo}</td>
+                        <td>
+                          {applicant.nombre} {applicant.apellido_paterno}{" "}
+                          {applicant.apellido_materno}
+                        </td>
+                        <td>{applicant.nivel}</td>
+                        <td>{applicant.grupo}</td>
+                      </tr>
+                    );
+                  })
+                : null}
             </tbody>
           </Table>
           <Button
             disabled={props.reservations.length === 0}
-            onClick={() => props.handleAttendance(Object.values(state))}
+            onClick={() => {
+              props.handleAttendance(Object.values(state), {
+                teacher: props.teacherId,
+                option_id: props.optionId,
+              });
+              setShowReservations(false);
+            }}
           >
             Send
           </Button>
@@ -179,6 +198,8 @@ export const GET_RESERVATIONS = gql`
     teacher(id: $teacher) {
       name
       options {
+        id
+        teacher_id
         time
         day
         workshop
@@ -200,8 +221,11 @@ export const GET_RESERVATIONS = gql`
 `;
 
 export const SAVE_ATTENDANCE = gql`
-  mutation saveAttendance($students: [AttendingStudent!]) {
-    saveWorkshopsAttendance(input: $students) {
+  mutation saveAttendance(
+    $students: [AttendingStudent!]
+    $workshopInfo: SavedAttendanceWorkshopInfo!
+  ) {
+    saveWorkshopsAttendance(input: $students, workshop: $workshopInfo) {
       success
     }
   }

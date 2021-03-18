@@ -50,6 +50,7 @@ type Workshop = {
 type Option = {
   id: string;
   teacher: string;
+  teacher_id: string;
   time: string;
   day: "lunes" | "martes" | "miercoles" | "jueves";
   url: string;
