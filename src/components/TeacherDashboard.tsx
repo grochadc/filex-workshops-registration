@@ -59,6 +59,11 @@ const Dashboard: React.FC<any> = () => {
           handleAttendance={handleAttendance}
         />
       ))}
+      <Row>
+        <a href="https://docs.google.com/spreadsheets/d/1AezhkIpOJ-rWg88jGbZb89DI2aSRtRTD4hlQcVF2thQ/edit#gid=0">
+          Attendance in Google Sheets
+        </a>
+      </Row>
     </Container>
   );
 };
