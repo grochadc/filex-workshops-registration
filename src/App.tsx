@@ -4,6 +4,7 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Home from "./components/Home";
 import Selection from "./components/Selection";
 import Success from "./components/Success";
+import TeacherDashboard from "./components/TeacherDashboard";
 import Dashboard from "./components/Dashboard";
 import TeacherSelector from "./components/TeacherSelector";
 
@@ -30,6 +31,9 @@ function App() {
           <Success reservationResponse={reservationResponse} />
         </Route>
         <Route path="/dashboard/:teacher">
+          <TeacherDashboard />
+        </Route>
+        <Route path="/dashboard">
           <Dashboard />
         </Route>
         <Route path="/teachers">
