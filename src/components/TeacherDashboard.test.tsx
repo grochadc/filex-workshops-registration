@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Switch, Route } from "react-router-dom";
 import { renderWithProviders } from "../testutils";
 import { getReservationsMock, saveAttendanceMock } from "../testutils/mocks";
-import Dashboard from "./Dashboard";
+import Dashboard from "./TeacherDashboard";
 
 test("Dashboard", async () => {
   renderWithProviders(
