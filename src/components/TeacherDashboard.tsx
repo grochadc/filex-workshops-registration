@@ -44,15 +44,12 @@ const Dashboard: React.FC<any> = () => {
       </Row>
       {data.teacher.options.map((option: Option, index: number) => (
         <WorkshopAttendance
+          {...option}
           key={index}
-          url={option.url}
           name={option.workshop}
-          workshop={option.workshop}
           optionId={option.id}
           teacherId={option.teacher_id}
           teacher={data.teacher.name}
-          day={option.day}
-          time={option.time}
           reservations={data.teacher.reservations.filter(
             (reservation: ReservationWithOptionObj) =>
               reservation.option.day === option.day
