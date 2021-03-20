@@ -1,9 +1,9 @@
 import React, { useReducer } from "react";
 import { useParams } from "react-router-dom";
-import Form from "react-bootstrap/Form";
 import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { capitalizeString } from "../utils/lib";
@@ -45,6 +45,7 @@ const Dashboard: React.FC<any> = () => {
       {data.teacher.options.map((option: Option, index: number) => (
         <WorkshopAttendance
           key={index}
+          url={option.url}
           name={option.workshop}
           workshop={option.workshop}
           optionId={option.id}
@@ -83,6 +84,7 @@ interface ReducerState {
 
 interface WorkshopAttendanceProps {
   name: string;
+  url: string;
   optionId: string;
   teacherId: string;
   day: string;
@@ -96,6 +98,14 @@ interface WorkshopAttendanceProps {
   ) => any;
 }
 const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
+  const [workshopUrl, setWorkshopUrl] = React.useState(props.url);
+  const [buttonLoading, setButtonLoading] = React.useState(false);
+  const [saveWorkshopUrl] = useMutation(SAVE_WORKSHOP_URL, {
+    onCompleted: () => {
+      alert("Url saved successfully");
+      setButtonLoading(false);
+    },
+  });
   const [showReservations, setShowReservations] = React.useState(true);
   const reducer = (state: ReducerState, action: ReducerAction) => {
     const targetProp = action.payload;
@@ -131,13 +141,42 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
 
   const initialState = toObjWithIds(reservations, "codigo");
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log("state", initialState);
   return (
     <Row>
       <Col>
         <h5>
           {props.name}: {capitalizeString(props.day)} {props.time}
         </h5>
+        <Form.Group>
+          <Row>
+            <Form.Label>Link:</Form.Label>
+            <Col>
+              <Form.Control
+                id="workshop-url"
+                type="text"
+                value={workshopUrl}
+                onChange={(e) => setWorkshopUrl(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setButtonLoading(true);
+                  saveWorkshopUrl({
+                    variables: {
+                      option_id: props.optionId,
+                      teacher_id: props.teacherId,
+                      link: workshopUrl,
+                    },
+                  });
+                }}
+              >
+                {buttonLoading ? <>Guardando...</> : <>Guardar</>}
+              </Button>
+            </Col>
+          </Row>
+        </Form.Group>
         <Form.Group>
           <Table striped bordered size="sm">
             <thead>
@@ -190,13 +229,23 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
               setShowReservations(false);
             }}
           >
-            Send
+            Save Attendance
           </Button>
         </Form.Group>
       </Col>
     </Row>
   );
 };
+
+export const SAVE_WORKSHOP_URL = gql`
+  mutation saveWorkshopUrl(
+    $option_id: String!
+    $teacher_id: String!
+    $link: String!
+  ) {
+    setWorkshopLink(option_id: $option_id, teacher_id: $teacher_id, link: $link)
+  }
+`;
 
 export const GET_RESERVATIONS = gql`
   query reservationsList($teacher: ID!) {
@@ -208,6 +257,7 @@ export const GET_RESERVATIONS = gql`
         time
         day
         workshop
+        url
       }
       reservations {
         codigo
