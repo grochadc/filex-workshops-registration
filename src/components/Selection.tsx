@@ -21,7 +21,7 @@ type SelectionForModal = {
 type SelectionProps = {
   setReservation: React.Dispatch<any>;
 };
-const Selection: React.FC<SelectionProps> = (props) => {
+const Selection = (props: SelectionProps) => {
   const params: { code: string } = useParams();
   const history = useHistory();
   const { data, loading, error } = useQuery(GET_STUDENT, {
@@ -76,112 +76,155 @@ const Selection: React.FC<SelectionProps> = (props) => {
           .filter(({ levels }: { levels: number[] }) =>
             levels.includes(data.student.nivel)
           )
-          .map((workshop: Workshop, workshopIndex: number) => {
-            const eventKey = workshopIndex.toString();
-            return (
-              <Accordion key={workshopIndex}>
-                <Card className="text-center p-3">
-                  <Accordion.Toggle eventKey={eventKey} as={Button}>
-                    {workshop.name}
-                  </Accordion.Toggle>
-                  {workshop.description}
-                </Card>
-                <Accordion.Collapse eventKey={eventKey}>
-                  <Container>
-                    <Row>
-                      {workshop.options.map((option, optionIndex) => {
-                        return (
-                          <Col className="mb-3" key={optionIndex}>
-                            <Card
-                              as="a"
-                              style={optionCardStyles}
-                              className="text-center pt-3"
-                            >
-                              <Card.Title
-                                className={option.available ? "" : "text-muted"}
-                              >
-                                Teacher {capitalizeString(option.teacher)}
-                              </Card.Title>
-                              <Card.Subtitle
-                                className={option.available ? "" : "text-muted"}
-                              >
-                                {capitalizeString(option.day)}
-                              </Card.Subtitle>
-                              <Card.Body
-                                className={option.available ? "" : "text-muted"}
-                              >
-                                {option.time}
-                                {option.available ? (
-                                  <p>
-                                    <Button
-                                      onClick={() => {
-                                        const workshopSelection: Selected = {
-                                          codigo: data.student.codigo,
-                                          option_id: option.id,
-                                        };
-                                        handleWorkshopSelection(
-                                          workshopSelection
-                                        );
-                                      }}
-                                    >
-                                      Reservar
-                                    </Button>
-                                  </p>
-                                ) : (
-                                  <Alert variant="danger">
-                                    Lugares no disponibles
-                                  </Alert>
-                                )}
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        );
-                      })}
-                    </Row>
-                  </Container>
-                </Accordion.Collapse>
-              </Accordion>
-            );
-          })}
+          .map((workshop: Workshop, workshopIndex: number) => (
+            <WorkshopSelector
+              workshop={workshop}
+              index={workshopIndex}
+              handleWorkshopSelection={handleWorkshopSelection}
+              student={data.student}
+            />
+          ))}
       </div>
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Seleccionaste la opcion:</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectionForModal ? (
-            <>
-              <p>
-                <strong>Taller:</strong>{" "}
-                <em>{capitalizeString(selectionForModal.workshop)}</em>
-              </p>
-              <p>
-                <strong>Teacher:</strong>{" "}
-                <em>{capitalizeString(selectionForModal.teacher)}</em>
-              </p>
-              <p>
-                <strong>Horario:</strong> <em>{selectionForModal.time}</em>
-              </p>
-              <p>
-                <strong>Dia:</strong>{" "}
-                <em>{capitalizeString(selectionForModal.day)}</em>
-              </p>
-            </>
-          ) : null}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => handleSubmit(workshopSelection)}
-          >
-            Reservar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <SelectionModal
+        handleCloseModal={handleCloseModal}
+        handleSubmit={handleSubmit}
+        show={showModal}
+        selectionForModal={selectionForModal}
+        workshopSelection={workshopSelection}
+      />
     </Container>
+  );
+};
+
+type SelectionModalProps = {
+  handleCloseModal: () => void;
+  handleSubmit: (selection: any) => void;
+  show: boolean;
+  selectionForModal: SelectionForModal | undefined;
+  workshopSelection: any;
+};
+const SelectionModal = ({
+  show,
+  selectionForModal,
+  handleCloseModal,
+  workshopSelection,
+  handleSubmit,
+}: SelectionModalProps) => {
+  return (
+    <Modal show={show} onHide={handleCloseModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Seleccionaste la opcion:</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {selectionForModal ? (
+          <>
+            <p>
+              <strong>Taller:</strong>{" "}
+              <em>{capitalizeString(selectionForModal.workshop)}</em>
+            </p>
+            <p>
+              <strong>Teacher:</strong>{" "}
+              <em>{capitalizeString(selectionForModal.teacher)}</em>
+            </p>
+            <p>
+              <strong>Horario:</strong> <em>{selectionForModal.time}</em>
+            </p>
+            <p>
+              <strong>Dia:</strong>{" "}
+              <em>{capitalizeString(selectionForModal.day)}</em>
+            </p>
+          </>
+        ) : null}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseModal}>
+          Cancelar
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => handleSubmit(workshopSelection)}
+        >
+          Reservar
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+type WorkshopSelectorProps = {
+  workshop: Workshop;
+  index: number;
+  student: Student;
+  handleWorkshopSelection: (selection: Selected) => void;
+};
+const WorkshopSelector = ({
+  workshop,
+  index,
+  student,
+  handleWorkshopSelection,
+}: WorkshopSelectorProps) => {
+  const eventKey = index.toString();
+  return (
+    <Accordion key={index}>
+      <Card className="text-center p-3">
+        <Accordion.Toggle eventKey={eventKey} as={Button}>
+          {workshop.name}
+        </Accordion.Toggle>
+        {workshop.description}
+      </Card>
+      <Accordion.Collapse eventKey={eventKey}>
+        <Container>
+          <Row>
+            {workshop.options
+              .filter((workshop) => workshop.day !== "jueves")
+              .map((option, optionIndex) => {
+                return (
+                  <Col className="mb-3" key={optionIndex}>
+                    <Card
+                      as="a"
+                      style={optionCardStyles}
+                      className="text-center pt-3"
+                    >
+                      <Card.Title
+                        className={option.available ? "" : "text-muted"}
+                      >
+                        Teacher {capitalizeString(option.teacher)}
+                      </Card.Title>
+                      <Card.Subtitle
+                        className={option.available ? "" : "text-muted"}
+                      >
+                        {capitalizeString(option.day)}
+                      </Card.Subtitle>
+                      <Card.Body
+                        className={option.available ? "" : "text-muted"}
+                      >
+                        {option.time}
+                        {option.available ? (
+                          <p>
+                            <Button
+                              onClick={() => {
+                                const workshopSelection: Selected = {
+                                  codigo: student.codigo,
+                                  option_id: option.id,
+                                };
+                                handleWorkshopSelection(workshopSelection);
+                              }}
+                            >
+                              Reservar
+                            </Button>
+                          </p>
+                        ) : (
+                          <Alert variant="danger">Lugares no disponibles</Alert>
+                        )}
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                );
+              })}
+          </Row>
+        </Container>
+      </Accordion.Collapse>
+    </Accordion>
   );
 };
 
