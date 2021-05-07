@@ -176,7 +176,7 @@ const WorkshopSelector = ({
         <Container>
           <Row>
             {workshop.options
-              .filter((workshop) => workshop.day !== "jueves")
+   
               .map((option, optionIndex) => {
                 return (
                   <Col className="mb-3" key={optionIndex}>
