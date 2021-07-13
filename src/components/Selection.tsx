@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -20,6 +20,7 @@ type SelectionForModal = {
 
 type SelectionProps = {
   setReservation: React.Dispatch<any>;
+  setReservationDetails: React.Dispatch<any>;
 };
 const Selection = (props: SelectionProps) => {
   const params: { code: string } = useParams();
@@ -60,6 +61,9 @@ const Selection = (props: SelectionProps) => {
     makeReservationMutation({ variables: { codigo, option_id } });
     history.push("/success");
   };
+  if (data?.studentReservation) {
+    props.setReservationDetails(data.studentReservation);
+  }
 
   if (error)
     return (
@@ -72,6 +76,12 @@ const Selection = (props: SelectionProps) => {
     <Container>
       <div>
         <>Hola {data.student.nombre}!</>
+        {data.studentReservation ? (
+          <Alert variant="primary">
+            Ya cuentas con una reservación.{" "}
+            <Link to="/details">Revisar detalles</Link>
+          </Alert>
+        ) : null}
         {data.workshops
           .filter(({ levels }: { levels: number[] }) =>
             levels.includes(data.student.nivel)
@@ -175,52 +185,48 @@ const WorkshopSelector = ({
       <Accordion.Collapse eventKey={eventKey}>
         <Container>
           <Row>
-            {workshop.options
-   
-              .map((option, optionIndex) => {
-                return (
-                  <Col className="mb-3" key={optionIndex}>
-                    <Card
-                      as="a"
-                      style={optionCardStyles}
-                      className="text-center pt-3"
+            {workshop.options.map((option, optionIndex) => {
+              return (
+                <Col className="mb-3" key={optionIndex}>
+                  <Card
+                    as="a"
+                    style={optionCardStyles}
+                    className="text-center pt-3"
+                  >
+                    <Card.Title
+                      className={option.available ? "" : "text-muted"}
                     >
-                      <Card.Title
-                        className={option.available ? "" : "text-muted"}
-                      >
-                        Teacher {capitalizeString(option.teacher)}
-                      </Card.Title>
-                      <Card.Subtitle
-                        className={option.available ? "" : "text-muted"}
-                      >
-                        {capitalizeString(option.day)}
-                      </Card.Subtitle>
-                      <Card.Body
-                        className={option.available ? "" : "text-muted"}
-                      >
-                        {option.time}
-                        {option.available ? (
-                          <p>
-                            <Button
-                              onClick={() => {
-                                const workshopSelection: Selected = {
-                                  codigo: student.codigo,
-                                  option_id: option.id,
-                                };
-                                handleWorkshopSelection(workshopSelection);
-                              }}
-                            >
-                              Reservar
-                            </Button>
-                          </p>
-                        ) : (
-                          <Alert variant="danger">Lugares no disponibles</Alert>
-                        )}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                );
-              })}
+                      Teacher {capitalizeString(option.teacher)}
+                    </Card.Title>
+                    <Card.Subtitle
+                      className={option.available ? "" : "text-muted"}
+                    >
+                      {capitalizeString(option.day)}
+                    </Card.Subtitle>
+                    <Card.Body className={option.available ? "" : "text-muted"}>
+                      {option.time}
+                      {option.available ? (
+                        <p>
+                          <Button
+                            onClick={() => {
+                              const workshopSelection: Selected = {
+                                codigo: student.codigo,
+                                option_id: option.id,
+                              };
+                              handleWorkshopSelection(workshopSelection);
+                            }}
+                          >
+                            Reservar
+                          </Button>
+                        </p>
+                      ) : (
+                        <Alert variant="danger">Lugares no disponibles</Alert>
+                      )}
+                    </Card.Body>
+                  </Card>
+                </Col>
+              );
+            })}
           </Row>
         </Container>
       </Accordion.Collapse>
@@ -234,6 +240,14 @@ export const GET_STUDENT = gql`
       codigo
       nombre
       nivel
+    }
+    studentReservation(codigo: $code) {
+      workshopName
+      day
+      time
+      teacher
+      url
+      zoom_id
     }
     workshops {
       name

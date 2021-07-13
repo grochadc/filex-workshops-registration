@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { ReservationDetailsCard } from "./utils";
 
 type SuccessProps = {
   reservationResponse: any;
@@ -10,25 +12,22 @@ const Success: React.FC<SuccessProps> = ({ reservationResponse }) => {
       <p>
         {reservationResponse.makeWorkshopReservation.alreadyRegistered ? (
           <>
-            Ya te habías registrado a ese taller. Aquí tienes toda la
-            informacion:
+            Ya te habías registrado a este taller. Consulta la informacion de tu
+            taller <Link to="/details">aquí</Link>
           </>
         ) : (
           <>Reservación realizada con exito!</>
         )}
       </p>
-      <p>ID de Reservacion: {reservationResponse.makeWorkshopReservation.id}</p>
-      <p>Codigo: {reservationResponse.makeWorkshopReservation.codigo}</p>
-      <p>Nombre: {reservationResponse.makeWorkshopReservation.nombre}</p>
-      <p>Hora: {reservationResponse.makeWorkshopReservation.timestamp}</p>
-      <p>
-        URL del taller:{" "}
-        <a href={reservationResponse.makeWorkshopReservation.url}>
-          {reservationResponse.makeWorkshopReservation.url}
-        </a>
-      </p>
-      {reservationResponse.makeWorkshopReservation.zoom_id && (
-        <p>Zoom ID: {reservationResponse.makeWorkshopReservation.zoom_id}</p>
+
+      {reservationResponse.makeWorkshopReservation.alreadyRegistered ? null : (
+        <ReservationDetailsCard
+          workshopName={"somename"}
+          teacher={"someteacher"}
+          day={"anyday"}
+          time={"notime"}
+          url={reservationResponse.makeWorkshopReservation.url}
+        />
       )}
     </div>
   );
