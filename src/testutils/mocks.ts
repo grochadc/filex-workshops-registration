@@ -1,42 +1,9 @@
 import {
-  GET_STUDENT,
   MAKE_RESERVATION,
   GET_RESERVATIONS,
   SAVE_ATTENDANCE,
+  GET_STUDENT,
 } from "../queries";
-
-export const getStudentMock: Mock = {
-  request: { query: GET_STUDENT, variables: { code: "1234567890" } },
-  result: {
-    data: {
-      student: {
-        codigo: "1234567890",
-        nombre: "Benito Antonio",
-        nivel: "4",
-      },
-      workshops: [
-        {
-          name: "Conversation",
-          description:
-            "El alumno se expresa oralmente utilizando las funciones comunicativas y vocabulario adquirido, mejorar la fluidez, y perder el temor a hablar.",
-          levels: ["1", "2", "3", "4", "5", "6"],
-          options: [
-            {
-              id: "alondralunes",
-              day: "lunes",
-              time: "13:00 - 14:00",
-              teacher: "Alondra",
-              workshop: "Conversation",
-              url: "https://meet.google.com/lookup/fnms6k7cad",
-              zoom_id: null,
-              available: true,
-            },
-          ],
-        },
-      ],
-    },
-  },
-};
 
 export const makeReservationMock: Mock = {
   request: {
@@ -113,5 +80,40 @@ export const saveAttendanceMock: Mock = {
   },
   result: {
     data: { saveWorkshopsAttendance: { success: true } },
+  },
+};
+
+export const getStudentMock: Mock = {
+  request: { query: GET_STUDENT, variables: { code: "1234567890" } },
+  result: {
+    data: {
+      student: {
+        codigo: "1234567890",
+        nombre: "BENITO ANTONIO",
+        nivel: "4",
+      },
+      studentReservation: null,
+      workshops: [
+        {
+          name: "Conversation",
+          description:
+            "El alumno se expresa oralmente utilizando las funciones comunicativas y vocabulario adquirido, mejorar la fluidez, y perder el temor a hablar.",
+          levels: ["1", "2", "3", "4", "5", "6"],
+          options: [
+            {
+              id: "brendalunes",
+              day: "lunes",
+              time: "12:00 - 13:00",
+              teacher: "Brenda",
+              workshop: "Conversation",
+              url:
+                "https://us04web.zoom.us/j/77370162343?pwd=VFpCS2xqejF1blJvY2t4OWk1c3RtQT09",
+              zoom_id: null,
+              available: true,
+            },
+          ],
+        },
+      ],
+    },
   },
 };

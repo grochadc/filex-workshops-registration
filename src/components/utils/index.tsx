@@ -28,7 +28,10 @@ const ReservationDetailsCard = ({
           <b>Horario:</b> {day} {time}
         </p>
         <p>
-          <b>Link:</b> <a href={url}>{url}</a>
+          <b>Link:</b>{" "}
+          <a data-testid="reservation-anchor" href={url}>
+            {url}
+          </a>
         </p>
       </Card.Body>
     </Card>
