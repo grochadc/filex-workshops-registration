@@ -88,6 +88,7 @@ const Selection = (props: SelectionProps) => {
           )
           .map((workshop: Workshop, workshopIndex: number) => (
             <WorkshopSelector
+              key={workshopIndex}
               workshop={workshop}
               index={workshopIndex}
               handleWorkshopSelection={handleWorkshopSelection}
@@ -151,6 +152,7 @@ const SelectionModal = ({
           Cancelar
         </Button>
         <Button
+          data-testid="modal-reservar-button"
           variant="primary"
           onClick={() => handleSubmit(workshopSelection)}
         >
@@ -215,6 +217,7 @@ const WorkshopSelector = ({
                               };
                               handleWorkshopSelection(workshopSelection);
                             }}
+                            data-testid={`button-reservar-${option.id}`}
                           >
                             Reservar
                           </Button>
@@ -273,6 +276,9 @@ export const MAKE_RESERVATION = gql`
       timestamp
       codigo
       nombre
+      teacher
+      day
+      time
       url
       zoom_id
       alreadyRegistered
