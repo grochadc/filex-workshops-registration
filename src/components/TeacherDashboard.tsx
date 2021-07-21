@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Alert from "react-bootstrap/Alert";
 import { capitalizeString } from "../utils/lib";
 import { useQuery, useMutation, gql } from "@apollo/client";
 
@@ -25,14 +26,14 @@ const Dashboard: React.FC<any> = () => {
   const { data, loading, error } = useQuery(GET_RESERVATIONS, {
     variables: { teacher },
   });
+  const [succesfulReservation, setSuccessfulReservation] = useState(false);
   const [saveAttendance] = useMutation(SAVE_ATTENDANCE, {
-    onCompleted: () => alert("Attendance was saved successfully"),
+    onCompleted: () => setSuccessfulReservation(true),
   });
   const handleAttendance = (
     students: Attendance[],
     workshopInfo: { teacher: string; option_id: string }
   ) => {
-    console.log("students", students);
     saveAttendance({ variables: { students, workshopInfo } });
   };
   if (loading) return <p>Loading...</p>;
@@ -55,6 +56,7 @@ const Dashboard: React.FC<any> = () => {
               reservation.option.day === option.day
           )}
           handleAttendance={handleAttendance}
+          succesfulReservation={succesfulReservation}
         />
       ))}
       <Row>
@@ -93,6 +95,7 @@ interface WorkshopAttendanceProps {
     info: any,
     workshop: { teacher: string; option_id: string }
   ) => any;
+  succesfulReservation: boolean;
 }
 const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
   const [workshopUrl, setWorkshopUrl] = React.useState(props.url);
@@ -171,6 +174,12 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
               >
                 {buttonLoading ? <>Guardando...</> : <>Guardar</>}
               </Button>
+              {props.succesfulReservation ? (
+                <>
+                  <br />
+                  <Alert variant="success">Attendance saved successfuly!</Alert>
+                </>
+              ) : null}
             </Col>
           </Row>
         </Form.Group>
