@@ -8,7 +8,6 @@ import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useModal } from "../hooks";
 import { useQuery, useMutation, gql } from "@apollo/client";
 
 type SelectionForModal = {
@@ -33,21 +32,18 @@ const Selection = (props: SelectionProps) => {
       props.setReservation(data);
     },
   });
-  const [workshopSelection, setWorkshopSelection] = useState<Selected>({
-    codigo: "",
-    option_id: "",
-  });
   const [selectionForModal, setSelectionForModal] = useState<
     SelectionForModal | undefined
   >(undefined);
-  const { showModal, handleCloseModal, handleShowModal } = useModal();
-  const handleWorkshopSelection = (selection: Selected) => {
-    setWorkshopSelection(selection);
+  const [showModal, setShowModal] = useState(false);
+  const [selectionId, setSelectionId] = useState("");
+  const selectWorkshop = (selectionId: string) => {
+    setSelectionId(selectionId);
     const options = data.workshops
       .map((workshop: Workshop) => workshop.options)
       .flat();
     const selectedOption = options.filter(
-      (option: Option) => option.id === selection.option_id
+      (option: Option) => option.id === selectionId
     )[0];
     setSelectionForModal({
       workshop: selectedOption.workshop,
@@ -55,10 +51,12 @@ const Selection = (props: SelectionProps) => {
       day: selectedOption.day,
       time: selectedOption.time,
     });
-    handleShowModal();
+    setShowModal(true);
   };
-  const handleSubmit = ({ codigo, option_id }: Selected) => {
-    makeReservationMutation({ variables: { codigo, option_id } });
+  const handleReservationConfirmation = () => {
+    makeReservationMutation({
+      variables: { codigo: params.code, option_id: selectionId },
+    });
     history.push("/success");
   };
   if (data?.studentReservation) {
@@ -91,17 +89,16 @@ const Selection = (props: SelectionProps) => {
               key={workshopIndex}
               workshop={workshop}
               index={workshopIndex}
-              handleWorkshopSelection={handleWorkshopSelection}
+              selectWorkshop={selectWorkshop}
               student={data.student}
             />
           ))}
       </div>
       <SelectionModal
-        handleCloseModal={handleCloseModal}
-        handleSubmit={handleSubmit}
         show={showModal}
+        handleCloseModal={() => setShowModal(false)}
+        handleReservationConfirmation={handleReservationConfirmation}
         selectionForModal={selectionForModal}
-        workshopSelection={workshopSelection}
       />
     </Container>
   );
@@ -109,52 +106,45 @@ const Selection = (props: SelectionProps) => {
 
 type SelectionModalProps = {
   handleCloseModal: () => void;
-  handleSubmit: (selection: any) => void;
+  handleReservationConfirmation: () => void;
   show: boolean;
   selectionForModal: SelectionForModal | undefined;
-  workshopSelection: any;
 };
-const SelectionModal = ({
-  show,
-  selectionForModal,
-  handleCloseModal,
-  workshopSelection,
-  handleSubmit,
-}: SelectionModalProps) => {
+export const SelectionModal = (props: SelectionModalProps) => {
   return (
-    <Modal show={show} onHide={handleCloseModal}>
+    <Modal show={props.show} onHide={props.handleCloseModal}>
       <Modal.Header closeButton>
         <Modal.Title>Seleccionaste la opcion:</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {selectionForModal ? (
+        {props.selectionForModal ? (
           <>
             <p>
               <strong>Taller:</strong>{" "}
-              <em>{capitalizeString(selectionForModal.workshop)}</em>
+              <em>{capitalizeString(props.selectionForModal.workshop)}</em>
             </p>
             <p>
               <strong>Teacher:</strong>{" "}
-              <em>{capitalizeString(selectionForModal.teacher)}</em>
+              <em>{capitalizeString(props.selectionForModal.teacher)}</em>
             </p>
             <p>
-              <strong>Horario:</strong> <em>{selectionForModal.time}</em>
+              <strong>Horario:</strong> <em>{props.selectionForModal.time}</em>
             </p>
             <p>
               <strong>Dia:</strong>{" "}
-              <em>{capitalizeString(selectionForModal.day)}</em>
+              <em>{capitalizeString(props.selectionForModal.day)}</em>
             </p>
           </>
         ) : null}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseModal}>
+        <Button variant="secondary" onClick={props.handleCloseModal}>
           Cancelar
         </Button>
         <Button
           data-testid="modal-reservar-button"
           variant="primary"
-          onClick={() => handleSubmit(workshopSelection)}
+          onClick={() => props.handleReservationConfirmation()}
         >
           Reservar
         </Button>
@@ -167,13 +157,13 @@ type WorkshopSelectorProps = {
   workshop: Workshop;
   index: number;
   student: Student;
-  handleWorkshopSelection: (selection: Selected) => void;
+  selectWorkshop: (selectionId: string) => void;
 };
-const WorkshopSelector = ({
+export const WorkshopSelector = ({
   workshop,
   index,
   student,
-  handleWorkshopSelection,
+  selectWorkshop,
 }: WorkshopSelectorProps) => {
   const eventKey = index.toString();
   return (
@@ -211,11 +201,7 @@ const WorkshopSelector = ({
                         <p>
                           <Button
                             onClick={() => {
-                              const workshopSelection: Selected = {
-                                codigo: student.codigo,
-                                option_id: option.id,
-                              };
-                              handleWorkshopSelection(workshopSelection);
+                              selectWorkshop(option.id);
                             }}
                             data-testid={`button-reservar-${option.id}`}
                           >
