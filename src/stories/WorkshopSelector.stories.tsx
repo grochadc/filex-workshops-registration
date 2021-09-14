@@ -16,6 +16,8 @@ const Template: ComponentStory<typeof WorkshopSelector> = (args) => (
 
 export const Normal = Template.bind({});
 Normal.args = {
+  selectWorkshop: (selectionId: string, teacher_id: string) =>
+    console.log("selectionId", selectionId, "teacher_id", teacher_id),
   index: 0,
   student: {
     id: "1234567890",

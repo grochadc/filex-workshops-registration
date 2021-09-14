@@ -17,7 +17,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^7.21.0",
     "formik": "^2.1.5",
-    "graphql": "^15.3.0",
+    "graphql": "^15.5.2",
     "json-server": "^0.16.1",
     "mutation-observer": "^1.0.3",
     "mutationobserver-shim": "^0.3.7",
@@ -40,7 +40,9 @@
     "eject": "react-scripts eject",
     "json-server": "json-server --watch db.json --port 5000",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "generate": "graphql-codegen --config codegen.yml",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "proxy": "http://localhost:5000",
   "eslintConfig": {
@@ -69,6 +71,11 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.1.1",
+    "@graphql-codegen/introspection": "2.1.0",
+    "@graphql-codegen/typescript": "2.1.2",
+    "@graphql-codegen/typescript-operations": "2.1.2",
+    "@graphql-codegen/typescript-react-apollo": "3.1.2",
     "@storybook/addon-actions": "^6.3.4",
     "@storybook/addon-essentials": "^6.3.4",
     "@storybook/addon-links": "^6.3.4",
@@ -76,8 +83,10 @@
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.3.4",
     "@testing-library/dom": "^7.24.2",
+    "apollo-typed-documents": "^2.0.0",
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.11.0",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "storybook-addon-apollo-client": "^4.0.9"
   }
 }

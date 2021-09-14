@@ -7,12 +7,6 @@ type SuccessProps = {
 };
 
 const Success: React.FC<SuccessProps> = ({ reservationResponse }) => {
-  const {
-    teacher,
-    day,
-    time,
-    url,
-  } = reservationResponse.makeWorkshopReservation;
   return (
     <div>
       <p>
@@ -28,11 +22,7 @@ const Success: React.FC<SuccessProps> = ({ reservationResponse }) => {
 
       {reservationResponse.makeWorkshopReservation.alreadyRegistered ? null : (
         <ReservationDetailsCard
-          workshopName={"noname"}
-          teacher={teacher}
-          day={day}
-          time={time}
-          url={url}
+          {...reservationResponse.makeWorkshopReservation}
         />
       )}
     </div>

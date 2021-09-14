@@ -8,7 +8,12 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
 import { capitalizeString } from "../utils/lib";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import {
+  GET_RESERVATIONS,
+  SAVE_ATTENDANCE,
+  SAVE_WORKSHOP_URL,
+} from "../pages/TeacherPage";
 
 type ReservationWithOptionObj = Reservation & {
   timestamp: string;
@@ -242,54 +247,5 @@ const WorkshopAttendance: React.FC<WorkshopAttendanceProps> = (props) => {
     </Row>
   );
 };
-
-export const SAVE_WORKSHOP_URL = gql`
-  mutation saveWorkshopUrl(
-    $option_id: String!
-    $teacher_id: String!
-    $link: String!
-  ) {
-    setWorkshopLink(option_id: $option_id, teacher_id: $teacher_id, link: $link)
-  }
-`;
-
-export const GET_RESERVATIONS = gql`
-  query reservationsList($teacher: ID!) {
-    teacher(id: $teacher) {
-      name
-      options {
-        id
-        teacher_id
-        time
-        day
-        workshop
-        url
-      }
-      reservations {
-        codigo
-        nombre
-        apellido_paterno
-        apellido_materno
-        nivel
-        grupo
-        timestamp
-        option {
-          day
-        }
-      }
-    }
-  }
-`;
-
-export const SAVE_ATTENDANCE = gql`
-  mutation saveAttendance(
-    $students: [AttendingStudent!]
-    $workshopInfo: SavedAttendanceWorkshopInfo!
-  ) {
-    saveWorkshopsAttendance(input: $students, workshop: $workshopInfo) {
-      success
-    }
-  }
-`;
 
 export default Dashboard;

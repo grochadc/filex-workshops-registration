@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -8,89 +8,66 @@ import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { Workshop } from "../generated/grapqhl";
 
 type SelectionForModal = {
-  workshop: string;
-  teacher: string;
+  workshop_name: string;
+  teacher_name: string;
   day: string;
   time: string;
+  isTutorial: boolean;
 };
 
 type SelectionProps = {
-  setReservation: React.Dispatch<any>;
-  setReservationDetails: React.Dispatch<any>;
+  student: any;
+  workshops: Workshop[];
+  onReservation: (option_id: string, tutorial_reason?: string) => void;
 };
 const Selection = (props: SelectionProps) => {
-  const params: { code: string } = useParams();
-  const history = useHistory();
-  const { data, loading, error } = useQuery(GET_STUDENT, {
-    variables: { code: params.code },
+  const [selectionForModal, setSelectionForModal] = useState({
+    day: "",
+    time: "",
+    teacher_name: "",
+    workshop_name: "",
+    isTutorial: false,
   });
-  const [makeReservationMutation] = useMutation(MAKE_RESERVATION, {
-    onCompleted: (data) => {
-      props.setReservation(data);
-    },
-  });
-  const [selectionForModal, setSelectionForModal] = useState<
-    SelectionForModal | undefined
-  >(undefined);
   const [showModal, setShowModal] = useState(false);
-  const [selectionId, setSelectionId] = useState("");
+  const [selection, setSelection] = useState({ option_id: "", teacher_id: "" });
   const selectWorkshop = (selectionId: string) => {
-    setSelectionId(selectionId);
-    const options = data.workshops
-      .map((workshop: Workshop) => workshop.options)
-      .flat();
+    const options = props.workshops.map((workshop) => workshop.options).flat();
     const selectedOption = options.filter(
-      (option: Option) => option.id === selectionId
+      (option) => option.id === selectionId
     )[0];
-    setSelectionForModal({
-      workshop: selectedOption.workshop,
-      teacher: selectedOption.teacher,
-      day: selectedOption.day,
-      time: selectedOption.time,
+
+    setSelection({
+      option_id: selectionId,
+      teacher_id: selectedOption.teacher_id,
     });
+    setSelectionForModal(selectedOption);
     setShowModal(true);
   };
-  const handleReservationConfirmation = () => {
-    makeReservationMutation({
-      variables: { codigo: params.code, option_id: selectionId },
-    });
-    history.push("/success");
+  const handleReservationConfirmation = (tutorial_reason?: string) => {
+    props.onReservation(selection.option_id, tutorial_reason);
   };
-  if (data?.studentReservation) {
-    props.setReservationDetails(data.studentReservation);
-  }
-
-  if (error)
-    return (
-      <p>
-        <h1>This is the code {params.code}</h1>Error: {JSON.stringify(error)}
-      </p>
-    );
-  if (loading) return <p>Loading...</p>;
   return (
     <Container>
       <div>
-        <>Hola {data.student.nombre}!</>
-        {data.studentReservation ? (
+        <>Hola {props.student.nombre}!</>
+        {props.student.reservation ? (
           <Alert variant="primary">
             Ya cuentas con una reservación.{" "}
             <Link to="/details">Revisar detalles</Link>
           </Alert>
         ) : null}
-        {data.workshops
-          .filter(({ levels }: { levels: number[] }) =>
-            levels.includes(data.student.nivel)
-          )
+        {props.workshops
+          .filter((workshop) => workshop.levels.includes(props.student.nivel))
           .map((workshop: Workshop, workshopIndex: number) => (
             <WorkshopSelector
               key={workshopIndex}
               workshop={workshop}
               index={workshopIndex}
               selectWorkshop={selectWorkshop}
-              student={data.student}
+              student={props.student}
             />
           ))}
       </div>
@@ -106,11 +83,12 @@ const Selection = (props: SelectionProps) => {
 
 type SelectionModalProps = {
   handleCloseModal: () => void;
-  handleReservationConfirmation: () => void;
+  handleReservationConfirmation: (tutorial_reason?: string) => void;
   show: boolean;
   selectionForModal: SelectionForModal | undefined;
 };
 export const SelectionModal = (props: SelectionModalProps) => {
+  const [tutorialReason, setTutorialReason] = useState("");
   return (
     <Modal show={props.show} onHide={props.handleCloseModal}>
       <Modal.Header closeButton>
@@ -121,21 +99,32 @@ export const SelectionModal = (props: SelectionModalProps) => {
           <>
             <p>
               <strong>Taller:</strong>{" "}
-              <em>{capitalizeString(props.selectionForModal.workshop)}</em>
+              <em>{props.selectionForModal.workshop_name}</em>
             </p>
             <p>
               <strong>Teacher:</strong>{" "}
-              <em>{capitalizeString(props.selectionForModal.teacher)}</em>
+              <em>{props.selectionForModal.teacher_name}</em>
             </p>
             <p>
               <strong>Horario:</strong> <em>{props.selectionForModal.time}</em>
             </p>
             <p>
-              <strong>Dia:</strong>{" "}
-              <em>{capitalizeString(props.selectionForModal.day)}</em>
+              <strong>Dia:</strong> <em>{props.selectionForModal.day}</em>
             </p>
+            {props.selectionForModal.isTutorial ? (
+              <p>
+                ¿En que tema necesitas ayuda? <br />
+                <input
+                  type="text"
+                  value={tutorialReason}
+                  onChange={({ target }) => setTutorialReason(target.value)}
+                />
+              </p>
+            ) : null}
           </>
-        ) : null}
+        ) : (
+          "No has seleccionado una opcion"
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={props.handleCloseModal}>
@@ -144,7 +133,11 @@ export const SelectionModal = (props: SelectionModalProps) => {
         <Button
           data-testid="modal-reservar-button"
           variant="primary"
-          onClick={() => props.handleReservationConfirmation()}
+          onClick={() =>
+            props.handleReservationConfirmation(
+              tutorialReason.length > 0 ? tutorialReason : undefined
+            )
+          }
         >
           Reservar
         </Button>
@@ -154,15 +147,14 @@ export const SelectionModal = (props: SelectionModalProps) => {
 };
 
 type WorkshopSelectorProps = {
-  workshop: Workshop;
+  workshop: any;
   index: number;
   student: Student;
-  selectWorkshop: (selectionId: string) => void;
+  selectWorkshop: (selectionId: string, teacher_id: string) => void;
 };
 export const WorkshopSelector = ({
   workshop,
   index,
-  student,
   selectWorkshop,
 }: WorkshopSelectorProps) => {
   const eventKey = index.toString();
@@ -188,12 +180,12 @@ export const WorkshopSelector = ({
                     <Card.Title
                       className={option.available ? "" : "text-muted"}
                     >
-                      Teacher {capitalizeString(option.teacher)}
+                      Teacher {option.teacher_name}
                     </Card.Title>
                     <Card.Subtitle
                       className={option.available ? "" : "text-muted"}
                     >
-                      {capitalizeString(option.day)}
+                      {option.day}
                     </Card.Subtitle>
                     <Card.Body className={option.available ? "" : "text-muted"}>
                       {option.time}
@@ -201,7 +193,7 @@ export const WorkshopSelector = ({
                         <p>
                           <Button
                             onClick={() => {
-                              selectWorkshop(option.id);
+                              selectWorkshop(option.id, option.teacher_id);
                             }}
                             data-testid={`button-reservar-${option.id}`}
                           >
@@ -223,64 +215,11 @@ export const WorkshopSelector = ({
   );
 };
 
-export const GET_STUDENT = gql`
-  query getSelectionInfo($code: ID!) {
-    student(codigo: $code) {
-      codigo
-      nombre
-      nivel
-    }
-    studentReservation(codigo: $code) {
-      workshopName
-      day
-      time
-      teacher
-      url
-      zoom_id
-    }
-    workshops {
-      name
-      description
-      levels
-      options {
-        id
-        day
-        time
-        teacher
-        workshop
-        url
-        zoom_id
-        available
-      }
-    }
-  }
-`;
-export const MAKE_RESERVATION = gql`
-  mutation setReservation($codigo: ID!, $option_id: ID!) {
-    makeWorkshopReservation(input: { codigo: $codigo, option_id: $option_id }) {
-      id
-      timestamp
-      codigo
-      nombre
-      teacher
-      day
-      time
-      url
-      zoom_id
-      alreadyRegistered
-    }
-  }
-`;
-
 const optionCardStyles = {
   width: "18rem",
   cursor: "pointer",
   color: "black",
   textDecoration: "none",
-};
-
-const capitalizeString = (str: string) => {
-  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 };
 
 export default Selection;

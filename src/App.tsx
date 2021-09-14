@@ -2,31 +2,33 @@ import React, { useState } from "react";
 import { Switch, Route } from "react-router-dom";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Home from "./components/Home";
-import Selection from "./components/Selection";
+import SelectionPage from "./pages/SelectionPage";
 import Success from "./components/Success";
-import TeacherDashboard from "./components/TeacherDashboard";
+import TeacherPage from "./pages/TeacherPage";
 import Dashboard from "./components/Dashboard";
 import TeacherSelector from "./components/TeacherSelector";
 import ReservationDetails from "./components/ReservationDetails";
 
+const initialDetails = {
+  workshop_name: "",
+  day: "",
+  time: "",
+  teacher_name: "",
+  url: "",
+  zoom_id: null,
+};
+
+export type ReservationDetailsType = {
+  workshop_name: string;
+  day: string;
+  time: string;
+  teacher_name: string;
+  url: string;
+  zoom_id: string | null;
+};
+
 function App() {
-  const [reservationResponse, setReservationResponse] = useState({
-    makeWorkshopReservation: {
-      id: "",
-      timestamp: "",
-      codigo: "",
-      nombre: "",
-      url: "",
-    },
-  });
-  const [reservationDetails, setReservationDetails] = useState({
-    workshopName: "",
-    day: "",
-    time: "",
-    teacher: "",
-    url: "",
-    zoom_id: null,
-  });
+  const [reservationDetails, setReservationDetails] = useState(initialDetails);
   return (
     <div>
       <Jumbotron>
@@ -34,22 +36,19 @@ function App() {
       </Jumbotron>
       <Switch>
         <Route path="/selection/:code">
-          <Selection
-            setReservation={setReservationResponse}
-            setReservationDetails={setReservationDetails}
-          />
-        </Route>
-        <Route path="/success">
-          <Success reservationResponse={reservationResponse} />
+          <SelectionPage setReservationDetails={setReservationDetails} />
         </Route>
         <Route path="/dashboard/:teacher">
-          <TeacherDashboard />
+          <TeacherPage />
         </Route>
         <Route path="/dashboard">
           <Dashboard />
         </Route>
         <Route path="/teachers">
           <TeacherSelector />
+        </Route>
+        <Route path="/success">
+          <Success reservationResponse={reservationDetails} />
         </Route>
         <Route path="/details">
           <ReservationDetails reservationDetails={reservationDetails} />

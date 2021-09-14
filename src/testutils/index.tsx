@@ -9,7 +9,7 @@ const AllProviders = ({
   route,
 }: {
   children: any;
-  mocks: Mock[];
+  mocks: any[];
   route?: string;
 }) => {
   const defaultRoute = route ? route : "/";
@@ -22,7 +22,7 @@ const AllProviders = ({
 
 export const renderWithProviders = (
   ui: React.ReactElement,
-  { mocks, route }: { mocks: Mock[]; route?: string }
+  { mocks, route }: { mocks: any[]; route?: string }
 ) => {
   render(ui, {
     wrapper: (props: any) => (

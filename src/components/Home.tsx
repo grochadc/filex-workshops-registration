@@ -9,7 +9,20 @@ import { useHistory } from "react-router-dom";
 
 const Home: React.FC = () => {
   const history = useHistory();
+  const handleSubmit = (codigo: string) => {
+    history.push(`/selection/${codigo}`);
+  };
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 400px)" });
+  return (
+    <CodeForm onSubmit={handleSubmit} isTabletOrMobile={isTabletOrMobile} />
+  );
+};
+
+type CodeFormProps = {
+  onSubmit: (codigo: string) => void;
+  isTabletOrMobile: boolean;
+};
+export const CodeForm = (props: CodeFormProps) => {
   const formik = useFormik({
     initialValues: {
       code: "",
@@ -18,14 +31,14 @@ const Home: React.FC = () => {
       code: Yup.number().required("Required"),
     }),
     onSubmit: ({ code }) => {
-      history.push(`/selection/${code}`);
+      props.onSubmit(code);
     },
   });
   return (
     <div>
       <Form
         onSubmit={(e) => formik.handleSubmit(e as any)}
-        inline={isTabletOrMobile}
+        inline={props.isTabletOrMobile}
       >
         <Form.Group>
           <Form.Label htmlFor="code">Code:</Form.Label>
