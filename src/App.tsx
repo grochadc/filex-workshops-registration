@@ -8,6 +8,7 @@ import TeacherPage from "./pages/TeacherPage";
 import Dashboard from "./components/Dashboard";
 import TeacherSelector from "./components/TeacherSelector";
 import ReservationDetails from "./components/ReservationDetails";
+import TeacherSelectorPage from "./pages/TeacherSelectorPage";
 
 const initialDetails = {
   workshop_name: "",
@@ -38,8 +39,11 @@ function App() {
         <Route path="/selection/:code">
           <SelectionPage setReservationDetails={setReservationDetails} />
         </Route>
-        <Route path="/dashboard/:teacher">
+        <Route path="/teacher/:id">
           <TeacherPage />
+        </Route>
+        <Route path="/teachers">
+          <TeacherSelectorPage />
         </Route>
         <Route path="/dashboard">
           <Dashboard />
