@@ -80,6 +80,7 @@ const AttendanceTable = (props: AttendanceTableProps) => {
           </tr>
         </thead>
         <tbody>
+          {state.length === 0 ? <EmptyReservationsTable /> : null}
           {state.map((reservation, index) => {
             return (
               <tr key={reservation.id}>
@@ -118,5 +119,9 @@ const AttendanceTable = (props: AttendanceTableProps) => {
     </div>
   );
 };
+
+const EmptyReservationsTable = () => (
+  <div>There are no reservations for this workshop.</div>
+);
 
 export default AttendanceTable;

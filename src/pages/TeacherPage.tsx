@@ -3,6 +3,9 @@ import * as yup from "yup";
 import { gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { Loading, Error } from "../components/utils";
+import Accordion from "react-bootstrap/Accordion";
+import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
 import {
   useReservationsListQuery,
   useSaveAttendanceMutation,
@@ -117,29 +120,46 @@ const TeacherPage = () => {
   if (loading) return <Loading />;
   if (error) return <Error e={error} />;
   return (
-    <div>
+    <Container>
       <h1>Teacher {data?.teacher.name}'s Dashboard</h1>
-      {data?.teacher.options.map((option) => {
-        return (
-          <div key={option.id}>
-            <h4>
-              {option.workshop_name} {option.day} {option.time}
-            </h4>
-            <p>
-              Link: <a href={option.url}>{option.url}</a>
-            </p>
-            <AttendanceTable
-              reservations={option.reservations}
-              workshop_id={option.workshop_id}
-              option_id={option.id}
-              onSaveAttendance={handleSaveAttendance}
-              teacher={data?.teacher.name}
-              workshop={option.workshop_name}
-            />
-          </div>
-        );
-      })}
-    </div>
+      <Accordion>
+        {data?.teacher.options.map((option, index) => {
+          const eventKey = index.toString();
+          return (
+            <div key={option.id}>
+              <Accordion.Toggle eventKey={eventKey} as={Card}>
+                <Card.Body>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-around" }}
+                  >
+                    <div>
+                      <h4>{option.workshop_name}</h4>
+                      <h5>
+                        {option.day} {option.time}
+                      </h5>
+                      <p>
+                        Link: <a href={option.url}>{option.url}</a>
+                      </p>
+                    </div>
+                    <div>Click para Abrir/Cerrar</div>
+                  </div>
+                </Card.Body>
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey={eventKey}>
+                <AttendanceTable
+                  reservations={option.reservations}
+                  workshop_id={option.workshop_id}
+                  option_id={option.id}
+                  onSaveAttendance={handleSaveAttendance}
+                  teacher={data?.teacher.name}
+                  workshop={option.workshop_name}
+                />
+              </Accordion.Collapse>
+            </div>
+          );
+        })}
+      </Accordion>
+    </Container>
   );
 };
 
