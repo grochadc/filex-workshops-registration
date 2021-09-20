@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { ReservationsListQuery } from "../generated/grapqhl";
+import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
@@ -9,12 +9,25 @@ type AttendanceTableProps = {
   reservations: Reservations | null | undefined;
   workshop_id: string;
   option_id: string;
-  onSaveAttendance: (params: { attendance: any[]; option_id: string }) => void;
+  teacher: string;
+  workshop: string;
+  onSaveAttendance: (params: {
+    attendance: AttendingStudent[];
+    option_id: string;
+  }) => void;
 };
 
 const AttendanceTable = (props: AttendanceTableProps) => {
+  const initialState = props.reservations
+    ? props.reservations.map((reservation) => {
+        return {
+          ...reservation,
+          attended: false,
+        };
+      })
+    : [];
   type Action = { type: "change"; payload: number };
-  function reducer(state: any, action: Action) {
+  function reducer(state: typeof initialState, action: Action) {
     switch (action.type) {
       case "change":
         return [
@@ -29,17 +42,26 @@ const AttendanceTable = (props: AttendanceTableProps) => {
         throw new Error("Couldn't match action type on reducer");
     }
   }
-  const initialState = props.reservations
-    ? props.reservations.map((reservation) => {
-        return {
-          ...reservation,
-          attended: false,
-        };
-      })
-    : [];
   const [state, dispatch] = useReducer(reducer, initialState);
   const handleSaveAttendance = () => {
-    props.onSaveAttendance({ attendance: state, option_id: props.option_id });
+    function getValidatedAttendance(
+      state: typeof initialState,
+      teacher: string,
+      workshop: string
+    ): AttendingStudent[] {
+      return state.map((item) => {
+        const { __typename, email, telefono, ...result } = item;
+        return {
+          ...result,
+          teacher,
+          workshop,
+        };
+      });
+    }
+    props.onSaveAttendance({
+      attendance: getValidatedAttendance(state, props.teacher, props.workshop),
+      option_id: props.option_id,
+    });
   };
   return (
     <div>
@@ -81,7 +103,7 @@ const AttendanceTable = (props: AttendanceTableProps) => {
                 <td>
                   <input
                     type="checkbox"
-                    value={state[index].attended}
+                    checked={state[index].attended}
                     onChange={() =>
                       dispatch({ type: "change", payload: index })
                     }

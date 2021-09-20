@@ -5,6 +5,7 @@ import { Loading, Error } from "../components/utils";
 import {
   useReservationsListQuery,
   useSaveAttendanceMutation,
+  AttendingStudent,
 } from "../generated/grapqhl";
 import AttendanceTable from "../components/AttendanceTable";
 
@@ -70,29 +71,18 @@ const TeacherPage = () => {
     if (saveAttendanceData) alert("Saved attendance successfully");
   }, [saveAttendanceData]);
 
-  const handleSaveAttendance = ({ attendance, option_id }) => {
-    const teacher_id = data ? data.teacher.id : "0";
-
-    const currentOption = data?.teacher.options.find(
-      (option) => option.id === option_id
-    );
-
-    const workshop_name = currentOption?.workshop_name;
-
-    const composedAttendance = attendance.map(
-      ({ id, tutorial_reason, ...student }) => {
-        return {
-          ...student,
-          teacher: data?.teacher.name,
-          workshop: workshop_name,
-        };
-      }
-    );
+  const handleSaveAttendance = ({
+    attendance,
+    option_id,
+  }: {
+    attendance: AttendingStudent[];
+    option_id: string;
+  }) => {
     saveAttendance({
       variables: {
         option_id,
-        teacher_id,
-        students: composedAttendance,
+        teacher_id: data ? data.teacher.id : "0",
+        students: attendance,
       },
     }).catch((e) => console.error(e));
   };
@@ -117,6 +107,8 @@ const TeacherPage = () => {
               workshop_id={option.workshop_id}
               option_id={option.id}
               onSaveAttendance={handleSaveAttendance}
+              teacher={data?.teacher.name}
+              workshop={option.workshop_name}
             />
           </div>
         );
