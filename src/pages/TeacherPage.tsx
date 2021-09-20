@@ -26,6 +26,8 @@ export const GET_RESERVATIONS = gql`
           nombre
           apellido_paterno
           apellido_materno
+          email
+          telefono
           nivel
           grupo
           tutorial_reason

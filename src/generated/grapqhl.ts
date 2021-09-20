@@ -345,11 +345,13 @@ export type Reservation = {
   apellido_materno: Scalars['String'];
   apellido_paterno: Scalars['String'];
   codigo: Scalars['String'];
+  email: Scalars['String'];
   grupo: Scalars['String'];
   id: Scalars['ID'];
   nivel: Scalars['String'];
   nombre: Scalars['String'];
   option_id: Scalars['String'];
+  telefono: Scalars['String'];
   tutorial_reason?: Maybe<Scalars['String']>;
   workshop_id: Scalars['String'];
   workshop_name: Scalars['String'];
@@ -518,7 +520,7 @@ export type ReservationsListQueryVariables = Exact<{
 }>;
 
 
-export type ReservationsListQuery = { __typename?: 'Query', teacher: { __typename?: 'Teacher', id: string, name: string, options: Array<{ __typename?: 'TeacherOption', id: string, day: string, time: string, url: string, workshop_name: string, workshop_id: string, reservations?: Maybe<Array<{ __typename?: 'Reservation', id: string, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, nivel: string, grupo: string, tutorial_reason?: Maybe<string> }>> }> } };
+export type ReservationsListQuery = { __typename?: 'Query', teacher: { __typename?: 'Teacher', id: string, name: string, options: Array<{ __typename?: 'TeacherOption', id: string, day: string, time: string, url: string, workshop_name: string, workshop_id: string, reservations?: Maybe<Array<{ __typename?: 'Reservation', id: string, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: string, grupo: string, tutorial_reason?: Maybe<string> }>> }> } };
 
 export type SaveAttendanceMutationVariables = Exact<{
   students: Array<AttendingStudent> | AttendingStudent;
@@ -700,6 +702,8 @@ export const ReservationsListDocument = gql`
         nombre
         apellido_paterno
         apellido_materno
+        email
+        telefono
         nivel
         grupo
         tutorial_reason

@@ -49,6 +49,8 @@ const AttendanceTable = (props: AttendanceTableProps) => {
             <th>no.</th>
             <th>Codigo</th>
             <th>Nombre</th>
+            <th>email</th>
+            <th>telefono</th>
             <th>Nivel</th>
             <th>Grupo</th>
             {props.workshop_id === "4" ? <th>Tutorial reason</th> : null}
@@ -65,6 +67,8 @@ const AttendanceTable = (props: AttendanceTableProps) => {
                   {reservation.nombre} {reservation.apellido_paterno}{" "}
                   {reservation.apellido_materno}
                 </td>
+                <td>{reservation.email}</td>
+                <td>{reservation.telefono}</td>
                 <td>{reservation.nivel}</td>
                 <td>{reservation.grupo}</td>
                 {props.workshop_id === "4" ? (
