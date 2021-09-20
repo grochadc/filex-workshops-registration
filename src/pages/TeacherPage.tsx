@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import * as yup from "yup";
 import { gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { Loading, Error } from "../components/utils";
@@ -50,6 +51,29 @@ export const SAVE_ATTENDANCE = gql`
     )
   }
 `;
+function validateAttendance(students: AttendingStudent[]) {
+  const attendingStudentSchema = yup
+    .array()
+    .of(
+      yup
+        .object()
+        .shape({
+          apellido_materno: yup.string().defined(),
+          apellido_paterno: yup.string().defined(),
+          attended: yup.boolean().defined(),
+          codigo: yup.string().defined(),
+          grupo: yup.string().defined(),
+          nivel: yup.string().defined(),
+          nombre: yup.string().defined(),
+          teacher: yup.string().defined(),
+          workshop: yup.string().defined(),
+        })
+        .noUnknown()
+        .defined()
+    )
+    .defined();
+  return attendingStudentSchema.validateSync(students);
+}
 
 export const SAVE_WORKSHOP_URL = gql`
   mutation saveWorkshopUrl($option_id: ID!, $link: String!) {
@@ -78,11 +102,13 @@ const TeacherPage = () => {
     attendance: AttendingStudent[];
     option_id: string;
   }) => {
+    const validAttendance = validateAttendance(attendance);
+
     saveAttendance({
       variables: {
         option_id,
         teacher_id: data ? data.teacher.id : "0",
-        students: attendance,
+        students: validAttendance,
       },
     }).catch((e) => console.error(e));
   };
