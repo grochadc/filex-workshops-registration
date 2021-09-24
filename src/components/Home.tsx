@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import { useMediaQuery } from "react-responsive";
 import { useHistory } from "react-router-dom";
 
-const Home: React.FC = () => {
+const Home = () => {
   const history = useHistory();
   const handleSubmit = (codigo: string) => {
     history.push(`/selection/${codigo}`);
@@ -28,10 +28,14 @@ export const CodeForm = (props: CodeFormProps) => {
       code: "",
     },
     validationSchema: Yup.object({
-      code: Yup.number().required("Required"),
+      code: Yup.number().required("El codigo es requerido"),
     }),
     onSubmit: ({ code }) => {
-      props.onSubmit(code);
+      const codigoSchema = Yup.string().trim();
+      const validCodigo = codigoSchema.validateSync(code);
+      if (validCodigo) {
+        props.onSubmit(validCodigo);
+      }
     },
   });
   return (
