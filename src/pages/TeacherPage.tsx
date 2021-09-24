@@ -4,7 +4,6 @@ import { gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { Loading, Error } from "../components/utils";
 import Accordion from "react-bootstrap/Accordion";
-import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import {
   useReservationsListQuery,
@@ -123,41 +122,31 @@ const TeacherPage = () => {
     <Container>
       <h1>Teacher {data?.teacher.name}'s Dashboard</h1>
       <Accordion>
-        {data?.teacher.options.map((option, index) => {
-          const eventKey = index.toString();
-          return (
-            <div key={option.id}>
-              <Accordion.Toggle eventKey={eventKey} as={Card}>
-                <Card.Body>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-around" }}
-                  >
-                    <div>
-                      <h4>{option.workshop_name}</h4>
-                      <h5>
-                        {option.day} {option.time}
-                      </h5>
-                      <p>
-                        Link: <a href={option.url}>{option.url}</a>
-                      </p>
-                    </div>
-                    <div>Click para Abrir/Cerrar</div>
-                  </div>
-                </Card.Body>
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey={eventKey}>
-                <AttendanceTable
-                  reservations={option.reservations}
-                  workshop_id={option.workshop_id}
-                  option_id={option.id}
-                  onSaveAttendance={handleSaveAttendance}
-                  teacher={data?.teacher.name}
-                  workshop={option.workshop_name}
-                />
-              </Accordion.Collapse>
-            </div>
-          );
-        })}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
+          }}
+        >
+          {data?.teacher.options.map((option, index) => {
+            return (
+              <AttendanceTable
+                index={index}
+                day={option.day}
+                time={option.time}
+                url={option.url}
+                reservations={option.reservations}
+                workshop_id={option.workshop_id}
+                workshop_name={option.workshop_name}
+                option_id={option.id}
+                teacher_id={data?.teacher.id}
+                teacher_name={data?.teacher.name}
+                onSaveAttendance={handleSaveAttendance}
+              />
+            );
+          })}
+        </div>
       </Accordion>
     </Container>
   );

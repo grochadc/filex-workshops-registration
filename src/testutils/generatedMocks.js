@@ -22,6 +22,42 @@ operations.reset.data = (values = {}, options = {}) => {
   };
 };
 
+operations.settings = {};
+operations.settings.variables = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({  }) => ({  }))(values);
+  values.__typename = __typename;
+  return {
+
+  };
+};
+operations.settings.data = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({ isWorkshopsOpen = null }) => ({ isWorkshopsOpen }))(values);
+  values.__typename = __typename;
+  return {
+    isWorkshopsOpen: (values.isWorkshopsOpen === null || values.isWorkshopsOpen === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isWorkshopsOpen', __typename, scalarValues: options.scalarValues }) : values.isWorkshopsOpen
+  };
+};
+
+operations.toggle = {};
+operations.toggle.variables = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({  }) => ({  }))(values);
+  values.__typename = __typename;
+  return {
+
+  };
+};
+operations.toggle.data = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({ toggleOpenWorkshops = null }) => ({ toggleOpenWorkshops }))(values);
+  values.__typename = __typename;
+  return {
+    toggleOpenWorkshops: (values.toggleOpenWorkshops === null || values.toggleOpenWorkshops === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'toggleOpenWorkshops', __typename, scalarValues: options.scalarValues }) : values.toggleOpenWorkshops
+  };
+};
+
 operations.getSelectionInfo = {};
 operations.getSelectionInfo.variables = (values = {}, options = {}) => {
   const __typename = '';
@@ -33,9 +69,10 @@ operations.getSelectionInfo.variables = (values = {}, options = {}) => {
 };
 operations.getSelectionInfo.data = (values = {}, options = {}) => {
   const __typename = '';
-  values = (({ student = null, workshops = null }) => ({ student, workshops }))(values);
+  values = (({ isWorkshopsOpen = null, student = null, workshops = null }) => ({ isWorkshopsOpen, student, workshops }))(values);
   values.__typename = __typename;
   return {
+    isWorkshopsOpen: (values.isWorkshopsOpen === null || values.isWorkshopsOpen === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isWorkshopsOpen', __typename, scalarValues: options.scalarValues }) : values.isWorkshopsOpen,
     student: ((values = {}, options = {}) => {
       const __typename = 'Student';
       values = (({ id = null, codigo = null, nombre = null, nivel = null, reservation = null }) => ({ id, codigo, nombre, nivel, reservation }))(values);

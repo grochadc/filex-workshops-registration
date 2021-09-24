@@ -10,6 +10,7 @@ import Selection from "../components/Selection";
 
 export const GET_SELECTION_INFO = gql`
   query getSelectionInfo($code: ID!) {
+    isWorkshopsOpen
     student(codigo: $code) {
       id
       codigo
@@ -106,6 +107,13 @@ const SelectionPage = (props: SelectionPageProps) => {
   if (error) return <Error e={error} />;
   if (loading) return <Loading />;
   if (data) {
+    if (!data.isWorkshopsOpen)
+      return (
+        <h2>
+          El horario para registro de talleres es Viernes a partir de las 11:00
+          am
+        </h2>
+      );
     return (
       <Selection
         student={data.student}

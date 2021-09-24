@@ -146,6 +146,7 @@ export type Mutation = {
   setMeetLinks?: Maybe<Scalars['Int']>;
   setRows: Scalars['Boolean'];
   setWorkshopLink: Scalars['Boolean'];
+  toggleOpenWorkshops: Scalars['Boolean'];
 };
 
 
@@ -253,6 +254,7 @@ export type Query = {
   getWorkshopsByCategory: Workshop;
   grades: Grades;
   isClosed: Scalars['Boolean'];
+  isWorkshopsOpen: Scalars['Boolean'];
   logIn: Scalars['Int'];
   logOut: Scalars['Int'];
   meetLinks: Array<Maybe<MeetLink>>;
@@ -499,12 +501,22 @@ export type ResetMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type ResetMutation = { __typename?: 'Mutation', resetReservations: boolean };
 
+export type SettingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SettingsQuery = { __typename?: 'Query', isWorkshopsOpen: boolean };
+
+export type ToggleMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ToggleMutation = { __typename?: 'Mutation', toggleOpenWorkshops: boolean };
+
 export type GetSelectionInfoQueryVariables = Exact<{
   code: Scalars['ID'];
 }>;
 
 
-export type GetSelectionInfoQuery = { __typename?: 'Query', student: { __typename?: 'Student', id: string, codigo: string, nombre: string, nivel: string, reservation?: Maybe<{ __typename?: 'StudentReservation', workshop_name: string, day: string, time: string, teacher_name: string, url: string, zoom_id?: Maybe<string> }> }, workshops: Array<{ __typename?: 'Workshop', id: string, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, workshop_id: string, workshop_name: string, day: string, time: string, teacher_name: string, teacher_id: string, url: string, zoom_id?: Maybe<string>, isTutorial: boolean, available: boolean }> }> };
+export type GetSelectionInfoQuery = { __typename?: 'Query', isWorkshopsOpen: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, nivel: string, reservation?: Maybe<{ __typename?: 'StudentReservation', workshop_name: string, day: string, time: string, teacher_name: string, url: string, zoom_id?: Maybe<string> }> }, workshops: Array<{ __typename?: 'Workshop', id: string, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, workshop_id: string, workshop_name: string, day: string, time: string, teacher_name: string, teacher_id: string, url: string, zoom_id?: Maybe<string>, isTutorial: boolean, available: boolean }> }> };
 
 export type SetReservationMutationVariables = Exact<{
   student_id: Scalars['ID'];
@@ -575,8 +587,71 @@ export function useResetMutation(baseOptions?: Apollo.MutationHookOptions<ResetM
 export type ResetMutationHookResult = ReturnType<typeof useResetMutation>;
 export type ResetMutationResult = Apollo.MutationResult<ResetMutation>;
 export type ResetMutationOptions = Apollo.BaseMutationOptions<ResetMutation, ResetMutationVariables>;
+export const SettingsDocument = gql`
+    query settings {
+  isWorkshopsOpen
+}
+    `;
+
+/**
+ * __useSettingsQuery__
+ *
+ * To run a query within a React component, call `useSettingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSettingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSettingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSettingsQuery(baseOptions?: Apollo.QueryHookOptions<SettingsQuery, SettingsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SettingsQuery, SettingsQueryVariables>(SettingsDocument, options);
+      }
+export function useSettingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SettingsQuery, SettingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SettingsQuery, SettingsQueryVariables>(SettingsDocument, options);
+        }
+export type SettingsQueryHookResult = ReturnType<typeof useSettingsQuery>;
+export type SettingsLazyQueryHookResult = ReturnType<typeof useSettingsLazyQuery>;
+export type SettingsQueryResult = Apollo.QueryResult<SettingsQuery, SettingsQueryVariables>;
+export const ToggleDocument = gql`
+    mutation toggle {
+  toggleOpenWorkshops
+}
+    `;
+export type ToggleMutationFn = Apollo.MutationFunction<ToggleMutation, ToggleMutationVariables>;
+
+/**
+ * __useToggleMutation__
+ *
+ * To run a mutation, you first call `useToggleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleMutation, { data, loading, error }] = useToggleMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useToggleMutation(baseOptions?: Apollo.MutationHookOptions<ToggleMutation, ToggleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ToggleMutation, ToggleMutationVariables>(ToggleDocument, options);
+      }
+export type ToggleMutationHookResult = ReturnType<typeof useToggleMutation>;
+export type ToggleMutationResult = Apollo.MutationResult<ToggleMutation>;
+export type ToggleMutationOptions = Apollo.BaseMutationOptions<ToggleMutation, ToggleMutationVariables>;
 export const GetSelectionInfoDocument = gql`
     query getSelectionInfo($code: ID!) {
+  isWorkshopsOpen
   student(codigo: $code) {
     id
     codigo
