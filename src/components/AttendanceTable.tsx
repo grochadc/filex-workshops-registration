@@ -88,8 +88,7 @@ const AttendanceTable = (props: AttendanceTableProps) => {
                 {props.day} {props.time}
               </h5>
               <p>
-                Link: <a href={props.url}>{props.url}</a>{" "}
-                <button>editar</button>
+                Link: <a href={props.url}>{props.url}</a>
               </p>
             </div>
             <div>Click para Abrir/Cerrar</div>

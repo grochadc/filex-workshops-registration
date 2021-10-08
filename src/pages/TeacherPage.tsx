@@ -8,9 +8,11 @@ import Container from "react-bootstrap/Container";
 import {
   useReservationsListQuery,
   useSaveAttendanceMutation,
+  useSaveWorkshopUrlMutation,
   AttendingStudent,
 } from "../generated/grapqhl";
 import AttendanceTable from "../components/AttendanceTable";
+import LinksEditor from "../components/LinksEditor";
 
 export const GET_RESERVATIONS = gql`
   query reservationsList($teacher_id: ID!) {
@@ -88,14 +90,24 @@ const TeacherPage = () => {
   const { data, loading, error } = useReservationsListQuery({
     variables: { teacher_id: params.id },
   });
+
+  const onCompletedSaveAttendance = () => {
+    alert("Saved Attendance correctly!");
+  };
   const [
     saveAttendance,
     { data: saveAttendanceData, error: saveAttendanceError },
-  ] = useSaveAttendanceMutation();
+  ] = useSaveAttendanceMutation({ onCompleted: onCompletedSaveAttendance });
 
-  useEffect(() => {
-    if (saveAttendanceData) alert("Saved attendance successfully");
-  }, [saveAttendanceData]);
+  const onCompletedSaveWorkshopUrlMutation = () => {
+    alert("Saved url correctly!");
+  };
+  const [
+    saveWorkshopUrlMutation,
+    { data: saveWorkshopUrlMutationData, error: saveWorkshopUrlMutationError },
+  ] = useSaveWorkshopUrlMutation({
+    onCompleted: onCompletedSaveWorkshopUrlMutation,
+  });
 
   const handleSaveAttendance = ({
     attendance,
@@ -117,39 +129,47 @@ const TeacherPage = () => {
 
   if (saveAttendanceError) return <Error e={saveAttendanceError} />;
   if (loading) return <Loading />;
-  if (error) return <Error e={error} />;
-  return (
-    <Container>
-      <h1>Teacher {data?.teacher.name}'s Dashboard</h1>
-      <Accordion>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "column",
-          }}
-        >
-          {data?.teacher.options.map((option, index) => {
-            return (
-              <AttendanceTable
-                index={index}
-                day={option.day}
-                time={option.time}
-                url={option.url}
-                reservations={option.reservations}
-                workshop_id={option.workshop_id}
-                workshop_name={option.workshop_name}
-                option_id={option.id}
-                teacher_id={data?.teacher.id}
-                teacher_name={data?.teacher.name}
-                onSaveAttendance={handleSaveAttendance}
-              />
-            );
-          })}
-        </div>
-      </Accordion>
-    </Container>
-  );
+  if (error || saveWorkshopUrlMutationError) return <Error e={error} />;
+  if (data)
+    return (
+      <Container>
+        <h1>Teacher {data?.teacher.name}'s Dashboard</h1>
+        <Accordion>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexDirection: "column",
+            }}
+          >
+            {data?.teacher.options.map((option, index) => {
+              return (
+                <AttendanceTable
+                  index={index}
+                  day={option.day}
+                  time={option.time}
+                  url={option.url}
+                  reservations={option.reservations}
+                  workshop_id={option.workshop_id}
+                  workshop_name={option.workshop_name}
+                  option_id={option.id}
+                  teacher_id={data?.teacher.id}
+                  teacher_name={data?.teacher.name}
+                  onSaveAttendance={handleSaveAttendance}
+                />
+              );
+            })}
+          </div>
+        </Accordion>
+        <LinksEditor
+          options={data.teacher.options}
+          saveLinkOnServer={(variables) =>
+            saveWorkshopUrlMutation({ variables })
+          }
+        />
+      </Container>
+    );
+  return <div />;
 };
 
 export default TeacherPage;
