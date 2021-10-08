@@ -2,6 +2,9 @@
   "name": "typescript-react-testing",
   "version": "0.1.0",
   "private": true,
+  "resolutions": {
+    "babel-loader": "8.1.0"
+  },
   "dependencies": {
     "@apollo/client": "^3.2.1",
     "@testing-library/jest-dom": "^4.2.4",
