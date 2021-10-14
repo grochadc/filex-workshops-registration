@@ -81,13 +81,15 @@ const SelectionPage = (props: SelectionPageProps) => {
     [history, props]
   );
   const params: { code: string } = useParams();
-  const [saveReservation] = useSetReservationMutation({
+  const [
+    saveReservation,
+    { error: saveReservationError },
+  ] = useSetReservationMutation({
     onCompleted: (data) => {
       handleDetails(data.makeWorkshopReservation);
     },
   });
   const handleReservation = (option_id: string, tutorial_reason?: string) => {
-    console.log("sending student id ", data ? data.student.id : "");
     saveReservation({
       variables: {
         student_id: data ? data.student.id : "",
@@ -104,6 +106,12 @@ const SelectionPage = (props: SelectionPageProps) => {
       handleDetails(data.student.reservation);
     }
   }, [data, handleDetails]);
+  if (
+    saveReservationError?.graphQLErrors[0].extensions?.code ===
+    "RESERVATION_FORBIDDEN"
+  ) {
+    history.push(`/selection/${data?.student.codigo}`);
+  }
   if (error) return <Error e={error} />;
   if (loading) return <Loading />;
   if (data) {
