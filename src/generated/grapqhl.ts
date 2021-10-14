@@ -132,8 +132,10 @@ export type MeetLinkInputWithId = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addStudent: Student;
   closeExam?: Maybe<CloseExamResponse>;
   databaseSet: Scalars['Int'];
+  editStudent: Student;
   makeWorkshopReservation: StudentReservation;
   registerStudent: RegisterResponse;
   removeMeetLink?: Maybe<Scalars['Int']>;
@@ -150,8 +152,19 @@ export type Mutation = {
 };
 
 
+export type MutationAddStudentArgs = {
+  student: StudentInput;
+};
+
+
 export type MutationDatabaseSetArgs = {
   input?: Maybe<FirebaseInput>;
+};
+
+
+export type MutationEditStudentArgs = {
+  changes?: Maybe<StudentChangesInput>;
+  codigo: Scalars['ID'];
 };
 
 
@@ -408,6 +421,22 @@ export type Student = {
   telefono: Scalars['String'];
 };
 
+export type StudentChangesInput = {
+  apellido_materno?: Maybe<Scalars['String']>;
+  apellido_paterno?: Maybe<Scalars['String']>;
+  carrera?: Maybe<Scalars['String']>;
+  ciclo?: Maybe<Scalars['String']>;
+  codigo?: Maybe<Scalars['String']>;
+  curso?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  externo?: Maybe<Scalars['Boolean']>;
+  genero?: Maybe<Scalars['String']>;
+  grupo?: Maybe<Scalars['String']>;
+  nivel?: Maybe<Scalars['String']>;
+  nombre?: Maybe<Scalars['String']>;
+  telefono?: Maybe<Scalars['String']>;
+};
+
 export type StudentInput = {
   apellido_materno: Scalars['String'];
   apellido_paterno: Scalars['String'];
@@ -442,6 +471,11 @@ export type Teacher = {
   id: Scalars['ID'];
   name: Scalars['String'];
   options: Array<TeacherOption>;
+};
+
+
+export type TeacherOptionsArgs = {
+  sorted?: Maybe<Scalars['Boolean']>;
 };
 
 export type TeacherOption = {
@@ -764,7 +798,7 @@ export const ReservationsListDocument = gql`
   teacher(id: $teacher_id) {
     id
     name
-    options {
+    options(sorted: true) {
       id
       day
       time

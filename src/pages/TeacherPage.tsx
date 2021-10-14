@@ -19,7 +19,7 @@ export const GET_RESERVATIONS = gql`
     teacher(id: $teacher_id) {
       id
       name
-      options {
+      options(sorted: true) {
         id
         day
         time
