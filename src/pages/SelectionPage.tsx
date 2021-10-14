@@ -68,6 +68,8 @@ export const MAKE_RESERVATION = gql`
   }
 `;
 
+export const IsWorkshopsOpenContext = React.createContext(false);
+
 type SelectionPageProps = {
   setReservationDetails: Dispatch<any>;
 };
@@ -115,19 +117,15 @@ const SelectionPage = (props: SelectionPageProps) => {
   if (error) return <Error e={error} />;
   if (loading) return <Loading />;
   if (data) {
-    if (!data.isWorkshopsOpen)
-      return (
-        <h2>
-          El horario para registro de talleres es Viernes a partir de las 11:00
-          am
-        </h2>
-      );
     return (
-      <Selection
-        student={data.student}
-        workshops={data.workshops}
-        onReservation={handleReservation}
-      />
+      <IsWorkshopsOpenContext.Provider value={data?.isWorkshopsOpen}>
+        <Selection
+          student={data.student}
+          workshops={data.workshops}
+          onReservation={handleReservation}
+          isWorkshopsOpen={data.isWorkshopsOpen}
+        />
+      </IsWorkshopsOpenContext.Provider>
     );
   }
   return <div />;

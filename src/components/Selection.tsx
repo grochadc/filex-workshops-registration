@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Accordion from "react-bootstrap/Accordion";
-import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { Workshop } from "../generated/grapqhl";
+import WorkshopSelector from "./WorkshopSelector";
 
 type SelectionForModal = {
   workshop_name: string;
@@ -22,6 +18,7 @@ type SelectionProps = {
   student: any;
   workshops: Workshop[];
   onReservation: (option_id: string, tutorial_reason?: string) => void;
+  isWorkshopsOpen: boolean;
 };
 const Selection = (props: SelectionProps) => {
   const [selectionForModal, setSelectionForModal] = useState({
@@ -53,10 +50,10 @@ const Selection = (props: SelectionProps) => {
     <Container>
       <div>
         <>Hola {props.student.nombre}!</>
-        {props.student.reservation ? (
+        {!props.isWorkshopsOpen ? (
           <Alert variant="primary">
-            Ya cuentas con una reservación.{" "}
-            <Link to="/details">Revisar detalles</Link>
+            El registro esta cerrado. El horario para registro de talleres es
+            Viernes a partir de las 11:00 am
           </Alert>
         ) : null}
         {props.workshops
@@ -144,82 +141,6 @@ export const SelectionModal = (props: SelectionModalProps) => {
       </Modal.Footer>
     </Modal>
   );
-};
-
-type WorkshopSelectorProps = {
-  workshop: any;
-  index: number;
-  student: Student;
-  selectWorkshop: (selectionId: string, teacher_id: string) => void;
-};
-export const WorkshopSelector = ({
-  workshop,
-  index,
-  selectWorkshop,
-}: WorkshopSelectorProps) => {
-  const eventKey = index.toString();
-  return (
-    <Accordion key={index}>
-      <Card className="text-center p-3">
-        <Accordion.Toggle eventKey={eventKey} as={Button}>
-          {workshop.name}
-        </Accordion.Toggle>
-        {workshop.description}
-      </Card>
-      <Accordion.Collapse eventKey={eventKey}>
-        <Container>
-          <Row>
-            {workshop.options.map((option, optionIndex) => {
-              return (
-                <Col className="mb-3" key={optionIndex}>
-                  <Card
-                    as="a"
-                    style={optionCardStyles}
-                    className="text-center pt-3"
-                  >
-                    <Card.Title
-                      className={option.available ? "" : "text-muted"}
-                    >
-                      Teacher {option.teacher_name}
-                    </Card.Title>
-                    <Card.Subtitle
-                      className={option.available ? "" : "text-muted"}
-                    >
-                      {option.day}
-                    </Card.Subtitle>
-                    <Card.Body className={option.available ? "" : "text-muted"}>
-                      {option.time}
-                      {option.available ? (
-                        <p>
-                          <Button
-                            onClick={() => {
-                              selectWorkshop(option.id, option.teacher_id);
-                            }}
-                            data-testid={`button-reservar-${option.id}`}
-                          >
-                            Reservar
-                          </Button>
-                        </p>
-                      ) : (
-                        <Alert variant="danger">Lugares no disponibles</Alert>
-                      )}
-                    </Card.Body>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        </Container>
-      </Accordion.Collapse>
-    </Accordion>
-  );
-};
-
-const optionCardStyles = {
-  width: "18rem",
-  cursor: "pointer",
-  color: "black",
-  textDecoration: "none",
 };
 
 export default Selection;

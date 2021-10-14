@@ -1,6 +1,6 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { WorkshopSelector } from "../components/Selection";
+import WorkshopSelector from "../components/WorkshopSelector";
 
 export default {
   title: "WorkshopSelector",
