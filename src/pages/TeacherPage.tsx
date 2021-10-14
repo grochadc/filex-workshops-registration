@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import * as yup from "yup";
 import { gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
@@ -96,7 +96,7 @@ const TeacherPage = () => {
   };
   const [
     saveAttendance,
-    { data: saveAttendanceData, error: saveAttendanceError },
+    { error: saveAttendanceError },
   ] = useSaveAttendanceMutation({ onCompleted: onCompletedSaveAttendance });
 
   const onCompletedSaveWorkshopUrlMutation = () => {
@@ -104,7 +104,7 @@ const TeacherPage = () => {
   };
   const [
     saveWorkshopUrlMutation,
-    { data: saveWorkshopUrlMutationData, error: saveWorkshopUrlMutationError },
+    { error: saveWorkshopUrlMutationError },
   ] = useSaveWorkshopUrlMutation({
     onCompleted: onCompletedSaveWorkshopUrlMutation,
   });
