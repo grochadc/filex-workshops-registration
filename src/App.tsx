@@ -40,7 +40,7 @@ function App() {
       </Jumbotron>
       <Switch>
         <Route path="/selection">
-          <Nav student={{ codigo: "1234567890", nombre: "Benito Antonio" }} />
+          <Nav student={{ codigo: "", nombre: "" }} />
         </Route>
       </Switch>
       <Switch>
