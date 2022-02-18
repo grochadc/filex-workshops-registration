@@ -1,16 +1,16 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMediaQuery } from "react-responsive";
 import { useHistory } from "react-router-dom";
+import { Button } from "./utils";
 
 const Home = () => {
   const history = useHistory();
   const handleSubmit = (codigo: string) => {
-    history.push(`/selection/${codigo}`);
+    history.push(`/student/${codigo}`);
   };
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 400px)" });
   return (
@@ -44,16 +44,22 @@ export const CodeForm = (props: CodeFormProps) => {
         onSubmit={(e) => formik.handleSubmit(e as any)}
         inline={props.isTabletOrMobile}
       >
-        <Form.Group>
-          <Form.Label htmlFor="code">Code:</Form.Label>
-          <Form.Control
+        <div className="flex flex-col w-full md:flex-row md:w-40">
+          <label htmlFor="code">Codigo:</label>
+          <input
             id="code"
             type="text"
             onChange={(e) => formik.handleChange(e as any)}
             value={formik.values.code}
+            className="border rounded-sm w-full md:w-40 h-10 mx-2 px-3"
           />
-          <Button type="submit">Submit</Button>
-        </Form.Group>
+          <button
+            type="submit"
+            className="rounded bg-blue-500 text-white p-2 m-1"
+          >
+            Submit
+          </button>
+        </div>
       </Form>
       {formik.touched.code && formik.errors.code ? (
         <Alert variant="warning">

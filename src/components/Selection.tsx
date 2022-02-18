@@ -5,17 +5,17 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { Workshop } from "../generated/grapqhl";
 import WorkshopSelector from "./WorkshopSelector";
+import { Student } from "../generated/grapqhl";
 
 type SelectionForModal = {
   workshop_name: string;
   teacher_name: string;
   day: string;
   time: string;
-  isTutorial: boolean;
 };
 
-type SelectionProps = {
-  student: any;
+export type SelectionProps = {
+  student: Student;
   workshops: Workshop[];
   onReservation: (option_id: string, tutorial_reason?: string) => void;
   isWorkshopsOpen: boolean;
@@ -49,7 +49,6 @@ const Selection = (props: SelectionProps) => {
   return (
     <Container>
       <div>
-        <>Hola {props.student.nombre}!</>
         {!props.isWorkshopsOpen ? (
           <Alert variant="primary">
             El registro esta cerrado. El horario para registro de talleres es
@@ -108,16 +107,6 @@ export const SelectionModal = (props: SelectionModalProps) => {
             <p>
               <strong>Dia:</strong> <em>{props.selectionForModal.day}</em>
             </p>
-            {props.selectionForModal.isTutorial ? (
-              <p>
-                ¿En que tema necesitas ayuda? <br />
-                <input
-                  type="text"
-                  value={tutorialReason}
-                  onChange={({ target }) => setTutorialReason(target.value)}
-                />
-              </p>
-            ) : null}
           </>
         ) : (
           "No has seleccionado una opcion"

@@ -6,7 +6,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import tw from "tailwind-styled-components";
 import { IsWorkshopsOpenContext } from "../pages/SelectionPage";
+import { Student } from "../generated/grapqhl";
 
 const optionCardStyles = {
   width: "18rem",
@@ -14,6 +16,14 @@ const optionCardStyles = {
   color: "black",
   textDecoration: "none",
 };
+
+const TwButton = tw.button`
+rounded
+bg-blue-500
+p-2
+m-1
+text-white
+`;
 
 type WorkshopSelectorProps = {
   workshop: any;
@@ -31,7 +41,7 @@ const WorkshopSelector = ({
   return (
     <Accordion key={index}>
       <Card className="text-center p-3">
-        <Accordion.Toggle eventKey={eventKey} as={Button}>
+        <Accordion.Toggle eventKey={eventKey} as={TwButton}>
           {workshop.name}
         </Accordion.Toggle>
         {workshop.description}

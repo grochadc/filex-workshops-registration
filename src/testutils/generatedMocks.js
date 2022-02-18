@@ -33,10 +33,20 @@ operations.settings.variables = (values = {}, options = {}) => {
 };
 operations.settings.data = (values = {}, options = {}) => {
   const __typename = '';
-  values = (({ isWorkshopsOpen = null }) => ({ isWorkshopsOpen }))(values);
+  values = (({ isWorkshopsOpen = null, teachers = null }) => ({ isWorkshopsOpen, teachers }))(values);
   values.__typename = __typename;
   return {
-    isWorkshopsOpen: (values.isWorkshopsOpen === null || values.isWorkshopsOpen === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isWorkshopsOpen', __typename, scalarValues: options.scalarValues }) : values.isWorkshopsOpen
+    isWorkshopsOpen: (values.isWorkshopsOpen === null || values.isWorkshopsOpen === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isWorkshopsOpen', __typename, scalarValues: options.scalarValues }) : values.isWorkshopsOpen,
+    teachers: (values.teachers || []).map(item => ((values = {}, options = {}) => {
+      const __typename = 'Teacher';
+      values = (({ id = null, name = null }) => ({ id, name }))(values);
+      values.__typename = __typename;
+      return {
+        id: (values.id === null || values.id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'id', __typename, scalarValues: options.scalarValues }) : values.id,
+        name: (values.name === null || values.name === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'name', __typename, scalarValues: options.scalarValues }) : values.name,
+        ...(options.addTypename ? { __typename } : {})
+      };
+    })(item, options))
   };
 };
 
@@ -110,7 +120,7 @@ operations.getSelectionInfo.data = (values = {}, options = {}) => {
         levels: values.levels || [],
         options: (values.options || []).map(item => ((values = {}, options = {}) => {
           const __typename = 'Option';
-          values = (({ id = null, workshop_id = null, workshop_name = null, day = null, time = null, teacher_name = null, teacher_id = null, url = null, zoom_id = null, isTutorial = null, available = null }) => ({ id, workshop_id, workshop_name, day, time, teacher_name, teacher_id, url, zoom_id, isTutorial, available }))(values);
+          values = (({ id = null, workshop_id = null, workshop_name = null, day = null, time = null, teacher_name = null, teacher_id = null, url = null, zoom_id = null, available = null, isTutorial = null }) => ({ id, workshop_id, workshop_name, day, time, teacher_name, teacher_id, url, zoom_id, available, isTutorial }))(values);
           values.__typename = __typename;
           return {
             id: (values.id === null || values.id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'id', __typename, scalarValues: options.scalarValues }) : values.id,
@@ -122,8 +132,8 @@ operations.getSelectionInfo.data = (values = {}, options = {}) => {
             teacher_id: (values.teacher_id === null || values.teacher_id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'teacher_id', __typename, scalarValues: options.scalarValues }) : values.teacher_id,
             url: (values.url === null || values.url === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'url', __typename, scalarValues: options.scalarValues }) : values.url,
             zoom_id: values.zoom_id,
-            isTutorial: (values.isTutorial === null || values.isTutorial === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isTutorial', __typename, scalarValues: options.scalarValues }) : values.isTutorial,
             available: (values.available === null || values.available === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'available', __typename, scalarValues: options.scalarValues }) : values.available,
+            isTutorial: (values.isTutorial === null || values.isTutorial === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isTutorial', __typename, scalarValues: options.scalarValues }) : values.isTutorial,
             ...(options.addTypename ? { __typename } : {})
           };
         })(item, options)),
@@ -136,12 +146,11 @@ operations.getSelectionInfo.data = (values = {}, options = {}) => {
 operations.setReservation = {};
 operations.setReservation.variables = (values = {}, options = {}) => {
   const __typename = '';
-  values = (({ student_id = undefined, option_id = undefined, tutorial_reason = undefined }) => ({ student_id, option_id, tutorial_reason }))(values);
+  values = (({ student_id = undefined, option_id = undefined }) => ({ student_id, option_id }))(values);
   values.__typename = __typename;
   return {
     student_id: (values.student_id === null || values.student_id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'student_id', __typename, scalarValues: options.scalarValues }) : values.student_id,
-    option_id: (values.option_id === null || values.option_id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'option_id', __typename, scalarValues: options.scalarValues }) : values.option_id,
-    tutorial_reason: values.tutorial_reason
+    option_id: (values.option_id === null || values.option_id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'option_id', __typename, scalarValues: options.scalarValues }) : values.option_id
   };
 };
 operations.setReservation.data = (values = {}, options = {}) => {
@@ -151,7 +160,7 @@ operations.setReservation.data = (values = {}, options = {}) => {
   return {
     makeWorkshopReservation: ((values = {}, options = {}) => {
       const __typename = 'StudentReservation';
-      values = (({ day = null, time = null, teacher_name = null, workshop_name = null, url = null, zoom_id = null }) => ({ day, time, teacher_name, workshop_name, url, zoom_id }))(values);
+      values = (({ day = null, time = null, teacher_name = null, workshop_name = null, url = null }) => ({ day, time, teacher_name, workshop_name, url }))(values);
       values.__typename = __typename;
       return {
         day: (values.day === null || values.day === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'day', __typename, scalarValues: options.scalarValues }) : values.day,
@@ -159,10 +168,57 @@ operations.setReservation.data = (values = {}, options = {}) => {
         teacher_name: (values.teacher_name === null || values.teacher_name === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'teacher_name', __typename, scalarValues: options.scalarValues }) : values.teacher_name,
         workshop_name: (values.workshop_name === null || values.workshop_name === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'workshop_name', __typename, scalarValues: options.scalarValues }) : values.workshop_name,
         url: (values.url === null || values.url === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'url', __typename, scalarValues: options.scalarValues }) : values.url,
-        zoom_id: values.zoom_id,
         ...(options.addTypename ? { __typename } : {})
       };
     })(values.makeWorkshopReservation || undefined, options)
+  };
+};
+
+operations.getStudentProfile = {};
+operations.getStudentProfile.variables = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({ code = undefined }) => ({ code }))(values);
+  values.__typename = __typename;
+  return {
+    code: (values.code === null || values.code === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'code', __typename, scalarValues: options.scalarValues }) : values.code
+  };
+};
+operations.getStudentProfile.data = (values = {}, options = {}) => {
+  const __typename = '';
+  values = (({ student = null }) => ({ student }))(values);
+  values.__typename = __typename;
+  return {
+    student: ((values = {}, options = {}) => {
+      const __typename = 'Student';
+      values = (({ id = null, codigo = null, nombre = null, apellido_paterno = null, apellido_materno = null, email = null, telefono = null, nivel = null, reservation = null, reservationCount = null, reservationLimit = null }) => ({ id, codigo, nombre, apellido_paterno, apellido_materno, email, telefono, nivel, reservation, reservationCount, reservationLimit }))(values);
+      values.__typename = __typename;
+      return {
+        id: (values.id === null || values.id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'id', __typename, scalarValues: options.scalarValues }) : values.id,
+        codigo: (values.codigo === null || values.codigo === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'codigo', __typename, scalarValues: options.scalarValues }) : values.codigo,
+        nombre: (values.nombre === null || values.nombre === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'nombre', __typename, scalarValues: options.scalarValues }) : values.nombre,
+        apellido_paterno: (values.apellido_paterno === null || values.apellido_paterno === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'apellido_paterno', __typename, scalarValues: options.scalarValues }) : values.apellido_paterno,
+        apellido_materno: (values.apellido_materno === null || values.apellido_materno === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'apellido_materno', __typename, scalarValues: options.scalarValues }) : values.apellido_materno,
+        email: (values.email === null || values.email === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'email', __typename, scalarValues: options.scalarValues }) : values.email,
+        telefono: (values.telefono === null || values.telefono === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'telefono', __typename, scalarValues: options.scalarValues }) : values.telefono,
+        nivel: (values.nivel === null || values.nivel === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'nivel', __typename, scalarValues: options.scalarValues }) : values.nivel,
+        reservation: !values.reservation ? values.reservation : ((values = {}, options = {}) => {
+          const __typename = 'StudentReservation';
+          values = (({ workshop_name = null, day = null, time = null, teacher_name = null, url = null }) => ({ workshop_name, day, time, teacher_name, url }))(values);
+          values.__typename = __typename;
+          return {
+            workshop_name: (values.workshop_name === null || values.workshop_name === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'workshop_name', __typename, scalarValues: options.scalarValues }) : values.workshop_name,
+            day: (values.day === null || values.day === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'day', __typename, scalarValues: options.scalarValues }) : values.day,
+            time: (values.time === null || values.time === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'time', __typename, scalarValues: options.scalarValues }) : values.time,
+            teacher_name: (values.teacher_name === null || values.teacher_name === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'teacher_name', __typename, scalarValues: options.scalarValues }) : values.teacher_name,
+            url: (values.url === null || values.url === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'url', __typename, scalarValues: options.scalarValues }) : values.url,
+            ...(options.addTypename ? { __typename } : {})
+          };
+        })(values.reservation, options),
+        reservationCount: (values.reservationCount === null || values.reservationCount === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Int', mappedTypeName: 'number', fieldName: 'reservationCount', __typename, scalarValues: options.scalarValues }) : values.reservationCount,
+        reservationLimit: (values.reservationLimit === null || values.reservationLimit === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Int', mappedTypeName: 'number', fieldName: 'reservationLimit', __typename, scalarValues: options.scalarValues }) : values.reservationLimit,
+        ...(options.addTypename ? { __typename } : {})
+      };
+    })(values.student || undefined, options)
   };
 };
 

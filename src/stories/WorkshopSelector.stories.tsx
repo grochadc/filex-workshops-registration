@@ -1,9 +1,11 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { withReactContext } from "storybook-react-context";
+import { IsWorkshopsOpenContext } from "../pages/SelectionPage";
 import WorkshopSelector from "../components/WorkshopSelector";
 
 export default {
-  title: "WorkshopSelector",
+  title: "Components/WorkshopSelector",
   component: WorkshopSelector,
   argTypes: {
     backgroundColor: { control: "color" },
@@ -25,23 +27,40 @@ Normal.args = {
     nombre: "Benito Antonio",
     apellido_paterno: "Martinez",
     apellido_materno: "Ocasio",
+    genero: "M",
     telefono: "3412345678",
     email: "bad@bunny.pr",
-    nivel: 5,
+    carrera: "Abogado",
+    ciclo: "2022A",
+    externo: false,
+    curso: "en",
+    nivel: "5",
     grupo: "E5-1",
+    reservationCount: 0,
+    reservationLimit: 5,
   },
   workshop: {
     name: "Conversation",
     description: "A conversation club",
     options: [
       {
-        id: "gonzalojueves",
-        teacher: "gonzalo",
-        teacher_id: "gonzalo",
-        time: "15:00 - 16:00",
-        day: "jueves",
-        url: "https://meet.google.com/lookup/gonzaloconversation",
-        workshop: "conversation",
+        id: "4",
+        day: "Lunes",
+        time: "19:00 - 20:00",
+        teacher_name: "Sergio",
+        workshop_name: "Conversation",
+        url: "https://meet.google.com/xtw-czdx-yhr",
+        zoom_id: null,
+        available: true,
+      },
+      {
+        id: "5",
+        day: "Martes",
+        time: "19:00 - 20:00",
+        teacher_name: "Sergio",
+        workshop_name: "Conversation",
+        url: "https://meet.google.com/xtw-czdx-yhr",
+        zoom_id: null,
         available: true,
       },
     ],

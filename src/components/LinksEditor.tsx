@@ -25,7 +25,12 @@ function LinksEditor(props: LinksEditorProps) {
   const [links, dispatch] = useReducer(reducer, initialState);
   return (
     <div>
-      <Button onClick={openModal}>Edit your links</Button>
+      <button
+        className="bg-blue-500 rounded text-white p-2 m-1 hover:bg-blue-700"
+        onClick={openModal}
+      >
+        Edit your links
+      </button>
       <Modal show={isModalOpen} onHide={closeModal}>
         <Modal.Header closeButton>
           <Modal.Title>Settings</Modal.Title>
@@ -45,8 +50,8 @@ function LinksEditor(props: LinksEditorProps) {
                       dispatch({ id: option.id, payload: e.target.value })
                     }
                   />
-                  <Button
-                    variant="secondary"
+                  <button
+                    className="bg-slate-500 rounded text-white p-2 m-1"
                     onClick={() =>
                       props.saveLinkOnServer({
                         option_id: option.id,
@@ -55,7 +60,7 @@ function LinksEditor(props: LinksEditorProps) {
                     }
                   >
                     Save
-                  </Button>
+                  </button>
                 </Form.Group>
               );
             })}

@@ -1,11 +1,11 @@
 import React, { useReducer } from "react";
 import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 
-type Reservations = ReservationsListQuery["teacher"]["options"][0]["reservations"];
+type Reservations =
+  ReservationsListQuery["teacher"]["options"][0]["reservations"];
 
 type AttendanceTableProps = {
   index: number;
@@ -81,17 +81,23 @@ const AttendanceTable = (props: AttendanceTableProps) => {
     <div>
       <Accordion.Toggle eventKey={eventKey} as={Card}>
         <Card.Body>
-          <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <div className="flex justify-around">
             <div>
-              <h4>{props.workshop_name}</h4>
-              <h5>
+              <h4 className="font-bold text-2xl">{props.workshop_name}</h4>
+              <h5 className="font-bold text-lg">
                 {props.day} {props.time}
               </h5>
               <p>
-                Link: <a href={props.url}>{props.url}</a>
+                Link:{" "}
+                <a
+                  className="underline text-blue-500 hover:text-blue-300"
+                  href={props.url}
+                >
+                  {props.url}
+                </a>
               </p>
             </div>
-            <div>Click para Abrir/Cerrar</div>
+            <div className="cursor-pointer">Click para Abrir/Cerrar</div>
           </div>
         </Card.Body>
       </Accordion.Toggle>
@@ -104,7 +110,12 @@ const AttendanceTable = (props: AttendanceTableProps) => {
               dispatch({ type: "change", payload: index })
             }
           />
-          <Button onClick={handleSaveAttendance}>Save</Button>
+          <button
+            className="rounded rounded-sm bg-blue-500 p-2 m-1 text-white"
+            onClick={handleSaveAttendance}
+          >
+            Save
+          </button>
         </div>
       </Accordion.Collapse>
     </div>
@@ -119,9 +130,9 @@ type TableViewProps = {
 
 const TableView = (props: TableViewProps) => {
   return (
-    <Table>
+    <table className="w-screen mt-3">
       <thead>
-        <tr>
+        <tr className="border-b-4">
           <th>no.</th>
           <th>Codigo</th>
           <th>Nombre</th>
@@ -139,8 +150,11 @@ const TableView = (props: TableViewProps) => {
         ) : (
           props.reservations.map((reservation, index) => {
             return (
-              <tr key={reservation.id}>
-                <td>{index + 1}</td>
+              <tr
+                className="odd:bg-white even:bg-slate-100"
+                key={reservation.id}
+              >
+                <td className="py-2 text-center">{index + 1}</td>
                 <td>{reservation.codigo}</td>
                 <td>
                   {reservation.nombre} {reservation.apellido_paterno}{" "}
@@ -148,8 +162,8 @@ const TableView = (props: TableViewProps) => {
                 </td>
                 <td>{reservation.email}</td>
                 <td>{reservation.telefono}</td>
-                <td>{reservation.nivel}</td>
-                <td>{reservation.grupo}</td>
+                <td className="text-center">{reservation.nivel}</td>
+                <td className="text-center">{reservation.grupo}</td>
                 {props.isTutorial ? (
                   <td>
                     {reservation.tutorial_reason
@@ -157,7 +171,7 @@ const TableView = (props: TableViewProps) => {
                       : "null"}
                   </td>
                 ) : null}
-                <td>
+                <td className="text-center">
                   <input
                     type="checkbox"
                     checked={props.reservations[index].attended}
@@ -169,12 +183,12 @@ const TableView = (props: TableViewProps) => {
           })
         )}
       </tbody>
-    </Table>
+    </table>
   );
 };
 
 const EmptyReservationsTable = () => (
-  <div>There are no reservations for this workshop.</div>
+  <>There are no reservations for this workshop.</>
 );
 
 export default AttendanceTable;

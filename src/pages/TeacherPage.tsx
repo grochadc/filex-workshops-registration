@@ -85,7 +85,7 @@ export const SAVE_WORKSHOP_URL = gql`
   }
 `;
 
-const TeacherPage = () => {
+const TeacherPage = (props: any) => {
   const params: { id: string } = useParams();
   const { data, loading, error } = useReservationsListQuery({
     variables: { teacher_id: params.id },
@@ -94,20 +94,16 @@ const TeacherPage = () => {
   const onCompletedSaveAttendance = () => {
     alert("Saved Attendance correctly!");
   };
-  const [
-    saveAttendance,
-    { error: saveAttendanceError },
-  ] = useSaveAttendanceMutation({ onCompleted: onCompletedSaveAttendance });
+  const [saveAttendance, { error: saveAttendanceError }] =
+    useSaveAttendanceMutation({ onCompleted: onCompletedSaveAttendance });
 
   const onCompletedSaveWorkshopUrlMutation = () => {
     alert("Saved url correctly!");
   };
-  const [
-    saveWorkshopUrlMutation,
-    { error: saveWorkshopUrlMutationError },
-  ] = useSaveWorkshopUrlMutation({
-    onCompleted: onCompletedSaveWorkshopUrlMutation,
-  });
+  const [saveWorkshopUrlMutation, { error: saveWorkshopUrlMutationError }] =
+    useSaveWorkshopUrlMutation({
+      onCompleted: onCompletedSaveWorkshopUrlMutation,
+    });
 
   const handleSaveAttendance = ({
     attendance,
@@ -133,7 +129,9 @@ const TeacherPage = () => {
   if (data)
     return (
       <Container>
-        <h1>Teacher {data?.teacher.name}'s Dashboard</h1>
+        <h1 className="text-4xl font-bold">
+          Teacher {data?.teacher.name}'s Dashboard
+        </h1>
         <Accordion>
           <div
             style={{
@@ -145,6 +143,7 @@ const TeacherPage = () => {
             {data?.teacher.options.map((option, index) => {
               return (
                 <AttendanceTable
+                  key={index}
                   index={index}
                   day={option.day}
                   time={option.time}

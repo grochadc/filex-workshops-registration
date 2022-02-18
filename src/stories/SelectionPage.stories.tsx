@@ -3,15 +3,16 @@ import apolloMock from "../testutils/generatedMocks";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import { MemoryRouter, Route } from "react-router-dom";
 import SelectionPage, {
-  GET_SELECTION_INFO,
+  getSelectionInfo,
   MAKE_RESERVATION,
 } from "../pages/SelectionPage";
-//import { selectionInfoMock, makeReservationMock } from "../App.test";
+import { selectionInfoOpenMock } from "../App.stories";
 const selectionInfoMock = apolloMock(
-  GET_SELECTION_INFO,
+  getSelectionInfo,
   { code: "1234567890" },
   {
     data: {
+      isWorkshopsOpen: true,
       student: {
         nivel: "4",
       },
@@ -28,19 +29,6 @@ const selectionInfoMock = apolloMock(
             },
           ],
         },
-        {
-          name: "Tutorials",
-          levels: ["1", "2", "3", "4", "5", "6"],
-          options: [
-            {
-              id: "option_id2",
-              teacher_id: "teacher_id1",
-              teacher_name: "Gonzalo",
-              isTutorial: true,
-              available: true,
-            },
-          ],
-        },
       ],
     },
   }
@@ -50,6 +38,7 @@ const makeReservationMock = apolloMock(
   {
     codigo: "1234567890",
     option_id: "option_id1",
+    student_id: "Student-id",
     teacher_id: "teacher_id1",
   },
   {
@@ -65,7 +54,7 @@ const makeReservationMock = apolloMock(
   }
 );
 export default {
-  title: "Selection Page Story",
+  title: "Pages/Selection",
   component: SelectionPage,
   decorators: [
     (Story) => (
@@ -87,6 +76,6 @@ export const Example = () => (
 
 Example.parameters = {
   apolloClient: {
-    mocks: [selectionInfoMock, makeReservationMock],
+    mocks: [selectionInfoOpenMock, makeReservationMock],
   },
 };

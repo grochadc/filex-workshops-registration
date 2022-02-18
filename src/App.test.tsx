@@ -1,12 +1,17 @@
+//@ts-ignore
 import React from "react";
 import { screen, act } from "@testing-library/react";
 import { within } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "./testutils";
-import { GET_SELECTION_INFO, MAKE_RESERVATION } from "./pages/SelectionPage";
-import apolloMock from "./testutils/generatedMocks";
 import { Switch, Route } from "react-router-dom";
 import App from "./App";
+
+import {
+  withoutResMock,
+  selectionInfoOpenMock,
+  setReservationMock,
+} from "./App.stories";
 
 const waitForServer = async () => {
   return act(
@@ -14,61 +19,24 @@ const waitForServer = async () => {
   );
 };
 
-const selectionInfoMock = apolloMock(
-  GET_SELECTION_INFO,
-  { code: "1234567890" },
-  {
-    data: {
-      student: {
-        id: "1",
-        nivel: "4",
-      },
-      workshops: [
-        {
-          name: "Conversation",
-          levels: ["1", "2", "3", "4", "5", "6"],
-          options: [
-            {
-              id: "1",
-              teacher_name: "Gonzalo",
-              available: true,
-            },
-          ],
-        },
-      ],
-    },
-  }
-);
-const makeReservationMock = apolloMock(
-  MAKE_RESERVATION,
-  {
-    student_id: "1",
-    option_id: "1",
-    tutorial_reason: null,
-  },
-  {
-    data: {
-      makeWorkshopReservation: {
-        workshop_name: "Conversation",
-        teacher_name: "Fulanito",
-        day: "Lunes",
-        time: "14:00 - 15:00",
-        url: "https://meet.google.com",
-      },
-    },
-  }
-);
-
 test("makes a reservation successfully", async () => {
   renderWithProviders(<App />, {
-    mocks: [selectionInfoMock, makeReservationMock],
+    mocks: [withoutResMock, selectionInfoOpenMock, setReservationMock],
   });
 
   userEvent.type(screen.getByRole("textbox"), "1234567890");
   userEvent.click(screen.getByRole("button"));
   await waitForServer();
 
-  userEvent.click(screen.getByText(/reservar/i));
+  const resButton = await screen.findByRole("button", {
+    name: /hacer una reservacion/i,
+  });
+
+  userEvent.click(resButton);
+
+  await waitForServer();
+
+  userEvent.click(screen.getByTestId("button-reservar-option_id1"));
   await waitForServer();
 
   userEvent.click(screen.getByTestId("modal-reservar-button"));
@@ -88,7 +56,7 @@ test("changes a workshop selection", async () => {
       </Route>
     </Switch>,
     {
-      mocks: [selectionInfoMock],
+      mocks: [selectionInfoOpenMock],
       route: "/selection/1234567890",
     }
   );

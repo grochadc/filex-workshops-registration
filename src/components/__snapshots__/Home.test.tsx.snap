@@ -7,22 +7,21 @@ exports[`Renders Home without crashing 1`] = `
       class=""
     >
       <div
-        class="form-group"
+        class="flex flex-col w-full md:flex-row md:w-40"
       >
         <label
-          class="form-label"
           for="code"
         >
-          Code:
+          Codigo:
         </label>
         <input
-          class="form-control"
+          class="border rounded-sm w-full md:w-40 h-10 mx-2 px-3"
           id="code"
           type="text"
           value=""
         />
         <button
-          class="btn btn-primary"
+          class="rounded bg-blue-500 text-white p-2 m-1"
           type="submit"
         >
           Submit
