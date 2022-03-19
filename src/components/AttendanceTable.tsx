@@ -188,7 +188,7 @@ const TableView = (props: TableViewProps) => {
                   {reservation.nombre} {reservation.apellido_paterno}{" "}
                   {reservation.apellido_materno}
                 </td>
-                <td>{reservation.email}</td>
+                <td><a href={`mailto:${reservation.email}`} target="_blank" className="underline text-blue-500 hover:text-blue-300">{reservation.email}</a></td>
                 <td>{reservation.telefono}</td>
                 <td className="text-center">{reservation.nivel}</td>
                 <td className="text-center">{reservation.grupo}</td>
