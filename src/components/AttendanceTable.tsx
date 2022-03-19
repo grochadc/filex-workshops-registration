@@ -1,8 +1,22 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
+
+import tw from "tailwind-styled-components";
+
+const Tooltip = tw.div`
+  rounded
+  border
+  border-black
+  min-w-20
+  max-w-max
+  p-1
+  px-2
+  m-3
+  text-center
+`;
 
 type Reservations =
   ReservationsListQuery["teacher"]["options"][0]["reservations"];
@@ -21,7 +35,7 @@ type AttendanceTableProps = {
   onSaveAttendance: (params: {
     attendance: AttendingStudent[];
     option_id: string;
-  }) => void;
+  }) => Promise<any>;
 };
 
 const AttendanceTable = (props: AttendanceTableProps) => {
@@ -52,7 +66,11 @@ const AttendanceTable = (props: AttendanceTableProps) => {
   }
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const handleSaveAttendance = () => {
+    setLoading(true);
+
     function getValidatedAttendance(
       state: typeof initialState,
       teacher: string,
@@ -75,6 +93,9 @@ const AttendanceTable = (props: AttendanceTableProps) => {
         props.workshop_name
       ),
       option_id: props.option_id,
+    }).then(() => {
+      setLoading(false);
+      setSuccess(true);
     });
   };
   return (
@@ -116,6 +137,8 @@ const AttendanceTable = (props: AttendanceTableProps) => {
           >
             Save
           </button>
+          {loading ? <Tooltip>Saving...</Tooltip> : null}
+          {!loading && success ? <Tooltip>Saved attendance!</Tooltip> : null}
         </div>
       </Accordion.Collapse>
     </div>
@@ -140,7 +163,6 @@ const TableView = (props: TableViewProps) => {
           <th>telefono</th>
           <th>Nivel</th>
           <th>Grupo</th>
-          {props.isTutorial ? <th>Tutorial reason</th> : null}
           <th>Present</th>
         </tr>
       </thead>
@@ -164,13 +186,6 @@ const TableView = (props: TableViewProps) => {
                 <td>{reservation.telefono}</td>
                 <td className="text-center">{reservation.nivel}</td>
                 <td className="text-center">{reservation.grupo}</td>
-                {props.isTutorial ? (
-                  <td>
-                    {reservation.tutorial_reason
-                      ? reservation.tutorial_reason
-                      : "null"}
-                  </td>
-                ) : null}
                 <td className="text-center">
                   <input
                     type="checkbox"

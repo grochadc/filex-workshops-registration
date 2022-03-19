@@ -114,7 +114,7 @@ const TeacherPage = (props: any) => {
   }) => {
     const validAttendance = validateAttendance(attendance);
 
-    saveAttendance({
+    return saveAttendance({
       variables: {
         option_id,
         teacher_id: data ? data.teacher.id : "0",
