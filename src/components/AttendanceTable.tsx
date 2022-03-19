@@ -137,6 +137,12 @@ const AttendanceTable = (props: AttendanceTableProps) => {
           >
             Save
           </button>
+          <a 
+            href={`mailto:${props.reservations?.map((reservation) => reservation.email).join(',')}`}
+            className="underline text-blue-500 hover:text-blue-300"
+            target="_blank">
+              Enviar correo a todos
+          </a>
           {loading ? <Tooltip>Saving...</Tooltip> : null}
           {!loading && success ? <Tooltip>Saved attendance!</Tooltip> : null}
         </div>
