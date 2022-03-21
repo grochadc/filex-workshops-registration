@@ -3,6 +3,7 @@ import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
+import {useMediaQuery} from "react-responsive";
 import {EmailIconButton} from './utils';
 
 import tw from "tailwind-styled-components";
@@ -156,15 +157,19 @@ type TableViewProps = {
 };
 
 const TableView = (props: TableViewProps) => {
+  const isMobile = useMediaQuery({query: `(max-width:760px)`})
+  const [showFullDetails, setShowFullDetails] = useState(false);
   return (
-    <table className="w-screen mt-3">
+    <>
+    { isMobile ? <button className="underline text-blue-500" onClick={() => setShowFullDetails(!showFullDetails)}>Mostrar/Ocultar Datos Completos</button> : null}
+    <table className="w-full mt-3">
       <thead>
         <tr className="border-b-4">
           <th>no.</th>
-          <th>Codigo</th>
+          {showFullDetails || !isMobile ? <th>Codigo</th> : null}
           <th>Nombre</th>
-          <th>email</th>
-          <th>telefono</th>
+          {showFullDetails || !isMobile ? <th>email</th> : null}
+          {showFullDetails || !isMobile ? <th>telefono</th> : null}
           <th>Nivel</th>
           <th>Grupo</th>
           <th>Present</th>
@@ -181,13 +186,13 @@ const TableView = (props: TableViewProps) => {
                 key={reservation.id}
               >
                 <td className="py-2 text-center">{index + 1}</td>
-                <td>{reservation.codigo}</td>
+                {showFullDetails || !isMobile ? <td>{reservation.codigo}</td> : null}
                 <td>
                   {reservation.nombre} {reservation.apellido_paterno}{" "}
                   {reservation.apellido_materno}
                 </td>
-                <td><a href={`mailto:${reservation.email}`} target="_blank" className="underline text-blue-500 hover:text-blue-300">{reservation.email}</a></td>
-                <td>{reservation.telefono}</td>
+                {showFullDetails || !isMobile ?  <td><a href={`mailto:${reservation.email}`} target="_blank" className="underline text-blue-500 hover:text-blue-300">{reservation.email}</a></td> : null}
+                {showFullDetails || !isMobile ? <td>{reservation.telefono}</td> : null}
                 <td className="text-center">{reservation.nivel}</td>
                 <td className="text-center">{reservation.grupo}</td>
                 <td className="text-center">
@@ -203,6 +208,7 @@ const TableView = (props: TableViewProps) => {
         )}
       </tbody>
     </table>
+    </>
   );
 };
 
