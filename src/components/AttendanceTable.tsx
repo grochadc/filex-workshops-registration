@@ -3,6 +3,7 @@ import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
+import {EmailIconButton} from './utils';
 
 import tw from "tailwind-styled-components";
 
@@ -131,18 +132,15 @@ const AttendanceTable = (props: AttendanceTableProps) => {
               dispatch({ type: "change", payload: index })
             }
           />
+          <div className="flex justify-end w-full pt-4 pr-4">
           <button
             className="rounded rounded-sm bg-blue-500 p-2 m-1 text-white"
             onClick={handleSaveAttendance}
           >
-            Save
+            Save Attendance
           </button>
-          <a 
-            href={`mailto:${props.reservations?.map((reservation) => reservation.email).join(',')}`}
-            className="underline text-blue-500 hover:text-blue-300"
-            target="_blank">
-              Enviar correo a todos
-          </a>
+          <EmailIconButton title="Enviar Correo a Todos" fill="white" emails={props.reservations?.map((reservation) => reservation.email) || [""]} />
+          </div>
           {loading ? <Tooltip>Saving...</Tooltip> : null}
           {!loading && success ? <Tooltip>Saved attendance!</Tooltip> : null}
         </div>
