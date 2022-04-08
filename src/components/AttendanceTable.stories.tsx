@@ -32,7 +32,11 @@ const baseArgs = {
   option_id: "1",
   teacher_id: "1",
   teacher_name: "Gonzalo",
-  onSaveAttendance: () => console.log("Attendance Saved"),
+  onSaveAttendance: (): Promise<any> => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(true), 1000)
+    })
+  },
 };
 
 export const Normal = Template.bind({});

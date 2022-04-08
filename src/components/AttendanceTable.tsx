@@ -1,8 +1,24 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
+import {useMediaQuery} from "react-responsive";
+import {EmailIconButton} from './utils';
+
+import tw from "tailwind-styled-components";
+
+const Tooltip = tw.div`
+  rounded
+  border
+  border-black
+  min-w-20
+  max-w-max
+  p-1
+  px-2
+  m-3
+  text-center
+`;
 
 type Reservations =
   ReservationsListQuery["teacher"]["options"][0]["reservations"];
@@ -21,7 +37,7 @@ type AttendanceTableProps = {
   onSaveAttendance: (params: {
     attendance: AttendingStudent[];
     option_id: string;
-  }) => void;
+  }) => Promise<any>;
 };
 
 const AttendanceTable = (props: AttendanceTableProps) => {
@@ -52,7 +68,11 @@ const AttendanceTable = (props: AttendanceTableProps) => {
   }
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const handleSaveAttendance = () => {
+    setLoading(true);
+
     function getValidatedAttendance(
       state: typeof initialState,
       teacher: string,
@@ -75,6 +95,9 @@ const AttendanceTable = (props: AttendanceTableProps) => {
         props.workshop_name
       ),
       option_id: props.option_id,
+    }).then(() => {
+      setLoading(false);
+      setSuccess(true);
     });
   };
   return (
@@ -110,12 +133,17 @@ const AttendanceTable = (props: AttendanceTableProps) => {
               dispatch({ type: "change", payload: index })
             }
           />
+          <div className="flex justify-end w-full pt-4 pr-4">
           <button
             className="rounded rounded-sm bg-blue-500 p-2 m-1 text-white"
             onClick={handleSaveAttendance}
           >
-            Save
+            Save Attendance
           </button>
+          <EmailIconButton title="Enviar Correo a Todos" fill="white" emails={props.reservations?.map((reservation) => reservation.email) || [""]} />
+          </div>
+          {loading ? <Tooltip>Saving...</Tooltip> : null}
+          {!loading && success ? <Tooltip>Saved attendance!</Tooltip> : null}
         </div>
       </Accordion.Collapse>
     </div>
@@ -129,18 +157,21 @@ type TableViewProps = {
 };
 
 const TableView = (props: TableViewProps) => {
+  const isMobile = useMediaQuery({query: `(max-width:760px)`})
+  const [showFullDetails, setShowFullDetails] = useState(false);
   return (
-    <table className="w-screen mt-3">
+    <>
+    { isMobile ? <button className="underline text-blue-500" onClick={() => setShowFullDetails(!showFullDetails)}>Mostrar/Ocultar Datos Completos</button> : null}
+    <table className="w-full mt-3">
       <thead>
         <tr className="border-b-4">
           <th>no.</th>
-          <th>Codigo</th>
+          {showFullDetails || !isMobile ? <th>Codigo</th> : null}
           <th>Nombre</th>
-          <th>email</th>
-          <th>telefono</th>
+          {showFullDetails || !isMobile ? <th>email</th> : null}
+          {showFullDetails || !isMobile ? <th>telefono</th> : null}
           <th>Nivel</th>
           <th>Grupo</th>
-          {props.isTutorial ? <th>Tutorial reason</th> : null}
           <th>Present</th>
         </tr>
       </thead>
@@ -155,22 +186,15 @@ const TableView = (props: TableViewProps) => {
                 key={reservation.id}
               >
                 <td className="py-2 text-center">{index + 1}</td>
-                <td>{reservation.codigo}</td>
+                {showFullDetails || !isMobile ? <td>{reservation.codigo}</td> : null}
                 <td>
                   {reservation.nombre} {reservation.apellido_paterno}{" "}
                   {reservation.apellido_materno}
                 </td>
-                <td>{reservation.email}</td>
-                <td>{reservation.telefono}</td>
+                {showFullDetails || !isMobile ?  <td><a href={`mailto:${reservation.email}`} target="_blank" className="underline text-blue-500 hover:text-blue-300">{reservation.email}</a></td> : null}
+                {showFullDetails || !isMobile ? <td>{reservation.telefono}</td> : null}
                 <td className="text-center">{reservation.nivel}</td>
                 <td className="text-center">{reservation.grupo}</td>
-                {props.isTutorial ? (
-                  <td>
-                    {reservation.tutorial_reason
-                      ? reservation.tutorial_reason
-                      : "null"}
-                  </td>
-                ) : null}
                 <td className="text-center">
                   <input
                     type="checkbox"
@@ -184,6 +208,7 @@ const TableView = (props: TableViewProps) => {
         )}
       </tbody>
     </table>
+    </>
   );
 };
 
