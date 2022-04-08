@@ -245,6 +245,7 @@ export type MutationResponse = {
 
 export type Option = {
   __typename?: 'Option';
+  active: Scalars['Boolean'];
   available: Scalars['Boolean'];
   day: Scalars['String'];
   id: Scalars['ID'];
@@ -563,7 +564,7 @@ export type GetSelectionInfoQueryVariables = Exact<{
 }>;
 
 
-export type GetSelectionInfoQuery = { __typename?: 'Query', isWorkshopsOpen: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, nivel: string, reservation?: Maybe<{ __typename?: 'StudentReservation', workshop_name: string, day: string, time: string, teacher_name: string, url: string, zoom_id?: Maybe<string> }> }, workshops: Array<{ __typename?: 'Workshop', id: string, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, workshop_id: string, workshop_name: string, day: string, time: string, teacher_name: string, teacher_id: string, url: string, zoom_id?: Maybe<string>, available: boolean, isTutorial: boolean }> }> };
+export type GetSelectionInfoQuery = { __typename?: 'Query', isWorkshopsOpen: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, nivel: string, reservation?: Maybe<{ __typename?: 'StudentReservation', workshop_name: string, day: string, time: string, teacher_name: string, url: string, zoom_id?: Maybe<string> }> }, workshops: Array<{ __typename?: 'Workshop', id: string, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, workshop_id: string, workshop_name: string, day: string, time: string, teacher_name: string, teacher_id: string, url: string, zoom_id?: Maybe<string>, available: boolean, active: boolean, isTutorial: boolean }> }> };
 
 export type SetReservationMutationVariables = Exact<{
   student_id: Scalars['ID'];
@@ -739,6 +740,7 @@ export const GetSelectionInfoDocument = gql`
       url
       zoom_id
       available
+      active
       isTutorial
     }
   }

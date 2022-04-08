@@ -49,7 +49,7 @@ const WorkshopSelector = ({
       <Accordion.Collapse eventKey={eventKey}>
         <Container>
           <Row>
-            {workshop.options.map((option, optionIndex) => {
+            {workshop.options.filter(option => option.active).map((option, optionIndex) => {
               return (
                 <Col className="mb-3" key={optionIndex}>
                   <Card

@@ -120,7 +120,7 @@ operations.getSelectionInfo.data = (values = {}, options = {}) => {
         levels: values.levels || [],
         options: (values.options || []).map(item => ((values = {}, options = {}) => {
           const __typename = 'Option';
-          values = (({ id = null, workshop_id = null, workshop_name = null, day = null, time = null, teacher_name = null, teacher_id = null, url = null, zoom_id = null, available = null, isTutorial = null }) => ({ id, workshop_id, workshop_name, day, time, teacher_name, teacher_id, url, zoom_id, available, isTutorial }))(values);
+          values = (({ id = null, workshop_id = null, workshop_name = null, day = null, time = null, teacher_name = null, teacher_id = null, url = null, zoom_id = null, available = null, active = null, isTutorial = null }) => ({ id, workshop_id, workshop_name, day, time, teacher_name, teacher_id, url, zoom_id, available, active, isTutorial }))(values);
           values.__typename = __typename;
           return {
             id: (values.id === null || values.id === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'ID', mappedTypeName: 'string', fieldName: 'id', __typename, scalarValues: options.scalarValues }) : values.id,
@@ -133,6 +133,7 @@ operations.getSelectionInfo.data = (values = {}, options = {}) => {
             url: (values.url === null || values.url === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'String', mappedTypeName: 'string', fieldName: 'url', __typename, scalarValues: options.scalarValues }) : values.url,
             zoom_id: values.zoom_id,
             available: (values.available === null || values.available === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'available', __typename, scalarValues: options.scalarValues }) : values.available,
+            active: (values.active === null || values.active === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'active', __typename, scalarValues: options.scalarValues }) : values.active,
             isTutorial: (values.isTutorial === null || values.isTutorial === undefined) ? options.getDefaultScalarValue({ scalarTypeName: 'Boolean', mappedTypeName: 'boolean', fieldName: 'isTutorial', __typename, scalarValues: options.scalarValues }) : values.isTutorial,
             ...(options.addTypename ? { __typename } : {})
           };

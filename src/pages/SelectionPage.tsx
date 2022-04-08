@@ -41,6 +41,7 @@ export const getSelectionInfo = gql`
         url
         zoom_id
         available
+        active
         isTutorial
       }
     }

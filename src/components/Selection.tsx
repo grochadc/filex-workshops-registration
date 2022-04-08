@@ -31,7 +31,7 @@ const Selection = (props: SelectionProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selection, setSelection] = useState({ option_id: "", teacher_id: "" });
   const selectWorkshop = (selectionId: string) => {
-    const options = props.workshops.map((workshop) => workshop.options).flat();
+    const options = props.workshops.map((workshop) => workshop.options).flat().filter(option => option.active);
     const selectedOption = options.filter(
       (option) => option.id === selectionId
     )[0];
@@ -84,7 +84,6 @@ type SelectionModalProps = {
   selectionForModal: SelectionForModal | undefined;
 };
 export const SelectionModal = (props: SelectionModalProps) => {
-  const [tutorialReason, setTutorialReason] = useState("");
   return (
     <Modal show={props.show} onHide={props.handleCloseModal}>
       <Modal.Header closeButton>
@@ -120,9 +119,7 @@ export const SelectionModal = (props: SelectionModalProps) => {
           data-testid="modal-reservar-button"
           variant="primary"
           onClick={() =>
-            props.handleReservationConfirmation(
-              tutorialReason.length > 0 ? tutorialReason : undefined
-            )
+            props.handleReservationConfirmation()
           }
         >
           Reservar
