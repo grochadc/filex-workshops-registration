@@ -8,7 +8,7 @@ export const GET_TEACHER_LIST = gql`
   query getTeacherList {
     teachers {
       id
-      name
+      nombre
     }
   }
 `;
@@ -21,7 +21,7 @@ const TeacherSelectorPage = () => {
     <div>
       {data?.teachers.map((teacher) => (
         <p>
-          <Link to={`/teacher/${teacher.id}`}>{teacher.name}</Link>
+          <Link to={`/teacher/${teacher.id}`}>{teacher.nombre}</Link>
         </p>
       ))}
     </div>

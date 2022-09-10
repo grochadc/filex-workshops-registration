@@ -22,9 +22,9 @@ Normal.args = {
     console.log("selectionId", selectionId, "teacher_id", teacher_id),
   index: 0,
   student: {
-    id: "1234567890",
     codigo: "1234567890",
     nombre: "Benito Antonio",
+    //@ts-ignore
     apellido_paterno: "Martinez",
     apellido_materno: "Ocasio",
     genero: "M",
@@ -34,7 +34,7 @@ Normal.args = {
     ciclo: "2022A",
     externo: false,
     curso: "en",
-    nivel: "5",
+    nivel: 5,
     grupo: "E5-1",
     reservationCount: 0,
     reservationLimit: 5,

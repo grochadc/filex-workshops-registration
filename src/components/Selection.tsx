@@ -1,50 +1,65 @@
 import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
-import Button from "react-bootstrap/Button";
+import { Button } from "./utils";
 import Modal from "react-bootstrap/Modal";
-import { Workshop } from "../generated/grapqhl";
+import { GetSelectionInfoQuery } from "../generated/grapqhl";
 import WorkshopSelector from "./WorkshopSelector";
-import { Student } from "../generated/grapqhl";
+import { findWorkshopNameFromOptionId } from "../utils/lib";
 
-type SelectionForModal = {
-  workshop_name: string;
-  teacher_name: string;
-  day: string;
-  time: string;
-};
+type Student = GetSelectionInfoQuery["student"];
+type Workshops = GetSelectionInfoQuery["workshops"];
+type SelectionForModal = Workshops[0]["options"][0] & { workshop_name: string };
 
 export type SelectionProps = {
   student: Student;
-  workshops: Workshop[];
+  workshops: Workshops;
   onReservation: (option_id: string, tutorial_reason?: string) => void;
   isWorkshopsOpen: boolean;
 };
 const Selection = (props: SelectionProps) => {
-  const [selectionForModal, setSelectionForModal] = useState({
-    day: "",
-    time: "",
-    teacher_name: "",
-    workshop_name: "",
-    isTutorial: false,
-  });
+  const [selectionForModal, setSelectionForModal] =
+    useState<SelectionForModal | undefined>();
   const [showModal, setShowModal] = useState(false);
-  const [selection, setSelection] = useState({ option_id: "", teacher_id: "" });
+  const [selection, setSelection] =
+    useState<{ option_id: string } | undefined>();
+
   const selectWorkshop = (selectionId: string) => {
-    const options = props.workshops.map((workshop) => workshop.options).flat().filter(option => option.active);
+    const options = props.workshops
+      .map((workshop) => workshop.options)
+      .flat()
+      .filter((option) => option.active)
+      .sort();
+
+      // TO DO sort options by Lunes, Martes and time 19:00 abstract and test
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+
     const selectedOption = options.filter(
       (option) => option.id === selectionId
     )[0];
 
     setSelection({
       option_id: selectionId,
-      teacher_id: selectedOption.teacher_id,
     });
-    setSelectionForModal(selectedOption);
+
+    const selectedOptionWorkshopName = findWorkshopNameFromOptionId(
+      props.workshops,
+      selectionId
+    );
+
+    setSelectionForModal({
+      ...selectedOption,
+      workshop_name: selectedOptionWorkshopName
+        ? selectedOptionWorkshopName
+        : "",
+    });
+
     setShowModal(true);
   };
   const handleReservationConfirmation = (tutorial_reason?: string) => {
-    props.onReservation(selection.option_id, tutorial_reason);
+    if (selection) {
+      props.onReservation(selection.option_id, tutorial_reason);
+    }
   };
   return (
     <Container>
@@ -56,8 +71,10 @@ const Selection = (props: SelectionProps) => {
           </Alert>
         ) : null}
         {props.workshops
-          .filter((workshop) => workshop.levels.includes(props.student.nivel))
-          .map((workshop: Workshop, workshopIndex: number) => (
+          .filter((workshop) =>
+            workshop.levels.includes(String(props.student.nivel))
+          )
+          .map((workshop, workshopIndex: number) => (
             <WorkshopSelector
               key={workshopIndex}
               workshop={workshop}
@@ -98,7 +115,7 @@ export const SelectionModal = (props: SelectionModalProps) => {
             </p>
             <p>
               <strong>Teacher:</strong>{" "}
-              <em>{props.selectionForModal.teacher_name}</em>
+              <em>{props.selectionForModal.teacher.nombre}</em>
             </p>
             <p>
               <strong>Horario:</strong> <em>{props.selectionForModal.time}</em>
@@ -118,9 +135,7 @@ export const SelectionModal = (props: SelectionModalProps) => {
         <Button
           data-testid="modal-reservar-button"
           variant="primary"
-          onClick={() =>
-            props.handleReservationConfirmation()
-          }
+          onClick={() => props.handleReservationConfirmation()}
         >
           Reservar
         </Button>

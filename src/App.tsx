@@ -63,7 +63,7 @@ function App() {
           <TeacherSelector />
         </Route>
         <Route path="/success">
-          <Success reservationResponse={reservationDetails} />
+        <ReservationDetails reservationDetails={reservationDetails} />
         </Route>
         <Route path="/details">
           <ReservationDetails reservationDetails={reservationDetails} />
@@ -72,13 +72,6 @@ function App() {
           <Home />
         </Route>
       </Switch>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://docs.google.com/forms/d/e/1FAIpQLSdIdtnyAzbTcOlkCbwCpIWM3vrMNRfA_5DamsK4wosCrz3Ybg/viewform?usp=sf_link"
-      >
-        Reportar un problema
-      </a>
     </div>
   );
 }

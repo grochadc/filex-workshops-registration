@@ -4,9 +4,9 @@ import { useParams, useHistory } from "react-router-dom";
 import {
   useGetSelectionInfoQuery,
   useSetReservationMutation,
-} from "../generated/grapqhl";
-import { Loading, Error } from "../components/utils";
-import Selection from "../components/Selection";
+} from "../../generated/grapqhl";
+import { Loading, Error } from "../../components/utils";
+import Selection from "../../components/Selection";
 
 export const getSelectionInfo = gql`
   query getSelectionInfo($code: ID!) {
@@ -17,12 +17,18 @@ export const getSelectionInfo = gql`
       nombre
       nivel
       reservation {
-        workshop_name
-        day
-        time
-        teacher_name
-        url
-        zoom_id
+        option {
+          workshop {
+            name
+          }
+          day
+          time
+          teacher {
+            nombre
+          }
+          url
+          isTutorial
+        }
       }
     }
     workshops {
@@ -32,12 +38,11 @@ export const getSelectionInfo = gql`
       levels
       options {
         id
-        workshop_id
-        workshop_name
         day
         time
-        teacher_name
-        teacher_id
+        teacher {
+          nombre
+        }
         url
         zoom_id
         available
@@ -51,11 +56,17 @@ export const getSelectionInfo = gql`
 export const MAKE_RESERVATION = gql`
   mutation setReservation($student_id: ID!, $option_id: ID!) {
     makeWorkshopReservation(student_id: $student_id, option_id: $option_id) {
-      day
-      time
-      teacher_name
-      workshop_name
-      url
+      option {
+        day
+        time
+        teacher {
+          nombre
+        }
+        workshop {
+          name
+        }
+        url
+      }
     }
   }
 `;
@@ -67,6 +78,7 @@ type SelectionPageProps = {
 };
 const SelectionPage = (props: SelectionPageProps) => {
   const history = useHistory();
+  
   const handleDetails = useCallback(
     (details: any) => {
       props.setReservationDetails(details);
@@ -74,29 +86,38 @@ const SelectionPage = (props: SelectionPageProps) => {
     },
     [history, props]
   );
+
   const params: { code: string } = useParams();
+
   const [saveReservation, { error: saveReservationError }] =
     useSetReservationMutation({
       onCompleted: (data) => {
-        handleDetails(data.makeWorkshopReservation);
+        history.push(`/student/${params.code}`)
       },
     });
-  const handleReservation = (option_id: string) => {
+
+  const handleReservation = (
+    option_id: string,
+    tutorial_reason?: string,
+  ) => {
     saveReservation({
       variables: {
-        student_id: data ? data.student.id : "",
-        option_id,
+        student_id: data ? String(data.student.id) : "",
+        option_id: String(option_id),
       },
     });
   };
+
   const { data, loading, error } = useGetSelectionInfoQuery({
     variables: { code: params.code },
   });
+
   useEffect(() => {
     if (data?.student.reservation) {
       handleDetails(data.student.reservation);
     }
   }, [data, handleDetails]);
+
   if (
     saveReservationError?.graphQLErrors[0]?.extensions?.code ===
     "RESERVATION_FORBIDDEN"
@@ -110,8 +131,6 @@ const SelectionPage = (props: SelectionPageProps) => {
     return (
       <IsWorkshopsOpenContext.Provider value={data?.isWorkshopsOpen}>
         <Selection
-          /*
-        //@ts-ignore */
           student={data.student}
           workshops={data.workshops}
           onReservation={handleReservation}

@@ -1,14 +1,14 @@
 import React from "react";
-import { renderWithProviders } from "../testutils";
+import { renderWithProviders } from "../../testutils";
 import { createMemoryHistory } from "history";
 import { act, screen } from "@testing-library/react";
 import { Switch, Route } from "react-router-dom";
-import { getSelectionInfo } from "./SelectionPage";
-import apolloMock from "../testutils/generatedMocks";
+import { getSelectionInfo } from ".";
+import apolloMock from "../../testutils/generatedMocks";
 
-import SelectionPage from "./SelectionPage";
-import ReservationDetails from "../components/ReservationDetails";
-import { ReservationDetailsType } from "../App";
+import SelectionPage from ".";
+import ReservationDetails from "../../components/ReservationDetails";
+import { ReservationDetailsType } from "../../App";
 
 const reservationDetails: ReservationDetailsType = {
   workshop_name: "Conversation",

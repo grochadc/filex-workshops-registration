@@ -18,25 +18,30 @@ export const GET_RESERVATIONS = gql`
   query reservationsList($teacher_id: ID!) {
     teacher(id: $teacher_id) {
       id
-      name
-      options(sorted: true) {
+      nombre
+      options {
         id
         day
         time
         url
-        workshop_name
-        workshop_id
+        workshop {
+          name
+          id
+        }
         reservations {
           id
-          codigo
-          nombre
-          apellido_paterno
-          apellido_materno
-          email
-          telefono
-          nivel
-          grupo
-          tutorial_reason
+          student {
+          	codigo
+          	nombre
+          	apellido_paterno
+          	apellido_materno
+          	email
+          	telefono
+          	nivel
+          	grupo
+          }
+          tutorialReason
+          attended
         }
       }
     }
@@ -44,12 +49,12 @@ export const GET_RESERVATIONS = gql`
 `;
 export const SAVE_ATTENDANCE = gql`
   mutation saveAttendance(
-    $students: [AttendingStudent!]!
+    $attendingStudents: [AttendingStudent!]!
     $option_id: ID!
     $teacher_id: ID!
   ) {
     saveWorkshopsAttendance(
-      input: $students
+      attendingStudents: $attendingStudents
       option_id: $option_id
       teacher_id: $teacher_id
     )
@@ -118,7 +123,7 @@ const TeacherPage = (props: any) => {
       variables: {
         option_id,
         teacher_id: data ? data.teacher.id : "0",
-        students: validAttendance,
+        attendingStudents: validAttendance,
       },
     }).catch((e) => console.error(e));
   };
@@ -130,7 +135,7 @@ const TeacherPage = (props: any) => {
     return (
       <Container>
         <h1 className="text-4xl font-bold">
-          Teacher {data?.teacher.name}'s Dashboard
+          Teacher {data?.teacher.nombre}'s Dashboard
         </h1>
         <Accordion>
           <div
@@ -149,11 +154,9 @@ const TeacherPage = (props: any) => {
                   time={option.time}
                   url={option.url}
                   reservations={option.reservations}
-                  workshop_id={option.workshop_id}
-                  workshop_name={option.workshop_name}
+                  workshop={option.workshop}
                   option_id={option.id}
-                  teacher_id={data?.teacher.id}
-                  teacher_name={data?.teacher.name}
+                  teacher={data?.teacher}
                   onSaveAttendance={handleSaveAttendance}
                 />
               );

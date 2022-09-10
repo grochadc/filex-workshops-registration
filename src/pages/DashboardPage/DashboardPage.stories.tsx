@@ -1,9 +1,9 @@
 import React from "react";
-import apolloMock from "../testutils/generatedMocks";
+import apolloMock from "../../testutils/generatedMocks";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { MemoryRouter as Router } from "react-router-dom";
 
-import Dashboard, { getSettings } from "./DashboardPage";
+import Dashboard, { getSettings } from ".";
 
 const settingsMock = apolloMock(
   getSettings,

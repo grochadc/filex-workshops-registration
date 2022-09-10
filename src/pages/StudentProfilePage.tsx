@@ -2,7 +2,7 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import ReservationCounter from "../components/ReservationCounter";
 import { useParams, useHistory } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { useGetStudentProfileQuery } from "../generated/grapqhl";
 import { Error, Loading, Alert } from "../components/utils";
 
@@ -18,11 +18,17 @@ export const getStudentProfile = gql`
       telefono
       nivel
       reservation {
-        workshop_name
-        day
-        time
-        teacher_name
-        url
+        option {
+          workshop {
+            name
+          }
+          day
+          time
+          url
+          teacher {
+            nombre
+          }
+        }
       }
       reservationCount
       reservationLimit
@@ -49,6 +55,7 @@ function StudentProfile() {
   const { data, loading, error } = useGetStudentProfileQuery({
     variables: { code: params.codigo },
   });
+  
   if (loading) <Loading />;
   if (error) <Error e={error} />;
   if (data) {
@@ -92,18 +99,10 @@ function StudentProfile() {
           <Heading>Reservación Actual</Heading>
           {data.student.reservation ? (
             <>
-              <p>{data.student.reservation.workshop_name}</p>
-              <p>Teacher {data.student.reservation.teacher_name}</p>
+              <p>{data.student.reservation.option.workshop.name}</p>
+              <p>Teacher {data.student.reservation.option.teacher.nombre}</p>
               <p>
-                {data.student.reservation.day} {data.student.reservation.time}
-              </p>
-              <p>
-                <a
-                  className="underline text-blue-500"
-                  href={data.student.reservation.url}
-                >
-                  {data.student.reservation.url}
-                </a>
+                {data.student.reservation.option.day} {data.student.reservation.option.time}
               </p>
             </>
           ) : (

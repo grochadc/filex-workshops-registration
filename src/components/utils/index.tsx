@@ -3,11 +3,10 @@ import Card from "react-bootstrap/Card";
 import tw from "tailwind-styled-components";
 
 type ButtonProps = {
-  primary: boolean;
-  secondary: boolean;
+  variant?: "primary" | "secondary"
 };
 export const Button = tw.button<ButtonProps>`
-${(props) => (props.secondary ? "bg-grey-500" : "bg-blue-500")}
+${(p) => (p.variant === "secondary" ? "bg-gray-400" : "bg-blue-500")}
 rounded
 text-white
 p-2

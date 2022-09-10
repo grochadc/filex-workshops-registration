@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://filex-database.herokuapp.com"
+schema: "http://localhost:5000"
 documents: "(src/**/*.tsx)"
 generates:
   src/generated/grapqhl.ts:

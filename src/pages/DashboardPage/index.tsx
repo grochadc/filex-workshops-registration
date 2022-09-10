@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useMutation, gql } from "@apollo/client";
-import { useSettingsQuery, useToggleMutation } from "../generated/grapqhl";
-import { Error } from "../components/utils";
+import { useSettingsQuery, useToggleMutation } from "../../generated/grapqhl";
+import { Error } from "../../components/utils";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
 
@@ -50,7 +50,7 @@ const Dashboard = (props: any) => {
               {settingsData.teachers.map((teacher) => (
                 <li>
                   <Link to={`/teacher/${teacher.id}`} component={StyledAnchor}>
-                    {teacher.name}
+                    {teacher.nombre}
                   </Link>
                 </li>
               ))}
@@ -74,7 +74,7 @@ export const getSettings = gql`
     isWorkshopsOpen
     teachers {
       id
-      name
+      nombre
     }
   }
 `;

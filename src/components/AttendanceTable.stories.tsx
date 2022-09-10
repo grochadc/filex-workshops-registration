@@ -34,8 +34,8 @@ const baseArgs = {
   teacher_name: "Gonzalo",
   onSaveAttendance: (): Promise<any> => {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(true), 1000)
-    })
+      setTimeout(() => resolve(true), 1000);
+    });
   },
 };
 
@@ -45,36 +45,45 @@ Normal.args = {
   reservations: [
     {
       id: "1",
-      codigo: "1234567890",
-      nombre: "Benito Antonio",
-      apellido_paterno: "Martinez",
-      apellido_materno: "Ocasio",
-      email: "bad@bunny.pr",
-      telefono: "3411234567",
-      nivel: "4",
-      grupo: "E4-1",
+      attended: false,
+      student: {
+        codigo: "1234567890",
+        nombre: "Benito Antonio",
+        apellido_paterno: "Martinez",
+        apellido_materno: "Ocasio",
+        email: "bad@bunny.pr",
+        telefono: "3411234567",
+        nivel: 4,
+        grupo: "E4-1",
+      },
     },
     {
       id: "2",
-      codigo: "0987654321",
-      nombre: "Alberto",
-      apellido_paterno: "Aguilera",
-      apellido_materno: "Valadez",
-      email: "juanga@noanoa.com",
-      telefono: "3411234567",
-      nivel: "4",
-      grupo: "E4-1",
+      attended: false,
+      student: {
+        codigo: "0987654321",
+        nombre: "Alberto",
+        apellido_paterno: "Aguilera",
+        apellido_materno: "Valadez",
+        email: "juanga@noanoa.com",
+        telefono: "3411234567",
+        nivel: 4,
+        grupo: "E4-1",
+      },
     },
     {
       id: "3",
-      codigo: "1234509876",
-      nombre: "Gerardo",
-      apellido_paterno: "Ortiz",
-      apellido_materno: "Ortiz",
-      email: "gerard@mail.com",
-      telefono: "3411234567",
-      nivel: "4",
-      grupo: "E4-1",
+      attended: false,
+      student: {
+        codigo: "1234509876",
+        nombre: "Gerardo",
+        apellido_paterno: "Ortiz",
+        apellido_materno: "Ortiz",
+        email: "gerard@mail.com",
+        telefono: "3411234567",
+        nivel: 4,
+        grupo: "E4-1",
+      },
     },
   ],
 };
@@ -83,5 +92,6 @@ export const Empty = Template.bind({});
 
 Empty.args = {
   ...baseArgs,
-  reservations: null,
+  //@ts-ignore
+  reservations: null
 };
