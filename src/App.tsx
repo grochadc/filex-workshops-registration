@@ -59,11 +59,8 @@ function App() {
         <Route path="/dashboard">
           <Dashboard />
         </Route>
-        <Route path="/teachers">
-          <TeacherSelector />
-        </Route>
         <Route path="/success">
-        <ReservationDetails reservationDetails={reservationDetails} />
+          <ReservationDetails reservationDetails={reservationDetails} />
         </Route>
         <Route path="/details">
           <ReservationDetails reservationDetails={reservationDetails} />

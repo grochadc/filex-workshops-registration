@@ -82,7 +82,7 @@ const SelectionPage = (props: SelectionPageProps) => {
   const handleDetails = useCallback(
     (details: any) => {
       props.setReservationDetails(details);
-      history.push("/details");
+      history.push(`/student/${params.code}`);
     },
     [history, props]
   );
