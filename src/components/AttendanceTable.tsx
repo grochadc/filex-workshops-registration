@@ -124,8 +124,9 @@ const AttendanceTable = (props: AttendanceTableProps) => {
   );
 };
 
+type ReturnedReservation = ReservationsListQuery["teacher"]["options"][0]["reservations"][0];
 type TableViewProps = {
-  reservations: any[];
+  reservations: Exclude<ReturnedReservation, null>[];
   isTutorial: boolean;
   onCheckboxChange: (index: number) => void;
 };
@@ -164,37 +165,37 @@ const TableView = (props: TableViewProps) => {
               return (
                 <tr
                   className="odd:bg-white even:bg-slate-100"
-                  key={reservation.id}
+                  key={reservation?.id}
                 >
                   <td className="py-2 text-center">{index + 1}</td>
                   {showFullDetails || !isMobile ? (
-                    <td>{reservation.codigo}</td>
+                    <td>{reservation?.student.codigo}</td>
                   ) : null}
                   <td>
-                    {reservation.nombre} {reservation.apellido_paterno}{" "}
-                    {reservation.apellido_materno}
+                    {reservation?.student.nombre} {reservation?.student.apellido_paterno}{" "}
+                    {reservation?.student.apellido_materno}
                   </td>
                   {showFullDetails || !isMobile ? (
                     <td>
                       <a
-                        href={`mailto:${reservation.email}`}
+                        href={`mailto:${reservation?.student.email}`}
                         target="_blank"
                         rel='noreferrer'
                         className="underline text-blue-500 hover:text-blue-300"
                       >
-                        {reservation.email}
+                        {reservation?.student.email}
                       </a>
                     </td>
                   ) : null}
                   {showFullDetails || !isMobile ? (
-                    <td>{reservation.telefono}</td>
+                    <td>{reservation?.student.telefono}</td>
                   ) : null}
-                  <td className="text-center">{reservation.nivel}</td>
-                  <td className="text-center">{reservation.grupo}</td>
+                  <td className="text-center">{reservation?.student.nivel}</td>
+                  <td className="text-center">{reservation?.student.grupo}</td>
                   <td className="text-center">
                     <input
                       type="checkbox"
-                      checked={props.reservations[index].attended}
+                      checked={props.reservations && props.reservations[index].attended }
                       onChange={() => props.onCheckboxChange(index)}
                     />
                   </td>
