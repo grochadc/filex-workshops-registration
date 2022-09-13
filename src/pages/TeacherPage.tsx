@@ -110,22 +110,28 @@ const TeacherPage = (props: any) => {
       onCompleted: onCompletedSaveWorkshopUrlMutation,
     });
 
-  const handleSaveAttendance = ({
+  const handleSaveAttendance = async ({
     attendance,
     option_id,
   }: {
     attendance: AttendingStudent[];
     option_id: string;
   }) => {
-    const validAttendance = validateAttendance(attendance);
-
+    const shavedAttendance = attendance.map((attendingStudent) => {
+      return {
+        id: attendingStudent.id,
+        attended: attendingStudent.attended
+      }
+    })
     return saveAttendance({
       variables: {
         option_id,
         teacher_id: data ? data.teacher.id : "0",
-        attendingStudents: validAttendance,
+        attendingStudents: shavedAttendance,
       },
-    }).catch((e) => console.error(e));
+    }).catch((e) => {
+      console.error(e)
+    });
   };
 
   if (saveAttendanceError) return <Error e={saveAttendanceError} />;
