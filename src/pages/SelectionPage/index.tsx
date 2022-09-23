@@ -78,7 +78,7 @@ type SelectionPageProps = {
 };
 const SelectionPage = (props: SelectionPageProps) => {
   const history = useHistory();
-  
+
   const handleDetails = useCallback(
     (details: any) => {
       props.setReservationDetails(details);
@@ -92,25 +92,30 @@ const SelectionPage = (props: SelectionPageProps) => {
   const [saveReservation, { error: saveReservationError }] =
     useSetReservationMutation({
       onCompleted: (data) => {
-        history.push(`/student/${params.code}`)
+        alert('Reservacion hecha con exito. Redireccionando...')
+        history.push(`/student/${params.code}`);
+      },
+      onError: (err) => {
+        console.error(err);
       },
     });
-
-  const handleReservation = (
-    option_id: string,
-    tutorial_reason?: string,
-  ) => {
-    saveReservation({
-      variables: {
-        student_id: data ? String(data.student.id) : "",
-        option_id: String(option_id),
-      },
-    });
-  };
 
   const { data, loading, error } = useGetSelectionInfoQuery({
     variables: { code: params.code },
   });
+
+  const handleReservation = (
+    option_id: string,
+    studentId: number,
+    tutorial_reason?: string
+  ) => {
+    saveReservation({
+      variables: {
+        student_id: String(studentId),
+        option_id: String(option_id),
+      },
+    });
+  };
 
   useEffect(() => {
     if (data?.student.reservation) {
@@ -133,7 +138,9 @@ const SelectionPage = (props: SelectionPageProps) => {
         <Selection
           student={data.student}
           workshops={data.workshops}
-          onReservation={handleReservation}
+          onReservation={(option_id) => {
+            handleReservation(option_id, data.student.id);
+          }}
           isWorkshopsOpen={data.isWorkshopsOpen}
         />
       </IsWorkshopsOpenContext.Provider>
