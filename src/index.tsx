@@ -21,7 +21,7 @@ const clientEnviroment =
   process.env.NODE_ENV === "development" ? "dev" : "prod";
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-  uri: ServerUri,
+  uri: "http://localhost:5000/",
   cache: new InMemoryCache({ addTypename: false }),
   headers: {
     "client-enviroment": clientEnviroment,
