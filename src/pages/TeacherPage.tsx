@@ -10,6 +10,7 @@ import {
   useSaveAttendanceMutation,
   useSaveWorkshopUrlMutation,
   AttendingStudent,
+  ReservationsListQuery,
 } from "../generated/grapqhl";
 import AttendanceTable from "../components/AttendanceTable";
 import LinksEditor from "../components/LinksEditor";
@@ -31,14 +32,14 @@ export const GET_RESERVATIONS = gql`
         reservations {
           id
           student {
-          	codigo
-          	nombre
-          	apellido_paterno
-          	apellido_materno
-          	email
-          	telefono
-          	nivel
-          	grupo
+            codigo
+            nombre
+            apellido_paterno
+            apellido_materno
+            email
+            telefono
+            nivel
+            grupo
           }
           tutorialReason
           attended
@@ -48,41 +49,10 @@ export const GET_RESERVATIONS = gql`
   }
 `;
 export const SAVE_ATTENDANCE = gql`
-  mutation saveAttendance(
-    $attendingStudents: [AttendingStudent!]!
-    $option_id: ID!
-    $teacher_id: ID!
-  ) {
-    saveWorkshopsAttendance(
-      attendingStudents: $attendingStudents
-      option_id: $option_id
-      teacher_id: $teacher_id
-    )
+  mutation saveAttendance($attendingStudents: [AttendingStudent!]!) {
+    saveWorkshopsAttendance(attendingStudents: $attendingStudents)
   }
 `;
-function validateAttendance(students: AttendingStudent[]) {
-  const attendingStudentSchema = yup
-    .array()
-    .of(
-      yup
-        .object()
-        .shape({
-          apellido_materno: yup.string().defined(),
-          apellido_paterno: yup.string().defined(),
-          attended: yup.boolean().defined(),
-          codigo: yup.string().defined(),
-          grupo: yup.string().defined(),
-          nivel: yup.string().defined(),
-          nombre: yup.string().defined(),
-          teacher: yup.string().defined(),
-          workshop: yup.string().defined(),
-        })
-        .noUnknown()
-        .defined()
-    )
-    .defined();
-  return attendingStudentSchema.validateSync(students);
-}
 
 export const SAVE_WORKSHOP_URL = gql`
   mutation saveWorkshopUrl($option_id: ID!, $link: String!) {
@@ -112,36 +82,26 @@ const TeacherPage = (props: any) => {
 
   const handleSaveAttendance = async ({
     attendance,
-    option_id,
   }: {
     attendance: AttendingStudent[];
-    option_id: string;
   }) => {
-    const shavedAttendance = attendance.map((attendingStudent) => {
-      return {
-        id: attendingStudent.id,
-        attended: attendingStudent.attended
-      }
-    })
     return saveAttendance({
       variables: {
-        option_id,
-        teacher_id: data ? data.teacher.id : "0",
-        attendingStudents: shavedAttendance,
+        attendingStudents: attendance,
       },
     }).catch((e) => {
-      console.error(e)
+      console.error(e);
     });
   };
 
   if (saveAttendanceError) return <Error e={saveAttendanceError} />;
   if (loading) return <Loading />;
   if (error || saveWorkshopUrlMutationError) return <Error e={error} />;
-  if (data)
+  if (data) {
     return (
       <Container>
         <h1 className="text-4xl font-bold">
-          Teacher {data?.teacher.nombre}'s Dashboard
+          Teacher {data.teacher.nombre}'s Dashboard
         </h1>
         <Accordion>
           <div
@@ -151,14 +111,14 @@ const TeacherPage = (props: any) => {
               flexDirection: "column",
             }}
           >
-            {data?.teacher.options.map((option, index) => {
+            {data.teacher.options.map((option, index) => {
               return (
                 <AttendanceTable
                   key={index}
                   index={index}
                   day={option.day}
                   time={option.time}
-                  url={option.url}
+                  url={option.url || undefined}
                   reservations={option.reservations}
                   workshop={option.workshop}
                   option_id={option.id}
@@ -177,6 +137,7 @@ const TeacherPage = (props: any) => {
         />
       </Container>
     );
+  }
   return <div />;
 };
 

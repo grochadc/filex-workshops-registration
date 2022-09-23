@@ -1,8 +1,5 @@
 import React, { useReducer, useState } from "react";
-import {
-  ReservationsListQuery,
-  AttendingStudent,
-} from "../generated/grapqhl";
+import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import { useMediaQuery } from "react-responsive";
@@ -27,22 +24,21 @@ type AttendanceTableProps = {
   index: number;
   day: string;
   time: string;
-  url: string;
+  url?: string;
   reservations: OptionFromReservationsListQuery["reservations"];
   workshop: OptionFromReservationsListQuery["workshop"];
   option_id: string;
   teacher: ReservationsListQuery["teacher"];
   onSaveAttendance: (params: {
     attendance: AttendingStudent[];
-    option_id: string;
   }) => Promise<any>;
 };
 
 const AttendanceTable = (props: AttendanceTableProps) => {
   const eventKey = props.index.toString();
-  const initialState = props.reservations ? props.reservations : [];
+  const initialState = props.reservations;
   type Action = { type: "change"; payload: number };
-  function reducer(state: any[], action: Action) {
+  function reducer(state: any, action: Action) {
     switch (action.type) {
       case "change":
         const currentItem = state[action.payload];
@@ -68,7 +64,6 @@ const AttendanceTable = (props: AttendanceTableProps) => {
     props
       .onSaveAttendance({
         attendance: state,
-        option_id: props.option_id,
       })
       .then(() => {
         setLoading(false);
@@ -124,7 +119,8 @@ const AttendanceTable = (props: AttendanceTableProps) => {
   );
 };
 
-type ReturnedReservation = ReservationsListQuery["teacher"]["options"][0]["reservations"][0];
+type ReturnedReservation =
+  ReservationsListQuery["teacher"]["options"][0]["reservations"][0];
 type TableViewProps = {
   reservations: Exclude<ReturnedReservation, null>[];
   isTutorial: boolean;
@@ -172,7 +168,8 @@ const TableView = (props: TableViewProps) => {
                     <td>{reservation?.student.codigo}</td>
                   ) : null}
                   <td>
-                    {reservation?.student.nombre} {reservation?.student.apellido_paterno}{" "}
+                    {reservation?.student.nombre}{" "}
+                    {reservation?.student.apellido_paterno}{" "}
                     {reservation?.student.apellido_materno}
                   </td>
                   {showFullDetails || !isMobile ? (
@@ -180,7 +177,7 @@ const TableView = (props: TableViewProps) => {
                       <a
                         href={`mailto:${reservation?.student.email}`}
                         target="_blank"
-                        rel='noreferrer'
+                        rel="noreferrer"
                         className="underline text-blue-500 hover:text-blue-300"
                       >
                         {reservation?.student.email}
@@ -195,7 +192,9 @@ const TableView = (props: TableViewProps) => {
                   <td className="text-center">
                     <input
                       type="checkbox"
-                      checked={props.reservations && props.reservations[index].attended }
+                      checked={
+                        props.reservations && props.reservations[index].attended
+                      }
                       onChange={() => props.onCheckboxChange(index)}
                     />
                   </td>
