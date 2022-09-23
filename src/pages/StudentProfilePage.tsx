@@ -18,6 +18,7 @@ export const getStudentProfile = gql`
       telefono
       nivel
       reservation {
+        id
         option {
           workshop {
             name
@@ -55,79 +56,71 @@ function StudentProfile() {
   const { data, loading, error } = useGetStudentProfileQuery({
     variables: { code: params.codigo },
   });
-  
+
   if (loading) <Loading />;
   if (error) <Error e={error} />;
-  if (data) {
-    return (
-      <div className="">
-        <div className="md:flex">
-          <Card className="md:basis-1/2">
-            <Heading className="sm:text-center md:text-left">Alumno</Heading>
-            <p>
-              {data.student.nombre} {data.student.apellido_paterno}{" "}
-              {data.student.apellido_materno}
-            </p>
-            <p>
-              <strong>Código:</strong> {data.student.codigo}
-            </p>
-            <p>
-              <strong>Correo:</strong> {data.student.email}
-            </p>
-            <p>
-              <strong>Teléfono:</strong> {data.student.telefono}
-            </p>
-            <p>
-              <strong>Nivel:</strong> {data.student.nivel}
-            </p>
-          </Card>
-          <Card className="text-center md:basis-1/2">
-            <Heading>Reservaciones</Heading>
-            <div className="flex justify-center">
-              <ReservationCounter
-                current={data.student.reservationCount}
-                total={data.student.reservationLimit}
-              />
-            </div>
-            <p>
-              Recuerda que solo puedes hacer {data.student.reservationLimit}{" "}
-              reservaciones durante el semestre.
-            </p>
-          </Card>
-        </div>
-        <Card className="text-center">
-          <Heading>Reservación Actual</Heading>
-          {data.student.reservation ? (
-            <>
-              <p>{data.student.reservation.option.workshop.name}</p>
-              <p>Teacher {data.student.reservation.option.teacher.nombre}</p>
-              <p>
-                {data.student.reservation.option.day} {data.student.reservation.option.time}
-              </p>
-            </>
-          ) : (
-            <>
-              <p>No tienes una reservacion actualmente.</p>
-              {data.student.reservationCount < data.student.reservationLimit ? (
-                <p>
-                  <button
-                    className="rounded bg-blue-500 p-2 m-1 text-white"
-                    onClick={() => history.push(`/selection/${params.codigo}`)}
-                  >
-                    Hacer una reservacion
-                  </button>
-                </p>
-              ) : (
-                <Alert>
-                  Has llegado al limite de reservaciones este semestre.
-                </Alert>
-              )}
-            </>
-          )}
+  return (
+    <div className="">
+      <div className="md:flex">
+        <Card className="md:basis-1/2">
+          <Heading className="sm:text-center md:text-left">Alumno</Heading>
+          <p>
+            {data?.student.nombre} {data?.student.apellido_paterno}{" "}
+            {data?.student.apellido_materno}
+          </p>
+          <p>
+            <strong>Código:</strong> {data?.student.codigo}
+          </p>
+          <p>
+            <strong>Correo:</strong> {data?.student.email}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {data?.student.telefono}
+          </p>
+          <p>
+            <strong>Nivel:</strong> {data?.student.nivel}
+          </p>
+        </Card>
+        <Card className="text-center md:basis-1/2">
+          <Heading>Reservaciones</Heading>
+          <div className="flex justify-center">
+            <ReservationCounter
+              current={data ? data.student.reservationCount : 0}
+              total={data ? data.student.reservationLimit : 5}
+            />
+          </div>
+          <p>
+            Recuerda que solo puedes hacer {data?.student.reservationLimit}{" "}
+            reservaciones durante el semestre.
+          </p>
         </Card>
       </div>
-    );
-  }
-  return null;
+      <Card className="text-center">
+        <Heading>Reservación Actual</Heading>
+        {data?.student.reservation ? (
+          <>
+            <p>{data?.student.reservation.option.workshop.name}</p>
+            <p>Teacher {data?.student.reservation.option.teacher.nombre}</p>
+            <p>
+              {data?.student.reservation.option.day}{" "}
+              {data?.student.reservation.option.time}
+            </p>
+          </>
+        ) : (
+          <>
+            <p>No tienes una reservacion actualmente.</p>
+              <p>
+                <button
+                  className="rounded bg-blue-500 p-2 m-1 text-white"
+                  onClick={() => history.push(`/selection/${params.codigo}`)}
+                >
+                  Hacer una reservacion
+                </button>
+              </p>
+          </>
+        )}
+      </Card>
+    </div>
+  );
 }
 export default StudentProfile;

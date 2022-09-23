@@ -28,6 +28,10 @@ const baseArgs = {
   time: "13:00 - 14:00",
   url: "https://meet.google.com",
   workshop_id: "1",
+  workshop: {
+    id: 1,
+    name: "Conversation",
+  },
   workshop_name: "Conversation",
   option_id: "1",
   teacher_id: "1",
@@ -92,6 +96,5 @@ export const Empty = Template.bind({});
 
 Empty.args = {
   ...baseArgs,
-  //@ts-ignore
-  reservations: null
+  reservations: []
 };
