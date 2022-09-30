@@ -92,7 +92,7 @@ const SelectionPage = (props: SelectionPageProps) => {
   const [saveReservation, { error: saveReservationError }] =
     useSetReservationMutation({
       onCompleted: (data) => {
-        alert('Reservacion hecha con exito. Redireccionando...')
+        alert('Reservacion realizada con exito. Redireccionando...')
         history.push(`/student/${params.code}`);
       },
       onError: (err) => {
@@ -106,15 +106,19 @@ const SelectionPage = (props: SelectionPageProps) => {
 
   const handleReservation = (
     option_id: string,
-    studentId: number,
+    studentId: string,
     tutorial_reason?: string
   ) => {
-    saveReservation({
-      variables: {
-        student_id: String(studentId),
-        option_id: String(option_id),
-      },
-    });
+    if(studentId.match(/st\_\d*/) && option_id.match(/opt\_\d*/)) {
+      saveReservation({
+        variables: {
+          student_id: studentId,
+          option_id: option_id,
+        },
+      });
+    } else {
+      alert(`Error: studentId y option_id tienen un formato incorrecto. studentId ${studentId} option_id ${option_id}`)
+    }
   };
 
   useEffect(() => {
@@ -146,7 +150,7 @@ const SelectionPage = (props: SelectionPageProps) => {
       </IsWorkshopsOpenContext.Provider>
     );
   }
-  return <div />;
+  return <>NO Data fetched :(</>;
 };
 
 export default SelectionPage;

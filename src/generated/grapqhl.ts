@@ -427,6 +427,7 @@ export type Student = {
   __typename?: 'Student';
   apellido_materno: Scalars['String'];
   apellido_paterno: Scalars['String'];
+  applicant: Applicant;
   carrera: Scalars['String'];
   ciclo: Scalars['String'];
   codigo: Scalars['ID'];
@@ -434,8 +435,10 @@ export type Student = {
   email: Scalars['String'];
   externo: Scalars['Boolean'];
   genero: Scalars['String'];
+  group?: Maybe<Scalars['String']>;
+  groupObject?: Maybe<Group>;
   grupo: Scalars['String'];
-  id: Scalars['Int'];
+  id: Scalars['String'];
   nivel: Scalars['Int'];
   nombre: Scalars['String'];
   reservation?: Maybe<Reservation>;
@@ -560,6 +563,13 @@ export type MeetLink = {
   teacher: Scalars['String'];
 };
 
+export type FetchReservationsByOptionIdQueryVariables = Exact<{
+  optionId: Scalars['ID'];
+}>;
+
+
+export type FetchReservationsByOptionIdQuery = { __typename?: 'Query', reservations: Array<Maybe<{ __typename?: 'Reservation', id: string, tutorialReason?: Maybe<string>, attended: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, grupo: string } }>> };
+
 export type ResetMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -580,7 +590,7 @@ export type GetSelectionInfoQueryVariables = Exact<{
 }>;
 
 
-export type GetSelectionInfoQuery = { __typename?: 'Query', isWorkshopsOpen: boolean, student: { __typename?: 'Student', id: number, codigo: string, nombre: string, nivel: number, reservation?: Maybe<{ __typename?: 'Reservation', option: { __typename?: 'Option', day: string, time: string, url?: Maybe<string>, isTutorial: boolean, workshop: { __typename?: 'Workshop', name: string }, teacher: { __typename?: 'Teacher', nombre: string } } }> }, workshops: Array<{ __typename?: 'Workshop', id: number, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, day: string, time: string, url?: Maybe<string>, zoom_id?: Maybe<string>, available: boolean, active: boolean, isTutorial: boolean, teacher: { __typename?: 'Teacher', nombre: string } }> }> };
+export type GetSelectionInfoQuery = { __typename?: 'Query', isWorkshopsOpen: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, nivel: number, reservation?: Maybe<{ __typename?: 'Reservation', option: { __typename?: 'Option', day: string, time: string, url?: Maybe<string>, isTutorial: boolean, workshop: { __typename?: 'Workshop', name: string }, teacher: { __typename?: 'Teacher', nombre: string } } }> }, workshops: Array<{ __typename?: 'Workshop', id: number, name: string, description: string, levels: Array<string>, options: Array<{ __typename?: 'Option', id: string, day: string, time: string, url?: Maybe<string>, zoom_id?: Maybe<string>, available: boolean, active: boolean, isTutorial: boolean, teacher: { __typename?: 'Teacher', nombre: string } }> }> };
 
 export type SetReservationMutationVariables = Exact<{
   student_id: Scalars['ID'];
@@ -595,7 +605,7 @@ export type GetStudentProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentProfileQuery = { __typename?: 'Query', student: { __typename?: 'Student', id: number, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, reservationCount: number, reservationLimit: number, reservation?: Maybe<{ __typename?: 'Reservation', option: { __typename?: 'Option', day: string, time: string, url?: Maybe<string>, workshop: { __typename?: 'Workshop', name: string }, teacher: { __typename?: 'Teacher', nombre: string } } }> } };
+export type GetStudentProfileQuery = { __typename?: 'Query', student: { __typename?: 'Student', id: string, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, reservationCount: number, reservationLimit: number, reservation?: Maybe<{ __typename?: 'Reservation', id: string, option: { __typename?: 'Option', day: string, time: string, url?: Maybe<string>, workshop: { __typename?: 'Workshop', name: string }, teacher: { __typename?: 'Teacher', nombre: string } } }> } };
 
 export type ReservationsListQueryVariables = Exact<{
   teacher_id: Scalars['ID'];
@@ -603,6 +613,13 @@ export type ReservationsListQueryVariables = Exact<{
 
 
 export type ReservationsListQuery = { __typename?: 'Query', teacher: { __typename?: 'Teacher', id: string, nombre: string, options: Array<{ __typename?: 'TeacherOption', id: string, day: string, time: string, url?: Maybe<string>, workshop: { __typename?: 'Workshop', name: string, id: number }, reservations: Array<Maybe<{ __typename?: 'Reservation', id: string, tutorialReason?: Maybe<string>, attended: boolean, student: { __typename?: 'Student', codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, grupo: string } }>> }> } };
+
+export type GetReservationByIdQueryVariables = Exact<{
+  optionId: Scalars['ID'];
+}>;
+
+
+export type GetReservationByIdQuery = { __typename?: 'Query', reservations: Array<Maybe<{ __typename?: 'Reservation', id: string, tutorialReason?: Maybe<string>, attended: boolean, student: { __typename?: 'Student', codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, grupo: string } }>> };
 
 export type SaveAttendanceMutationVariables = Exact<{
   attendingStudents: Array<AttendingStudent> | AttendingStudent;
@@ -625,6 +642,54 @@ export type GetTeacherListQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetTeacherListQuery = { __typename?: 'Query', teachers: Array<{ __typename?: 'Teacher', id: string, nombre: string }> };
 
 
+export const FetchReservationsByOptionIdDocument = gql`
+    query fetchReservationsByOptionId($optionId: ID!) {
+  reservations(optionId: $optionId) {
+    id
+    student {
+      id
+      codigo
+      nombre
+      apellido_paterno
+      apellido_materno
+      email
+      telefono
+      nivel
+      grupo
+    }
+    tutorialReason
+    attended
+  }
+}
+    `;
+
+/**
+ * __useFetchReservationsByOptionIdQuery__
+ *
+ * To run a query within a React component, call `useFetchReservationsByOptionIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFetchReservationsByOptionIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFetchReservationsByOptionIdQuery({
+ *   variables: {
+ *      optionId: // value for 'optionId'
+ *   },
+ * });
+ */
+export function useFetchReservationsByOptionIdQuery(baseOptions: Apollo.QueryHookOptions<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>(FetchReservationsByOptionIdDocument, options);
+      }
+export function useFetchReservationsByOptionIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>(FetchReservationsByOptionIdDocument, options);
+        }
+export type FetchReservationsByOptionIdQueryHookResult = ReturnType<typeof useFetchReservationsByOptionIdQuery>;
+export type FetchReservationsByOptionIdLazyQueryHookResult = ReturnType<typeof useFetchReservationsByOptionIdLazyQuery>;
+export type FetchReservationsByOptionIdQueryResult = Apollo.QueryResult<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>;
 export const ResetDocument = gql`
     mutation reset {
   resetReservations
@@ -849,6 +914,7 @@ export const GetStudentProfileDocument = gql`
     telefono
     nivel
     reservation {
+      id
       option {
         workshop {
           name
@@ -955,6 +1021,53 @@ export function useReservationsListLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type ReservationsListQueryHookResult = ReturnType<typeof useReservationsListQuery>;
 export type ReservationsListLazyQueryHookResult = ReturnType<typeof useReservationsListLazyQuery>;
 export type ReservationsListQueryResult = Apollo.QueryResult<ReservationsListQuery, ReservationsListQueryVariables>;
+export const GetReservationByIdDocument = gql`
+    query getReservationById($optionId: ID!) {
+  reservations(optionId: $optionId) {
+    id
+    student {
+      codigo
+      nombre
+      apellido_paterno
+      apellido_materno
+      email
+      telefono
+      nivel
+      grupo
+    }
+    tutorialReason
+    attended
+  }
+}
+    `;
+
+/**
+ * __useGetReservationByIdQuery__
+ *
+ * To run a query within a React component, call `useGetReservationByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReservationByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReservationByIdQuery({
+ *   variables: {
+ *      optionId: // value for 'optionId'
+ *   },
+ * });
+ */
+export function useGetReservationByIdQuery(baseOptions: Apollo.QueryHookOptions<GetReservationByIdQuery, GetReservationByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReservationByIdQuery, GetReservationByIdQueryVariables>(GetReservationByIdDocument, options);
+      }
+export function useGetReservationByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReservationByIdQuery, GetReservationByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReservationByIdQuery, GetReservationByIdQueryVariables>(GetReservationByIdDocument, options);
+        }
+export type GetReservationByIdQueryHookResult = ReturnType<typeof useGetReservationByIdQuery>;
+export type GetReservationByIdLazyQueryHookResult = ReturnType<typeof useGetReservationByIdLazyQuery>;
+export type GetReservationByIdQueryResult = Apollo.QueryResult<GetReservationByIdQuery, GetReservationByIdQueryVariables>;
 export const SaveAttendanceDocument = gql`
     mutation saveAttendance($attendingStudents: [AttendingStudent!]!) {
   saveWorkshopsAttendance(attendingStudents: $attendingStudents)

@@ -32,7 +32,7 @@ const WorkshopSelector = ({
   const isWorkshopsOpen = useContext(IsWorkshopsOpenContext);
   const eventKey = index.toString();
   return (
-    <Accordion key={index}>
+    <Accordion key={workshop.id}>
       <Card className="text-center p-3">
         <Accordion.Toggle eventKey={eventKey} as={Button}>
           {workshop.name}
