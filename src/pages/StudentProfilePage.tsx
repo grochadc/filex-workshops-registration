@@ -105,6 +105,7 @@ function StudentProfile() {
               {data?.student.reservation.option.day}{" "}
               {data?.student.reservation.option.time}
             </p>
+            <p>Lugar: Centro de Aprendizaje Global</p>
           </>
         ) : (
           <>
