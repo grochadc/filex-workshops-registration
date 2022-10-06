@@ -49,7 +49,7 @@ const Dashboard = (props: any) => {
             <ol>
               {settingsData.teachers.map((teacher) => (
                 <li>
-                  <Link to={`/teacher/${teacher.id}`} component={StyledAnchor}>
+                  <Link to={`/attendance/${teacher.id}`} component={StyledAnchor}>
                     {teacher.nombre}
                   </Link>
                 </li>

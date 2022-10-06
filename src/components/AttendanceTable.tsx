@@ -1,5 +1,5 @@
 import React, { useReducer, useState } from "react";
-import { ReservationsListQuery, AttendingStudent } from "../generated/grapqhl";
+import { ReservationsListQuery } from "../generated/grapqhl";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import { useMediaQuery } from "react-responsive";
@@ -30,7 +30,7 @@ type AttendanceTableProps = {
   option_id: string;
   teacher: ReservationsListQuery["teacher"];
   onSaveAttendance: (params: {
-    attendance: AttendingStudent[];
+    attendance: any[];
   }) => Promise<any>;
 };
 

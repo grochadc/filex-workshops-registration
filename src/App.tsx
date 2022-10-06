@@ -3,14 +3,12 @@ import { Switch, Route } from "react-router-dom";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Home from "./components/Home";
 import SelectionPage from "./pages/SelectionPage";
-import Success from "./components/Success";
 import TeacherPage from "./pages/TeacherPage";
 import Dashboard from "./pages/DashboardPage";
-import TeacherSelector from "./components/TeacherSelector";
 import ReservationDetails from "./components/ReservationDetails";
 import TeacherSelectorPage from "./pages/TeacherSelectorPage";
-
 import StudentProfile from "./pages/StudentProfilePage";
+import AttendancePage from "./pages/AttendancePage";
 import Nav from "./components/Nav";
 
 const initialDetails = {
@@ -64,6 +62,9 @@ function App() {
         </Route>
         <Route path="/details">
           <ReservationDetails reservationDetails={reservationDetails} />
+        </Route>
+        <Route path="/attendance/:teacherId">
+          <AttendancePage />
         </Route>
         <Route path="/">
           <Home />

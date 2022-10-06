@@ -77,11 +77,6 @@ export type ApplicantResponse = {
   telefono: Scalars['String'];
 };
 
-export type AttendingStudent = {
-  attended: Scalars['Boolean'];
-  reservation_id: Scalars['ID'];
-};
-
 export type Carrera = {
   __typename?: 'Carrera';
   id: Scalars['ID'];
@@ -218,9 +213,7 @@ export type MutationSaveRegisteringLevelsArgs = {
 
 
 export type MutationSaveWorkshopsAttendanceArgs = {
-  attendingStudents: Array<AttendingStudent>;
-  option_id?: Maybe<Scalars['ID']>;
-  teacher_id?: Maybe<Scalars['ID']>;
+  attendingStudents: Array<ReservationInput>;
 };
 
 
@@ -410,6 +403,11 @@ export type Reservation = {
   tutorialReason?: Maybe<Scalars['String']>;
 };
 
+export type ReservationInput = {
+  attended: Scalars['Boolean'];
+  id: Scalars['ID'];
+};
+
 export type Section = {
   __typename?: 'Section';
   course: Scalars['String'];
@@ -570,6 +568,20 @@ export type FetchReservationsByOptionIdQueryVariables = Exact<{
 
 export type FetchReservationsByOptionIdQuery = { __typename?: 'Query', reservations: Array<Maybe<{ __typename?: 'Reservation', id: string, tutorialReason?: Maybe<string>, attended: boolean, student: { __typename?: 'Student', id: string, codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, grupo: string } }>> };
 
+export type SavereservationsFromOptionMutationVariables = Exact<{
+  reservations: Array<ReservationInput> | ReservationInput;
+}>;
+
+
+export type SavereservationsFromOptionMutation = { __typename?: 'Mutation', saveWorkshopsAttendance: boolean };
+
+export type FetchTeacherWorkshopsQueryVariables = Exact<{
+  teacher_id: Scalars['ID'];
+}>;
+
+
+export type FetchTeacherWorkshopsQuery = { __typename?: 'Query', teacher: { __typename?: 'Teacher', id: string, nombre: string, options: Array<{ __typename?: 'TeacherOption', id: string, day: string, time: string, url?: Maybe<string>, workshop: { __typename?: 'Workshop', name: string, id: number } }> } };
+
 export type ResetMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -622,7 +634,7 @@ export type GetReservationByIdQueryVariables = Exact<{
 export type GetReservationByIdQuery = { __typename?: 'Query', reservations: Array<Maybe<{ __typename?: 'Reservation', id: string, tutorialReason?: Maybe<string>, attended: boolean, student: { __typename?: 'Student', codigo: string, nombre: string, apellido_paterno: string, apellido_materno: string, email: string, telefono: string, nivel: number, grupo: string } }>> };
 
 export type SaveAttendanceMutationVariables = Exact<{
-  attendingStudents: Array<AttendingStudent> | AttendingStudent;
+  attendingStudents: Array<ReservationInput> | ReservationInput;
 }>;
 
 
@@ -690,6 +702,83 @@ export function useFetchReservationsByOptionIdLazyQuery(baseOptions?: Apollo.Laz
 export type FetchReservationsByOptionIdQueryHookResult = ReturnType<typeof useFetchReservationsByOptionIdQuery>;
 export type FetchReservationsByOptionIdLazyQueryHookResult = ReturnType<typeof useFetchReservationsByOptionIdLazyQuery>;
 export type FetchReservationsByOptionIdQueryResult = Apollo.QueryResult<FetchReservationsByOptionIdQuery, FetchReservationsByOptionIdQueryVariables>;
+export const SavereservationsFromOptionDocument = gql`
+    mutation savereservationsFromOption($reservations: [ReservationInput!]!) {
+  saveWorkshopsAttendance(attendingStudents: $reservations)
+}
+    `;
+export type SavereservationsFromOptionMutationFn = Apollo.MutationFunction<SavereservationsFromOptionMutation, SavereservationsFromOptionMutationVariables>;
+
+/**
+ * __useSavereservationsFromOptionMutation__
+ *
+ * To run a mutation, you first call `useSavereservationsFromOptionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSavereservationsFromOptionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [savereservationsFromOptionMutation, { data, loading, error }] = useSavereservationsFromOptionMutation({
+ *   variables: {
+ *      reservations: // value for 'reservations'
+ *   },
+ * });
+ */
+export function useSavereservationsFromOptionMutation(baseOptions?: Apollo.MutationHookOptions<SavereservationsFromOptionMutation, SavereservationsFromOptionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SavereservationsFromOptionMutation, SavereservationsFromOptionMutationVariables>(SavereservationsFromOptionDocument, options);
+      }
+export type SavereservationsFromOptionMutationHookResult = ReturnType<typeof useSavereservationsFromOptionMutation>;
+export type SavereservationsFromOptionMutationResult = Apollo.MutationResult<SavereservationsFromOptionMutation>;
+export type SavereservationsFromOptionMutationOptions = Apollo.BaseMutationOptions<SavereservationsFromOptionMutation, SavereservationsFromOptionMutationVariables>;
+export const FetchTeacherWorkshopsDocument = gql`
+    query fetchTeacherWorkshops($teacher_id: ID!) {
+  teacher(id: $teacher_id) {
+    id
+    nombre
+    options {
+      id
+      day
+      time
+      url
+      workshop {
+        name
+        id
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useFetchTeacherWorkshopsQuery__
+ *
+ * To run a query within a React component, call `useFetchTeacherWorkshopsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFetchTeacherWorkshopsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFetchTeacherWorkshopsQuery({
+ *   variables: {
+ *      teacher_id: // value for 'teacher_id'
+ *   },
+ * });
+ */
+export function useFetchTeacherWorkshopsQuery(baseOptions: Apollo.QueryHookOptions<FetchTeacherWorkshopsQuery, FetchTeacherWorkshopsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FetchTeacherWorkshopsQuery, FetchTeacherWorkshopsQueryVariables>(FetchTeacherWorkshopsDocument, options);
+      }
+export function useFetchTeacherWorkshopsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FetchTeacherWorkshopsQuery, FetchTeacherWorkshopsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FetchTeacherWorkshopsQuery, FetchTeacherWorkshopsQueryVariables>(FetchTeacherWorkshopsDocument, options);
+        }
+export type FetchTeacherWorkshopsQueryHookResult = ReturnType<typeof useFetchTeacherWorkshopsQuery>;
+export type FetchTeacherWorkshopsLazyQueryHookResult = ReturnType<typeof useFetchTeacherWorkshopsLazyQuery>;
+export type FetchTeacherWorkshopsQueryResult = Apollo.QueryResult<FetchTeacherWorkshopsQuery, FetchTeacherWorkshopsQueryVariables>;
 export const ResetDocument = gql`
     mutation reset {
   resetReservations
@@ -1069,7 +1158,7 @@ export type GetReservationByIdQueryHookResult = ReturnType<typeof useGetReservat
 export type GetReservationByIdLazyQueryHookResult = ReturnType<typeof useGetReservationByIdLazyQuery>;
 export type GetReservationByIdQueryResult = Apollo.QueryResult<GetReservationByIdQuery, GetReservationByIdQueryVariables>;
 export const SaveAttendanceDocument = gql`
-    mutation saveAttendance($attendingStudents: [AttendingStudent!]!) {
+    mutation saveAttendance($attendingStudents: [ReservationInput!]!) {
   saveWorkshopsAttendance(attendingStudents: $attendingStudents)
 }
     `;

@@ -9,11 +9,12 @@ import {
   useReservationsListQuery,
   useSaveAttendanceMutation,
   useSaveWorkshopUrlMutation,
-  AttendingStudent,
   ReservationsListQuery,
 } from "../generated/grapqhl";
 import AttendanceTable from "../components/AttendanceTable";
 import LinksEditor from "../components/LinksEditor";
+
+import produce from "immer";
 
 export const GET_RESERVATIONS = gql`
   query reservationsList($teacher_id: ID!) {
@@ -48,8 +49,28 @@ export const GET_RESERVATIONS = gql`
     }
   }
 `;
+
+export const getReservationById = gql`
+  query getReservationById($optionId: ID!) {
+    reservations(optionId: $optionId) {
+      id
+      student {
+        codigo
+        nombre
+        apellido_paterno
+        apellido_materno
+        email
+        telefono
+        nivel
+        grupo
+      }
+      tutorialReason
+      attended
+    }
+  }
+`;
 export const SAVE_ATTENDANCE = gql`
-  mutation saveAttendance($attendingStudents: [AttendingStudent!]!) {
+  mutation saveAttendance($attendingStudents: [ReservationInput!]!) {
     saveWorkshopsAttendance(attendingStudents: $attendingStudents)
   }
 `;
@@ -65,6 +86,24 @@ const TeacherPage = (props: any) => {
   const { data, loading, error } = useReservationsListQuery({
     variables: { teacher_id: params.id },
   });
+
+  const [teacherLocal, dispatch] = React.useReducer( 
+    produce((draft, action) => {
+      switch (action.type) {
+        case "append":
+          const option = draft.teacher.options.find((opt) => {
+            return Boolean(opt.id === action.optionId);
+          });
+          if(option) option.reservations = action.payload;
+          break;
+        case "set":
+          return action.payload;
+        default:
+          break;
+    }
+  }),
+  {}
+);
 
   const onCompletedSaveAttendance = () => {
     alert("Saved Attendance correctly!");
@@ -83,7 +122,7 @@ const TeacherPage = (props: any) => {
   const handleSaveAttendance = async ({
     attendance,
   }: {
-    attendance: AttendingStudent[];
+    attendance: any[];
   }) => {
     return saveAttendance({
       variables: {
@@ -94,10 +133,14 @@ const TeacherPage = (props: any) => {
     });
   };
 
+  React.useEffect(() => {
+    dispatch({type: "set", payload: data})
+  }, [data])
+
   if (saveAttendanceError) return <Error e={saveAttendanceError} />;
   if (loading) return <Loading />;
   if (error || saveWorkshopUrlMutationError) return <Error e={error} />;
-  if (data) {
+  if (teacherLocal && data) {
     return (
       <Container>
         <h1 className="text-4xl font-bold">
